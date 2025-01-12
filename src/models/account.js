@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const mongoose_delete = require("mongoose-delete");
+const mongoose = require('mongoose');
+const mongoose_delete = require('mongoose-delete');
 const { Schema, model } = mongoose;
 
 const accountSchema = new Schema(
@@ -11,7 +11,7 @@ const accountSchema = new Schema(
     isBanned: Boolean,
     avatar: String,
     address: String,
-    role: { type: Schema.Types.ObjectId, ref: "Role" },
+    role: { type: Schema.Types.ObjectId, ref: 'Role' },
     description: String,
     followers: [String],
     following: [String],
@@ -19,8 +19,8 @@ const accountSchema = new Schema(
   { timestamps: true }
 );
 
-accountSchema.plugin(mongoose_delete, { overrideMethods: "all" });
-const Account = model("account", accountSchema);
+accountSchema.plugin(mongoose_delete, { overrideMethods: 'all' });
+const Account = model('account', accountSchema);
 //default data
 
 module.exports = Account;

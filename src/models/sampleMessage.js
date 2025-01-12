@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const mongoose_delete = require("mongoose-delete");
+const mongoose = require('mongoose');
+const mongoose_delete = require('mongoose-delete');
 const { Schema, model } = mongoose;
 const sampleMessageSchema = new Schema(
   {
@@ -8,6 +8,6 @@ const sampleMessageSchema = new Schema(
   },
   { timestamps: true }
 );
-sampleMessageSchema.plugin(mongoose_delete, { overrideMethods: "all" });
-const SampleMessage = model("sampleMessage", sampleMessageSchema);
+sampleMessageSchema.plugin(mongoose_delete, { overrideMethods: 'all' });
+const SampleMessage = model('sampleMessage', sampleMessageSchema);
 module.exports = SampleMessage;

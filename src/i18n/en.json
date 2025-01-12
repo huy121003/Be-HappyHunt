@@ -1,0 +1,4 @@
+{
+  "listen": "Backend app listening on port",
+  "expireToken": "Token is expired or invalid"
+}

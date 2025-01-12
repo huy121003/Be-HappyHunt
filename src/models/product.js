@@ -1,19 +1,19 @@
-const mongoose = require("mongoose");
-const mongoose_delete = require("mongoose-delete");
+const mongoose = require('mongoose');
+const mongoose_delete = require('mongoose-delete');
 const { Schema, model } = mongoose;
 const productSchema = new Schema(
   {
-    category: { type: Schema.Types.ObjectId, ref: "Category" },
-    seller: { type: Schema.Types.ObjectId, ref: "Account" },
-    buyer: { type: Schema.Types.ObjectId, ref: "Account" },
+    category: { type: Schema.Types.ObjectId, ref: 'Category' },
+    seller: { type: Schema.Types.ObjectId, ref: 'Account' },
+    buyer: { type: Schema.Types.ObjectId, ref: 'Account' },
     name: String,
     price: Number,
     description: String,
     images: [String],
     status: {
       type: String,
-      enum: ["selling", "sold", "expire", "pending"],
-      default: "expire",
+      enum: ['selling', 'sold', 'expire', 'pending'],
+      default: 'expire',
     },
     clickCount: Number,
     acttributes: [
@@ -23,7 +23,7 @@ const productSchema = new Schema(
         unit: String,
       },
     ],
-     
+
     warrantyPolicy: String,
     startPost: Date,
     endPost: Date,
@@ -37,6 +37,6 @@ const productSchema = new Schema(
   },
   { timestamps: true }
 );
-productSchema.plugin(mongoose_delete, { overrideMethods: "all" });
-const Product = model("product", productSchema);
+productSchema.plugin(mongoose_delete, { overrideMethods: 'all' });
+const Product = model('product', productSchema);
 module.exports = Product;

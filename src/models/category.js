@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const mongoose_delete = require("mongoose-delete");
+const mongoose = require('mongoose');
+const mongoose_delete = require('mongoose-delete');
 const { Schema, model } = mongoose;
 
 const categorySchema = new Schema(
@@ -18,6 +18,6 @@ const categorySchema = new Schema(
   { timestamps: true }
 );
 
-categorySchema.plugin(mongoose_delete, { overrideMethods: "all" });
-const Category = model("category", categorySchema);
+categorySchema.plugin(mongoose_delete, { overrideMethods: 'all' });
+const Category = model('category', categorySchema);
 module.exports = Category;

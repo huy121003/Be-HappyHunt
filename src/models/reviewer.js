@@ -1,19 +1,19 @@
-const mongoose = require("mongoose");
-const mongoose_delete = require("mongoose-delete");
+const mongoose = require('mongoose');
+const mongoose_delete = require('mongoose-delete');
 const { Schema, model } = mongoose;
 const reviewerSchema = new Schema(
   {
     reviewer: {
       type: Schema.Types.ObjectId,
-      ref: "Account",
+      ref: 'Account',
     },
     target: {
       type: Schema.Types.ObjectId,
-      ref: "Account",
+      ref: 'Account',
     },
     product: {
       type: Schema.Types.ObjectId,
-      ref: "Product",
+      ref: 'Product',
     },
     star: {
       type: Number,
@@ -25,6 +25,6 @@ const reviewerSchema = new Schema(
   },
   { timestamps: true }
 );
-reviewerSchema.plugin(mongoose_delete, { overrideMethods: "all" });
-const Reviewer = model("reviewer", reviewerSchema);
+reviewerSchema.plugin(mongoose_delete, { overrideMethods: 'all' });
+const Reviewer = model('reviewer', reviewerSchema);
 module.exports = Reviewer;
