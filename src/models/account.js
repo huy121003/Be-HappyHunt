@@ -10,11 +10,10 @@ const accountSchema = new Schema(
     password: String,
     isBanned: Boolean,
     avatar: String,
+    isVip: Boolean,
     address: String,
     role: { type: Schema.Types.ObjectId, ref: 'Role' },
     description: String,
-    followers: [String],
-    following: [String],
   },
   { timestamps: true }
 );

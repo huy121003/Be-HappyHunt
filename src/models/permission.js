@@ -3,7 +3,7 @@ const mongoose_delete = require('mongoose-delete');
 const { Schema, model } = mongoose;
 const permissionSchema = new Schema(
   {
-    method: { type: String, enum: ['GET', 'POST', 'PUT', 'DELETE'] },
+    method: { type: String, enum: ['GET', 'POST', 'PATCH', 'DELETE', 'ACL'] },
     type: String,
     name: String,
     description: String,

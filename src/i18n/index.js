@@ -8,11 +8,11 @@ i18next.use(i18nextHttpMiddleware.LanguageDetector).init({
     order: ['header'],
     lookupHeader: 'accept-language',
   },
-  preload: ['en', 'vn'],
-  fallbackLng: 'vn',
+  preload: ['en', 'vi'],
+  fallbackLng: 'vi',
   resources: {
     en: { translation: translationEn },
-    vn: { translation: translationVn },
+    vi: { translation: translationVn },
   },
 });
 module.exports = {

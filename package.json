@@ -6,12 +6,18 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon ./src/server.js",
-    "start": "node ./src/server.js",
-    "build": "tsc"
+    "start": "node ./dist/server.js",
+    "build": "babel ./src --out-dir dist --copy-files",
+    "lint": "eslint . --ext .js",
+    "format": "prettier --write .",
+    "lint:fix": "eslint . --ext .js --fix"
   },
   "author": "Quang Huy",
   "license": "ISC",
   "devDependencies": {
+    "@babel/cli": "^7.26.4",
+    "@babel/core": "^7.26.0",
+    "@babel/preset-env": "^7.26.0",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.31.0",
@@ -21,6 +27,7 @@
     "prettier": "^3.4.2"
   },
   "dependencies": {
+    "@vonage/server-sdk": "^3.19.3",
     "api-query-params": "^5.4.0",
     "bcrypt": "^5.1.1",
     "be-happyhunt": "file:",
@@ -29,10 +36,16 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-fileupload": "^1.5.1",
+    "express-list-endpoints": "^7.1.1",
     "i18next": "^24.2.1",
     "i18next-http-middleware": "^3.7.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.3",
-    "mongoose-delete": "^1.0.2"
+    "mongoose-delete": "^1.0.2",
+    "node-cron": "^3.0.3",
+    "redis": "^4.7.0",
+    "twilio": "^5.4.2",
+    "uuid": "^11.0.5",
+    "uuidv4": "^6.2.13"
   }
 }

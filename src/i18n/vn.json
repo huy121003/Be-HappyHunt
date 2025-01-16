@@ -1,4 +1,26 @@
 {
   "listen": "Backend app đang lắng nghe trên cổng",
-  "expireToken": "Token bị hết hạn hoặc không hợp lệ"
+  "path": {
+    "notFound": "Đường dẫn không tồn tại",
+    "notFoundContent": "Đường dẫn bạn truy cập không tồn tại",
+    "serverError": "Lỗi server",
+    "serverErrorContent": "Có lỗi xảy ra trên server, vui lòng thử lại sau"
+  },
+  "token": {
+    "required": "Token không được để trống",
+    "expireToken": "Token bị hết hạn hoặc không hợp lệ"
+  },
+  "auth": {
+    "required": "Vui lòng nhập đầy đủ thông tin",
+    "invalid": "Thông tin đăng nhập không chính xác",
+    "success": "Đăng nhập thành công",
+    "fail": "Đăng nhập thất bại",
+    "logout": "Đăng xuất thành công",
+    "logoutFail": "Đăng xuất thất bại",
+    "register": "Đăng ký thành công",
+    "registerFail": "Đăng ký thất bại",
+    "phoneExit": "Số điện thoại đã được đăng kí trước đó",
+    "phoneValid": "Số điện thoại không đúng định dạng",
+    "passValid": "Mật khẩu không đúng định dạng"
+  }
 }
