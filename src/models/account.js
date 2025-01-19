@@ -12,7 +12,7 @@ const accountSchema = new Schema(
     avatar: String,
     isVip: Boolean,
     address: String,
-    role: { type: Schema.Types.ObjectId, ref: 'Role' },
+    role: { type: Schema.Types.ObjectId, ref: 'role' },
     description: String,
   },
   { timestamps: true }

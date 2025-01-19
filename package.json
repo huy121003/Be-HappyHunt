@@ -31,6 +31,8 @@
     "api-query-params": "^5.4.0",
     "bcrypt": "^5.1.1",
     "be-happyhunt": "file:",
+    "cloudinary": "^2.5.1",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dayjs": "^1.11.13",
     "dotenv": "^16.4.7",
@@ -44,6 +46,7 @@
     "mongoose-delete": "^1.0.2",
     "node-cron": "^3.0.3",
     "redis": "^4.7.0",
+    "streamifier": "^0.1.1",
     "twilio": "^5.4.2",
     "uuid": "^11.0.5",
     "uuidv4": "^6.2.13"

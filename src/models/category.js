@@ -4,16 +4,20 @@ const { Schema, model } = mongoose;
 
 const categorySchema = new Schema(
   {
-    name: String,
-    acttributes: [
+    nameVn: String,
+    nameEn: String,
+
+    attributes: [
       {
-        name: String,
-        values: [String],
-        unit: String,
+        nameVn: { type: String, required: true },
+        nameEn: { type: String, required: true },
+        values: [{ type: String, required: true }], // Mảng string
+        _id: false,
       },
     ],
     description: String,
     url: String,
+    icon: String,
   },
   { timestamps: true }
 );

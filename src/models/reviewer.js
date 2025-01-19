@@ -11,9 +11,9 @@ const reviewerSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'Account',
     },
-    product: {
+    Post: {
       type: Schema.Types.ObjectId,
-      ref: 'Product',
+      ref: 'Post',
     },
     star: {
       type: Number,

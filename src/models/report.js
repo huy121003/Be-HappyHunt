@@ -7,7 +7,7 @@ const reportSchema = new Schema(
     target: { type: Schema.Types.ObjectId, refPath: 'targetType' },
     targetType: {
       type: String,
-      enum: ['Account', 'Product'], // Trùng khớp với tên mô hình
+      enum: ['Account', 'Post'], // Trùng khớp với tên mô hình
       default: 'Account',
     },
     title: String,

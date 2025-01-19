@@ -1,7 +1,7 @@
 const Account = require('../models/account');
 require('dotenv').config();
 const bcrypt = require('bcrypt');
-const autoCreateAdminService = async () => {
+const autoCreateAdminService = async (roleId) => {
   const bycryptedPassword = await bcrypt.hash(process.env.PASSWORD_ADMIN, 10);
 
   await Account.create({
@@ -12,6 +12,7 @@ const autoCreateAdminService = async () => {
     address: '',
     avatar: '',
     isVip: true,
+    role: roleId,
   });
 };
 module.exports = {

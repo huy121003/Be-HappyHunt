@@ -1,26 +1,30 @@
 require('dotenv').config();
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const { i18next, i18nextHttpMiddleware } = require('./i18n');
 const cors = require('cors');
+const fileUpload = require('express-fileupload');
 const app = express();
+app.use(fileUpload());
+app.use(cookieParser());
 const port = process.env.PORT || 8001;
 const hostname = process.env.HOST_NAME || 'localhost';
 const connection = require('./configs/database');
 const indexRouter = require('./routes/index');
-const { ErrorResponse, sendNotFound } = require('./helpers/apiHelper');
 const { autoCreateAdmin } = require('./controllers/accountController');
-require('./tasks');
 const {
-  authMiddlewareAccessToken,
-  authMiddlewareRefreshToken,
-} = require('./middlewares/authMiddleware');
+  autoCreatePermissionMany,
+} = require('./controllers/permissionController');
+const { autoCreatePolicy } = require('./controllers/policyController');
+const { autoCreateRole } = require('./controllers/roleController');
+require('./tasks');
 
 // CORS middleware
 app.use(
   cors({
     origin: true,
     credentials: true,
-    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PATCH', 'DELETE'],
   })
 );
 
@@ -34,17 +38,14 @@ app.use(i18nextHttpMiddleware.handle(i18next));
 // Routes công khai
 app.use('/api/v1/', indexRouter);
 
-// Middleware chỉ áp dụng cho route bảo mật);
-
 // Kết nối cơ sở dữ liệu và khởi động server
 (async () => {
   try {
-    console.log('Connecting to database...');
     await connection();
-    console.log('Database connected.');
-
+    await autoCreatePermissionMany();
+    await autoCreateRole();
+    await autoCreatePolicy();
     await autoCreateAdmin();
-    console.log('Admin account created.');
 
     app.listen(port, hostname, () => {
       console.log(`${i18next.t('listen')} http://${hostname}:${port}`);

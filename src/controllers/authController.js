@@ -1,19 +1,18 @@
 const {
-  validationErrorWithData,
   sendValidationError,
   sendSuccessWithData,
   sendErrorMessage,
   sendNotFound,
   sendSuccessMessage,
-  sendUnauthorizedError,
 } = require('../helpers/apiHelper');
-const uuid = require('uuid');
 const { i18next } = require('../i18n');
 const Account = require('../models/account');
 const {
   loginService,
   registerService,
   forgotPasswordService,
+  getAccountInfoService,
+  getNewAccessTokenService,
 } = require('../services/authService');
 const { verifyOtpService, sendOtpService } = require('../services/otpService');
 const bcrypt = require('bcrypt');
@@ -25,10 +24,8 @@ const login = async (req, res) => {
     return valida(res, i18next.t('auth.required'), null);
   }
   try {
-    const result = await loginService(phoneNumber, password, res);
-    if (!result) {
-      return sendValidationError(res, i18next.t('auth.invalid'));
-    }
+    await loginService(phoneNumber, password, res);
+
     return sendSuccessWithData(res, i18next.t('auth.success'), result);
   } catch (error) {
     return sendErrorMessage(res, error.message);
@@ -42,11 +39,7 @@ const register = async (req, res) => {
   }
   try {
     const phoneVn = `+84${phoneNumber.slice(1)}`;
-    const veryfyOtp = await verifyOtpService(phoneVn, otp);
-    if (!veryfyOtp) {
-      return sendValidationError(res, i18next.t('auth.invalid'));
-    }
-
+    await verifyOtpService(phoneVn, otp);
     // Gọi service để xử lý đăng ký
     const registerResult = await registerService(phoneNumber, password);
 
@@ -65,10 +58,8 @@ const sendOtpRegister = async (req, res) => {
       return sendValidationError(res, i18next.t('auth.phoneExit'));
     }
     const phoneVn = `+84${phoneNumber.slice(1)}`;
-    const sendOtp = await sendOtpService(phoneVn);
-    if (!sendOtp) {
-      return sendValidationError(res, i18next.t('auth.invalid'));
-    }
+    await sendOtpService(phoneVn);
+
     return sendSuccessMessage(res, 'Mã OTP đã được gửi');
   } catch (error) {
     return sendErrorMessage(res, error.message);
@@ -91,9 +82,7 @@ const sendOtpForgotPassword = async (req, res) => {
     }
     const phoneVn = `+84${phoneNumber.slice(1)}`;
     const sendOtp = await sendOtpService(phoneVn);
-    if (!sendOtp) {
-      return sendValidationError(res, i18next.t('auth.invalid'));
-    }
+
     return sendSuccessMessage(res, 'Mã OTP đã được gửi');
   } catch (error) {
     return sendErrorMessage(res, error.message);
@@ -106,10 +95,8 @@ const forgotPassword = async (req, res) => {
     return sendValidationError(res, i18next.t('auth.required'), null);
   }
   try {
-    const veryfyOtp = await forgotPasswordService(phoneNumber, otp);
-    if (!veryfyOtp) {
-      return sendValidationError(res, i18next.t('auth.invalid'));
-    }
+    await forgotPasswordService(phoneNumber, otp);
+
     return sendSuccessMessage(
       res,
       `Mật khẩu mới đã được gửi về số điện thoại ${phoneNumber}`
@@ -122,6 +109,27 @@ const forgotPassword = async (req, res) => {
 const resetPassword = async (req, res) => {
   // reset password logic
 };
+//TODO Get Account Info function
+const getAccountInfo = async (req, res) => {
+  const { phoneNUmber, _id } = req.userAccess;
+  try {
+    const result = await getAccountInfoService(phoneNUmber, _id);
+
+    return sendSuccessWithData(res, 'Thông tin người dùng', result);
+  } catch (error) {
+    return sendErrorMessage(res, error.message);
+  }
+};
+//TODO Get new access token function
+const getNewAccessToken = async (req, res) => {
+  const { _id, phoneNumber } = req.userRefresh;
+  try {
+    result = await getNewAccessTokenService(_id, phoneNumber);
+    return sendSuccessWithData(res, 'Access token mới', result);
+  } catch (error) {
+    return sendErrorMessage(res, error.message);
+  }
+};
 
 module.exports = {
   login,
@@ -131,4 +139,6 @@ module.exports = {
   resetPassword,
   sendOtpRegister,
   sendOtpForgotPassword,
+  getAccountInfo,
+  getNewAccessToken,
 };

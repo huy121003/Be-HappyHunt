@@ -3,15 +3,16 @@ const mongoose_delete = require('mongoose-delete');
 const { Schema, model } = mongoose;
 const policySchema = new Schema(
   {
-    limitProduct: Number,
+    limitPost: Number,
     timeExpired: Number,
-    minImageProduct: Number,
-    maxImageProduct: Number,
-    timeLogout: Number,
+    minImagePost: Number,
+    maxImagePost: Number,
     spamMessageCount: Number,
+    moneyToCoin: Number,
+    coinToVip: Number,
   },
   { timestamps: true }
 );
-settingAdminSchema.plugin(mongoose_delete, { overrideMethods: 'all' });
+policySchema.plugin(mongoose_delete, { overrideMethods: 'all' });
 const Policy = model('policy', policySchema);
 module.exports = Policy;

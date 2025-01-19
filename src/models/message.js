@@ -5,18 +5,14 @@ const messageSchema = new Schema(
   {
     seller: { type: Schema.Types.ObjectId, ref: 'Account' },
     buyer: { type: Schema.Types.ObjectId, ref: 'Account' },
-    product: { type: Schema.Types.ObjectId, ref: 'Product' },
+    post: { type: Schema.Types.ObjectId, ref: 'Post' },
     url: String,
-    content: [
-      {
-        sender: { type: Schema.Types.ObjectId, ref: 'Account' },
-        message: String,
-        images: String,
-        read: { type: Boolean, default: false },
-        timeSend: Date,
-        timeRead: Date,
-      },
-    ],
+    sender: { type: Schema.Types.ObjectId, ref: 'Account' },
+    message: String,
+    images: String,
+    isRead: { type: Boolean, default: false },
+    timeSend: Date,
+    timeRead: Date,
   },
   { timestamps: true }
 );
