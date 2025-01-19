@@ -6,7 +6,7 @@ const categorySchema = new Schema(
   {
     nameVn: String,
     nameEn: String,
-
+    parent: { type: Schema.Types.ObjectId, ref: 'category', default: null },
     attributes: [
       {
         nameVn: { type: String, required: true },

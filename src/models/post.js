@@ -13,7 +13,7 @@ const postSchema = new Schema(
     status: {
       type: String,
       enum: ['SELLING', 'SOLD', 'REJECTED', 'WAITING'],
-      default: 'expire',
+      default: 'WAITING',
     },
     clickCount: Number,
     attribute: [
@@ -23,8 +23,6 @@ const postSchema = new Schema(
         unit: String,
       },
     ],
-
-    warrantyDate: String,
     url: String,
     address: String,
   },

@@ -1,6 +1,7 @@
 require('dotenv').config();
 const policyData = {
   limitPost: Number(process.env.LIMIT_POST_DEFAULT),
+  limitVipPost: Number(process.env.LIMIT_POST_VIP),
   timeExpired: Number(process.env.TIME_EXPIRED),
   minImagePost: Number(process.env.MIN_IMAGE_POST),
   maxImagePost: Number(process.env.MAX_IMAGE_POST),

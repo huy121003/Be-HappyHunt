@@ -4,7 +4,15 @@ const { Schema, model } = mongoose;
 const sampleMessageSchema = new Schema(
   {
     message: String,
-    forSeller: Boolean,
+    seller: {
+      messageVn: String,
+      messageEn: String,
+    },
+    buyer: {
+      messageVn: String,
+      messageEn: String,
+    },
+    category: { type: Schema.Types.ObjectId, ref: 'category' },
   },
   { timestamps: true }
 );
