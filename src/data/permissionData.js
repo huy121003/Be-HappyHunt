@@ -76,5 +76,55 @@ const perimissionData = [
     description: 'Verify OTP',
     url: '/otp/verify',
   },
+  {
+    method: 'POST',
+    type: 'OTP',
+    name: 'Resend OTP',
+    description: 'Resend OTP',
+    url: '/otp/resend',
+  },
+  {
+    method: 'GET',
+    type: 'Permission',
+    name: 'Get All Permission',
+    description: 'Get All Permission',
+    url: '/permission',
+  },
+  {
+    method: 'GET',
+    type: 'Permission',
+    name: 'Get All Permission With Pagination',
+    description: 'Get All Permission With Pagination',
+    url: '/permission/pagination',
+  },
+  {
+    method: 'GET',
+    type: 'Permission',
+    name: 'Get Permission By Id',
+    description: 'Get Permission By Id',
+    url: '/permission/:id',
+  },
+  {
+    method: 'POST',
+    type: 'Permission',
+    name: 'Create A Permission',
+    description: 'Create A Permission',
+    url: '/permission',
+  },
+  {
+    method: 'PATCH',
+    type: 'Permission',
+    name: 'Update A Permission',
+    description: 'Update A Permission',
+    url: '/permission/:id',
+  },
+  {
+    method: 'DELETE',
+    type: 'Permission',
+    name: 'Delete A Permission',
+    description: 'Delete A Permission',
+    url: '/permission/:id',
+  },
 ];
+
 module.exports = perimissionData;

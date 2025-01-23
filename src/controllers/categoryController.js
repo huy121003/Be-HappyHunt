@@ -13,13 +13,14 @@ const {
   fetchCategoryByIdService,
   updateCategoryService,
   deleteCategoryService,
+  fetchCategoryParentService,
 } = require('../services/categoryService');
 require('dotenv').config();
 const createCategory = async (req, res) => {
   if (!req.files || Object.keys(req.files).length === 0) {
     return sendValidationError(res, 'Icon không được để trống');
   }
-  const { nameVn, nameEn, description, attributes, url } = req.body;
+  const { nameVn, nameEn, description, attributes, url, parent } = req.body;
   if (!nameVn || !nameEn || !description || !attributes || !url) {
     return sendValidationError(res, 'Thông tin không được để trống');
   }
@@ -46,6 +47,7 @@ const createCategory = async (req, res) => {
       attributes,
       url,
       icon: req.files.icon,
+      parent,
     });
     return sendSuccessWithData(res, 'Category created successfully', result);
   } catch (error) {
@@ -115,7 +117,8 @@ const updateCategory = async (req, res) => {
     return sendValidationError(res, 'Id không được để trống');
   }
 
-  const { nameVn, nameEn, description, attributes, url, icon } = req.body;
+  const { nameVn, nameEn, description, attributes, url, icon, parent } =
+    req.body;
   console.log('sss', icon);
   if (!icon && (!req.files || Object.keys(req.files).length === 0)) {
     return sendValidationError(res, 'Icon không được để trống');
@@ -131,6 +134,7 @@ const updateCategory = async (req, res) => {
       attributes,
       url,
       icon: req.files ? req.files.icon : icon,
+      parent,
     });
     return sendSuccessWithData(res, 'Category created successfully', result);
   } catch (error) {
@@ -149,6 +153,14 @@ const deleteCategory = async (req, res) => {
     return sendErrorMessage(res, error.message);
   }
 };
+const fetchCategoryParent = async (req, res) => {
+  try {
+    const result = await fetchCategoryParentService();
+    return sendSuccessWithData(res, 'List categories', result);
+  } catch (error) {
+    return sendErrorMessage(res, error.message);
+  }
+};
 module.exports = {
   createCategory,
   fetchAllCategories,
@@ -156,4 +168,5 @@ module.exports = {
   fetchCategoryById,
   updateCategory,
   deleteCategory,
+  fetchCategoryParent,
 };

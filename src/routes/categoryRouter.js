@@ -6,6 +6,7 @@ const { authMiddlewareAccessToken } = require('../middlewares/authMiddleware');
 router.post('/', categoryController.createCategory);
 router.get('/pagination', categoryController.fetchAllCategoriesWithPagination);
 router.get('/', categoryController.fetchAllCategories);
+router.get('/parent', categoryController.fetchCategoryParent);
 router.get(
   '/:id',
   authMiddlewareAccessToken,

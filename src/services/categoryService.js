@@ -8,6 +8,10 @@ const createCategoryService = async (category) => {
   }
 
   let attributes = JSON.parse(category.attributes);
+  let parent = category.parent;
+  if (category.parent === 'null') {
+    parent = null;
+  }
 
   const categoryData = {
     nameVn: category.nameVn,
@@ -16,6 +20,7 @@ const createCategoryService = async (category) => {
     attributes: attributes,
     url: category.url,
     icon: iconUrl,
+    parent: parent,
   };
   console.log(categoryData);
   const result = await Category.create(categoryData);
@@ -63,6 +68,10 @@ const updateCategoryService = async (id, category) => {
   if (!iconUrl) {
     throw new Error('Icon upload failed');
   }
+  let parent = category.parent;
+  if (category.parent === 'null') {
+    parent = null;
+  }
 
   const categoryData = {
     nameVn: category.nameVn,
@@ -71,6 +80,7 @@ const updateCategoryService = async (id, category) => {
     attributes: attributes,
     url: category.url,
     icon: iconUrl,
+    parent: parent,
   };
   const result = await Category.findByIdAndUpdate(id, categoryData, {
     new: true,
@@ -81,7 +91,13 @@ const deleteCategoryService = async (id) => {
   const result = await Category.deleteById(id);
   return result;
 };
-
+const fetchCategoryParentService = async () => {
+  const result = await Category.find({ parent: null });
+  if (!result) {
+    throw new Error('Fetch parent category failed');
+  }
+  return result;
+};
 module.exports = {
   createCategoryService,
   fetchAllCategoriesService,
@@ -89,4 +105,5 @@ module.exports = {
   fetchCategoryByIdService,
   updateCategoryService,
   deleteCategoryService,
+  fetchCategoryParentService,
 };

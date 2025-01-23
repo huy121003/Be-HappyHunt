@@ -24,7 +24,7 @@ const login = async (req, res) => {
     return valida(res, i18next.t('auth.required'), null);
   }
   try {
-    await loginService(phoneNumber, password, res);
+    const result = await loginService(phoneNumber, password, res);
 
     return sendSuccessWithData(res, i18next.t('auth.success'), result);
   } catch (error) {
