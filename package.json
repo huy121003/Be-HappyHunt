@@ -2,7 +2,7 @@
   "name": "be-happyhunt",
   "version": "1.0.0",
   "description": "coded by Quang Huy",
-  "main": "server.js",
+  "main": "src/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon ./src/server.js",
@@ -42,6 +42,7 @@
     "i18next": "^24.2.1",
     "i18next-http-middleware": "^3.7.1",
     "jsonwebtoken": "^9.0.2",
+    "module-alias": "^2.2.3",
     "mongoose": "^8.9.3",
     "mongoose-delete": "^1.0.2",
     "node-cron": "^3.0.3",
@@ -50,5 +51,13 @@
     "twilio": "^5.4.2",
     "uuid": "^11.0.5",
     "uuidv4": "^6.2.13"
+  },
+  "_moduleAliases": {
+    "@models": "./src/models",
+    "@features": "./src/features",
+    "@middlewares": "./src/middlewares",
+    "@i18n": "./src/i18n",
+    "@helpers": "./src/helpers",
+    "@configs": "./src/configs"
   }
 }

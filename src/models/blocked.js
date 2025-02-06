@@ -3,13 +3,9 @@ const mongoose_delete = require('mongoose-delete');
 const { Schema, model } = mongoose;
 const blockedSchema = new Schema(
   {
-    accountId: { type: Schema.Types.ObjectId, ref: 'Account' },
-    blockeds: [
-      {
-        accountId: { type: Schema.Types.ObjectId, ref: 'Account' },
-        reason: String,
-      },
-    ],
+    accountId: { type: Schema.Types.ObjectId, ref: 'account' },
+    blockedId: { type: Schema.Types.ObjectId, ref: 'account' },
+    reason: String,
   },
   { timestamps: true }
 );

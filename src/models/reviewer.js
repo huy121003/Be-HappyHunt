@@ -5,15 +5,15 @@ const reviewerSchema = new Schema(
   {
     reviewer: {
       type: Schema.Types.ObjectId,
-      ref: 'Account',
+      ref: 'account',
     },
     target: {
       type: Schema.Types.ObjectId,
-      ref: 'Account',
+      ref: 'account',
     },
-    Post: {
+    post: {
       type: Schema.Types.ObjectId,
-      ref: 'Post',
+      ref: 'post',
     },
     star: {
       type: Number,

@@ -3,8 +3,8 @@ const mongoose_delete = require('mongoose-delete');
 const { Schema, model } = mongoose;
 const historySearchSchema = new Schema(
   {
-    account: { type: Schema.Types.ObjectId, ref: 'Account' },
-    keyword: [String],
+    account: { type: Schema.Types.ObjectId, ref: 'account' },
+    keyword: String,
   },
   { timestamps: true }
 );

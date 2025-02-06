@@ -1,0 +1,15 @@
+const accountRouter = require('./features/account/account.router');
+const authRouter = require('./features/auth/auth.router');
+const categoryRouter = require('./features/category/category.router');
+const otpRouter = require('./features/otp/otp.router');
+const fileRouter = require('./features/file/file.router');
+const policyRouter = require('./features/policy/policy.router');
+const express = require('express');
+const app = express();
+app.use('/account/', accountRouter);
+app.use('/auth/', authRouter);
+app.use('/category/', categoryRouter);
+app.use('/otp/', otpRouter);
+app.use('/file/', fileRouter);
+app.use('/policy/', policyRouter);
+module.exports = app;

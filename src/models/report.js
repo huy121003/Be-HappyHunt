@@ -3,12 +3,12 @@ const mongoose_delete = require('mongoose-delete');
 const { Schema, model } = mongoose;
 const reportSchema = new Schema(
   {
-    sender: { type: Schema.Types.ObjectId, ref: 'Account' },
+    sender: { type: Schema.Types.ObjectId, ref: 'account' },
     target: { type: Schema.Types.ObjectId, refPath: 'targetType' },
     targetType: {
       type: String,
-      enum: ['Account', 'Post'], // Trùng khớp với tên mô hình
-      default: 'Account',
+      enum: ['account', 'post'], // Trùng khớp với tên mô hình
+      default: 'account',
     },
     title: String,
     reason: String,

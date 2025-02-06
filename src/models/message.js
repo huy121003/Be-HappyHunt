@@ -3,11 +3,11 @@ const mongoose_delete = require('mongoose-delete');
 const { Schema, model } = mongoose;
 const messageSchema = new Schema(
   {
-    seller: { type: Schema.Types.ObjectId, ref: 'Account' },
-    buyer: { type: Schema.Types.ObjectId, ref: 'Account' },
-    post: { type: Schema.Types.ObjectId, ref: 'Post' },
+    seller: { type: Schema.Types.ObjectId, ref: 'account' },
+    buyer: { type: Schema.Types.ObjectId, ref: 'account' },
+    post: { type: Schema.Types.ObjectId, ref: 'post' },
     url: String,
-    sender: { type: Schema.Types.ObjectId, ref: 'Account' },
+    sender: { type: Schema.Types.ObjectId, ref: 'account' },
     message: String,
     images: String,
     isRead: { type: Boolean, default: false },

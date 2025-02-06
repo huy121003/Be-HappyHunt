@@ -4,8 +4,8 @@ const { Schema, model } = mongoose;
 
 const historyClickPostSchema = new Schema(
   {
-    account: { type: Schema.Types.ObjectId, ref: 'Account' },
-    Post: { type: Schema.Types.ObjectId, ref: 'Post' },
+    account: { type: Schema.Types.ObjectId, ref: 'account' },
+    post: { type: Schema.Types.ObjectId, ref: 'post' },
   },
   { timestamps: true }
 );
