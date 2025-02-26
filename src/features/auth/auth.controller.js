@@ -8,7 +8,7 @@ const authController = {
   //TODO: Login function
   login: async (req, res) => {
     try {
-      const result = await authService.login(data, req.body);
+      const result = await authService.login(req.body, res);
 
       return apiHandler.sendSuccessWithData(res, 'Login success', result);
     } catch (error) {

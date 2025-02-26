@@ -3,23 +3,6 @@ const { Permission } = require('../../models');
 const perimissionData = require('./permission.data');
 const permissionService = require('./permission.service');
 
-const autoCreatePermissionMany = async () => {
-  try {
-    const permissions = await Permission.find({});
-    if (permissions.length === 0) {
-      for (const permission of perimissionData) {
-        await Permission.create(permission);
-        console.log('Inserted permission:', permission);
-      }
-      console.log('All permissions inserted successfully');
-    } else {
-      console.log('Permissions already exist');
-    }
-  } catch (err) {
-    console.error('Error inserting permissions:', err);
-  }
-};
-
 const getAllPermission = async (req, res) => {
   let { sort, ...search } = req.query;
 
@@ -124,7 +107,6 @@ const deleteAPermission = async (req, res) => {
 };
 
 module.exports = {
-  autoCreatePermissionMany,
   getAllPermission,
   getAllPermissionWithPagination,
   getPermissionById,

@@ -4,23 +4,20 @@ const categoryService = require('./category.service');
 
 require('dotenv').config();
 
-const createCategory = async (req, res) => {
-  console.log(req.body);
+const create = async (req, res) => {
   try {
     const nameExist = await Category.findOne({ name: req.body.name });
-    if (nameExist) {
+    if (nameExist)
       return apiHandler.sendValidationError(
         res,
         'Category name already exists'
       );
-    }
     const urlExist = await Category.findOne({
       url: req.body.url,
     });
-    if (urlExist) {
+    if (urlExist)
       return apiHandler.sendValidationError(res, 'Category url already exists');
-    }
-    const result = await categoryService.createCategory({
+    const result = await categoryService.create({
       ...req.body,
       ...(req.files && { icon: req.files.icon }),
     });
@@ -33,50 +30,35 @@ const createCategory = async (req, res) => {
     return apiHandler.sendErrorMessage(res, error.message);
   }
 };
-const fetchAllCategories = async (req, res) => {
+const getAll = async (req, res) => {
   try {
-    const result = await categoryService.fetchAllCategories(req.query);
+    const result = await categoryService.getAll(req.query);
     return apiHandler.sendSuccessWithData(res, 'List categories', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }
 };
-const fetchAllCategoriesWithPagination = async (req, res) => {
-  console.log('đ,', req.query);
+const getAllPagination = async (req, res) => {
   try {
-    const result = await categoryService.fetchAllCategoriesWithPagination(
-      req.query
-    );
+    const result = await categoryService.getAllPagination(req.query);
     return apiHandler.sendSuccessWithData(res, 'List categories', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }
 };
-const fetchCategoryById = async (req, res) => {
-  const { id } = req.params;
-
+const getById = async (req, res) => {
   try {
-    const result = await categoryService.fetchCategoryById(id);
+    const result = await categoryService.getById(req.params.id);
     return apiHandler.sendSuccessWithData(res, 'Category', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }
 };
-const updateCategory = async (req, res) => {
-  const { id } = req.params;
-
-  const { nameVn, nameEn, description, attributes, url, icon, parent } =
-    req.body;
-
+const update = async (req, res) => {
   try {
-    const result = await categoryService.updateCategory(id, {
-      nameVn,
-      nameEn,
-      description,
-      attributes,
-      url,
-      icon: req.files ? req.files.icon : icon,
-      parent,
+    const result = await categoryService.update(req.params.id, {
+      ...req.body,
+      ...(req.files && { icon: req.files.icon }),
     });
     return apiHandler.sendSuccessWithData(
       res,
@@ -88,20 +70,17 @@ const updateCategory = async (req, res) => {
     return apiHandler.sendErrorMessage(res, error.message);
   }
 };
-const deleteCategory = async (req, res) => {
-  const { id } = req.params;
-
+const remove = async (req, res) => {
   try {
-    await categoryService.deleteCategory(id);
+    await categoryService.remove(req.params.id);
     return apiHandler.sendSuccessMessage(res, 'Xóa danh mục thành công');
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }
 };
-const fetchCategoryParent = async (req, res) => {
-  console.log('đ,', req.query);
+const getAllParent = async (req, res) => {
   try {
-    const result = await categoryService.fetchCategoryParent(req.query);
+    const result = await categoryService.getAllParent(req.query);
     return apiHandler.sendSuccessWithData(res, 'List categories', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
@@ -109,11 +88,11 @@ const fetchCategoryParent = async (req, res) => {
 };
 
 module.exports = {
-  fetchAllCategories,
-  fetchAllCategoriesWithPagination,
-  fetchCategoryById,
-  createCategory,
-  updateCategory,
-  deleteCategory,
-  fetchCategoryParent,
+  create,
+  getAll,
+  getById,
+  update,
+  remove,
+  getAllParent,
+  getAllPagination,
 };

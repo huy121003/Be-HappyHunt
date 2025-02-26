@@ -2,10 +2,8 @@ const parseFilterQuery = require('../../helpers/parseFilterQuery');
 const { Category } = require('../../models');
 const { uploadSingle } = require('../file/file.service');
 require('dotenv').config();
-const createCategory = async (category) => {
+const create = async (category) => {
   const iconUrl = category.icon ? await uploadSingle(category.icon) : null;
-  if (category.icon && !iconUrl) throw new Error('Category icon upload failed');
-
   const result = await Category.create({
     ...category,
     icon: iconUrl,
@@ -19,7 +17,7 @@ const createCategory = async (category) => {
   return result;
 };
 
-const fetchAllCategoriesWithPagination = async (data) => {
+const getAllPagination = async (data) => {
   const {
     pageNumber = process.env.PAGENUMBER_DEFAULT,
     pageSize = process.env.PAGESIZE_DEFAULT,
@@ -49,7 +47,7 @@ const fetchAllCategoriesWithPagination = async (data) => {
   };
 };
 
-const fetchAllCategories = async (data) => {
+const getAll = async (data) => {
   const result = await Category.find(parseFilterQuery(data))
     .select('name _id parent')
     .populate('parent', 'name _id')
@@ -58,51 +56,39 @@ const fetchAllCategories = async (data) => {
 
   return result;
 };
-const fetchCategoryById = async (id) => {
+const getById = async (id) => {
   const result = await Category.findById(id);
+  if (!result) throw new Error('Category not found');
   return result;
 };
-const updateCategory = async (id, category) => {
-  let iconUrl;
-  let attributes = JSON.parse(category.attributes);
-  if (category.icon && typeof category.icon !== 'string')
-    iconUrl = await uploadSingle(category.icon);
-  else iconUrl = category.icon;
-
-  if (!iconUrl) throw new Error('Icon upload failed');
-
-  let parent = category.parent;
-  if (category.parent === 'null') parent = null;
-
-  console.log(iconUrl);
-
-  const categoryData = {
-    nameVn: category.nameVn,
-    nameEn: category.nameEn,
-    description: category.description,
-    attributes: attributes,
-    url: category.url,
-    icon: iconUrl,
-    parent: parent,
-  };
-  console.log(categoryData);
-  const result = await Category.findByIdAndUpdate(id, categoryData, {
-    new: true,
-  });
+const update = async (id, category) => {
+  const iconUrl = category.icon ? await uploadSingle(category.icon) : null;
+  const result = await Category.findByIdAndUpdate(
+    id,
+    {
+      ...category,
+      ...(iconUrl && { icon: iconUrl }),
+      attributes: category.attributes
+        ? JSON.parse(category.attributes)
+        : undefined,
+      parent: category.parent ? category.parent : null,
+    },
+    {
+      new: true,
+    }
+  );
+  if (!result) throw new Error('Category creation failed');
   return result;
 };
-const deleteCategory = async (id) => {
+const remove = async (id) => {
   const result = await Category.deleteById(id);
   if (!result) throw new Error('Delete category failed');
-
   return result;
 };
-const fetchCategoryParent = async (data) => {
+const getAllParent = async (data) => {
   const { pageNumber, pageSize, ...filter } = data;
-
   const [totalDocuments, result] = await Promise.all([
     Category.countDocuments(parseFilterQuery(filter)),
-
     Category.find(parseFilterQuery(filter))
       .select('name _id parent')
       .limit(pageSize)
@@ -111,11 +97,8 @@ const fetchCategoryParent = async (data) => {
 
       .exec(),
   ]);
-
   if (!result) throw new Error('Fetch parent category failed');
-
   if (!totalDocuments) throw new Error('Fetch total documents failed');
-
   return {
     documentList: result,
     totalDocuments,
@@ -125,11 +108,11 @@ const fetchCategoryParent = async (data) => {
 };
 
 module.exports = {
-  createCategory,
-  fetchAllCategoriesWithPagination,
-  fetchAllCategories,
-  fetchCategoryById,
-  updateCategory,
-  deleteCategory,
-  fetchCategoryParent,
+  create,
+  getAllPagination,
+  getAll,
+  getById,
+  update,
+  remove,
+  getAllParent,
 };

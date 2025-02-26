@@ -8,9 +8,9 @@ cron.schedule('1 * * * * *', () => {
 
   Otp.deleteMany({ createdAt: { $lt: new Date(expiryTime) } })
     .then((result) => {
-      console.log(`Đã xóa ${result.deletedCount} OTP hết hạn sau 60 giây.`);
+      console.log(`Deleted ${result.deletedCount} expired OTPs`);
     })
     .catch((err) => {
-      console.error('Lỗi khi xóa OTP hết hạn:', err);
+      console.error('Error deleting expired OTPs:', err);
     });
 });

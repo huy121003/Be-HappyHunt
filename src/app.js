@@ -7,8 +7,8 @@ const { i18next, i18nextHttpMiddleware } = require('./configs').translateConfig;
 require('module-alias/register');
 
 const app = express();
-const appRouter = require('./app.router');
-require('./app.task'); // Chạy tác vụ nền (cron jobs, schedulers, v.v.)
+const appRouter = require('./features/app/app.router');
+require('./features/app/app.task');
 
 // Middleware
 app.use(fileUpload());
