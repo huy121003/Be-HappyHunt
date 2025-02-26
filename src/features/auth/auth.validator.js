@@ -1,11 +1,11 @@
 const { apiHandler } = require('../../helpers');
 
 const login = async (req, res, next) => {
-  const { phoneNumber, password } = req.body;
-  if (!phoneNumber || !password) {
+  const { phoneNumber, password, type } = req.body;
+  if (!phoneNumber || !password || !type) {
     return apiHandler.sendValidationError(
       res,
-      i18next.t('auth.required'),
+      'Please submit all required fields',
       null
     );
   }
@@ -16,7 +16,7 @@ const register = async (req, res, next) => {
   if (!phoneNumber || !password || !otp) {
     return apiHandler.sendValidationError(
       res,
-      i18next.t('auth.required'),
+      'Please submit all required fields',
       null
     );
   }
@@ -39,7 +39,7 @@ const sendOtpRegister = async (req, res, next) => {
   if (!phoneNumber) {
     return apiHandler.sendValidationError(
       res,
-      i18next.t('auth.required'),
+      'Please submit all required fields',
       null
     );
   }
@@ -51,7 +51,7 @@ const sendOtpForgotPassword = async (req, res, next) => {
   if (!phoneNumber) {
     return apiHandler.sendValidationError(
       res,
-      i18next.t('auth.required'),
+      'Please submit all required fields',
       null
     );
   }
@@ -62,7 +62,7 @@ const forgotPassword = async (req, res, next) => {
   if (!phoneNumber || !otp) {
     return apiHandler.sendValidationError(
       res,
-      i18next.t('auth.required'),
+      'Please submit all required fields',
       null
     );
   }
@@ -73,7 +73,7 @@ const getAccountInfo = async (req, res, next) => {
   if (!phoneNumber || !_id) {
     return apiHandler.sendValidationError(
       res,
-      i18next.t('auth.required'),
+      'Please submit all required fields',
       null
     );
   }
@@ -84,7 +84,7 @@ const getNewAccessToken = async (req, res, next) => {
   if (!_id || !phoneNumber) {
     return apiHandler.sendValidationError(
       res,
-      i18next.t('auth.required'),
+      'Please submit all required fields',
       null
     );
   }

@@ -7,15 +7,13 @@ const {
 const blockedSchema = new Schema({
   accountId: {
     type: Schema.Types.ObjectId,
-    ref: 'Account'
+    ref: 'account'
   },
-  blockeds: [{
-    accountId: {
-      type: Schema.Types.ObjectId,
-      ref: 'Account'
-    },
-    reason: String
-  }]
+  blockedId: {
+    type: Schema.Types.ObjectId,
+    ref: 'account'
+  },
+  reason: String
 }, {
   timestamps: true
 });

@@ -7,11 +7,11 @@ const {
 const historyClickPostSchema = new Schema({
   account: {
     type: Schema.Types.ObjectId,
-    ref: 'Account'
+    ref: 'account'
   },
-  Post: {
+  post: {
     type: Schema.Types.ObjectId,
-    ref: 'Post'
+    ref: 'post'
   }
 }, {
   timestamps: true

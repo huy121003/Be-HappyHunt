@@ -6,6 +6,7 @@ const {
 } = mongoose;
 const policySchema = new Schema({
   limitPost: Number,
+  limitVipPost: Number,
   timeExpired: Number,
   minImagePost: Number,
   maxImagePost: Number,

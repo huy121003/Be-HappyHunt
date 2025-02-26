@@ -1,11 +1,18 @@
 const mongoose = require('mongoose');
 const mongoose_delete = require('mongoose-delete');
+const applyAutoIncrement = require('../configs/autoIncrement');
 const { Schema, model } = mongoose;
 
-const favoritePostSchema = new Schema({
-  account: { type: Schema.Types.ObjectId, ref: 'account' },
-  post: { type: Schema.Types.ObjectId, ref: 'post' },
-});
+const favoritePostSchema = new Schema(
+  {
+    _id: Number,
+    account: { type: Number, ref: 'account', required: true },
+    post: { type: Number, ref: 'post', required: true },
+  },
+  { timestamps: true }
+);
+
+applyAutoIncrement(mongoose, favoritePostSchema, 'favoritePost');
 favoritePostSchema.plugin(mongoose_delete, { overrideMethods: 'all' });
 const FavoritePost = model('favoritePost', favoritePostSchema);
 module.exports = FavoritePost;

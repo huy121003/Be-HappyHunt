@@ -7,20 +7,20 @@ const {
 const messageSchema = new Schema({
   seller: {
     type: Schema.Types.ObjectId,
-    ref: 'Account'
+    ref: 'account'
   },
   buyer: {
     type: Schema.Types.ObjectId,
-    ref: 'Account'
+    ref: 'account'
   },
   post: {
     type: Schema.Types.ObjectId,
-    ref: 'Post'
+    ref: 'post'
   },
   url: String,
   sender: {
     type: Schema.Types.ObjectId,
-    ref: 'Account'
+    ref: 'account'
   },
   message: String,
   images: String,

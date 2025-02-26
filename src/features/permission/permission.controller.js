@@ -5,15 +5,21 @@ const permissionService = require('./permission.service');
 
 const autoCreatePermissionMany = async () => {
   try {
-    const permission = await Permission.find({});
-    if (permission.length === 0) {
-      await Permission.insertMany(perimissionData);
-      return true;
+    const permissions = await Permission.find({});
+    if (permissions.length === 0) {
+      for (const permission of perimissionData) {
+        await Permission.create(permission);
+        console.log('Inserted permission:', permission);
+      }
+      console.log('All permissions inserted successfully');
+    } else {
+      console.log('Permissions already exist');
     }
   } catch (err) {
-    console.log(err);
+    console.error('Error inserting permissions:', err);
   }
 };
+
 const getAllPermission = async (req, res) => {
   let { sort, ...search } = req.query;
 

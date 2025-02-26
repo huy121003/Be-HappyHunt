@@ -7,9 +7,9 @@ const {
 const historySearchSchema = new Schema({
   account: {
     type: Schema.Types.ObjectId,
-    ref: 'Account'
+    ref: 'account'
   },
-  keyword: [String]
+  keyword: String
 }, {
   timestamps: true
 });

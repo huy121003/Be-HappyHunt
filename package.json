@@ -45,6 +45,7 @@
     "module-alias": "^2.2.3",
     "mongoose": "^8.9.3",
     "mongoose-delete": "^1.0.2",
+    "mongoose-sequence": "^6.0.1",
     "node-cron": "^3.0.3",
     "redis": "^4.7.0",
     "streamifier": "^0.1.1",

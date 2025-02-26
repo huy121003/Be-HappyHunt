@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const mongoose_delete = require('mongoose-delete');
 const { Schema, model } = mongoose;
-
+const applyAutoIncrement = require('../configs/autoIncrement');
 // Định nghĩa các loại feedback
 const typeFeedback = {
   CONTRIBUTION: 'contribute',
@@ -13,18 +13,15 @@ const typeFeedback = {
 // Định nghĩa schema cho feedback
 const feedbackSchema = new Schema(
   {
-    type: {
-      type: String,
-      enum: Object.values(typeFeedback), // Sử dụng Object.values để lấy các giá trị từ đối tượng
-    },
-    title: String,
-    content: String,
-    images: String,
+    _id: Number,
+    type: { type: String, enum: Object.values(typeFeedback), required: true },
+    title: { type: String, required: true },
+    content: { type: String, required: true },
+    images: { type: [String], default: [] },
   },
   { timestamps: true }
 );
-
-// Áp dụng plugin xóa mềm
+applyAutoIncrement(mongoose, feedbackSchema, 'feedback');
 feedbackSchema.plugin(mongoose_delete, { overrideMethods: 'all' });
 
 // Tạo mô hình Feedback

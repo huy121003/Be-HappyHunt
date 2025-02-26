@@ -7,16 +7,10 @@ const otpService = require('../otp/otp.service');
 const authController = {
   //TODO: Login function
   login: async (req, res) => {
-    const { phoneNumber, password } = req.body;
-
     try {
-      const result = await authService.login(phoneNumber, password, res);
+      const result = await authService.login(data, req.body);
 
-      return apiHandler.sendSuccessWithData(
-        res,
-        i18next.t('auth.success'),
-        result
-      );
+      return apiHandler.sendSuccessWithData(res, 'Login success', result);
     } catch (error) {
       return apiHandler.sendErrorMessage(res, error.message);
     }
@@ -33,7 +27,7 @@ const authController = {
       // Gửi kết quả trả về từ service
       return apiHandler.sendSuccessWithData(
         res,
-        'Đăng ký thành công',
+        'Register success',
         registerResult
       );
     } catch (error) {
@@ -46,11 +40,11 @@ const authController = {
     try {
       const account = await Account.findOne({ phoneNumber: phoneNumber });
       if (account) {
-        return sendValidationError(res, i18next.t('auth.phoneExit'));
+        return sendValidationError(res, 'Phone number already exists');
       }
       const phoneVn = `+84${phoneNumber.slice(1)}`;
       await otpService.sendOtp(phoneVn);
-      return apiHandler.sendSuccessMessage(res, 'Mã OTP đã được gửi');
+      return apiHandler.sendSuccessMessage(res, 'OTP has been sent');
     } catch (error) {
       return apiHandler.sendErrorMessage(res, error.message);
     }
@@ -65,12 +59,12 @@ const authController = {
     try {
       const account = await Account.findOne({ phoneNumber: phoneNumber });
       if (!account) {
-        return sendValidationError(res, i18next.t('auth.invalid'));
+        return sendValidationError(res, 'Phone number does not exist');
       }
       const phoneVn = `+84${phoneNumber.slice(1)}`;
       await otpService.sendOtp(phoneVn);
 
-      return apiHandler.sendSuccessMessage(res, 'Mã OTP đã được gửi');
+      return apiHandler.sendSuccessMessage(res, 'OTP has been sent');
     } catch (error) {
       return apiHandler.sendErrorMessage(res, error.message);
     }
@@ -84,7 +78,7 @@ const authController = {
 
       return apiHandler.sendSuccessMessage(
         res,
-        `Mật khẩu mới đã được gửi về số điện thoại ${phoneNumber}`
+        `Reset password success, please check your phone number ${phoneNumber} to get new password`
       );
     } catch (error) {
       return apiHandler.sendErrorMessage(res, error.message);
@@ -100,11 +94,7 @@ const authController = {
     try {
       const result = await authService.getAccountInfo(phoneNUmber, _id);
 
-      return apiHandler.sendSuccessWithData(
-        res,
-        'Thông tin người dùng',
-        result
-      );
+      return apiHandler.sendSuccessWithData(res, 'Account information', result);
     } catch (error) {
       return apiHandler.sendErrorMessage(res, error.message);
     }
@@ -114,7 +104,7 @@ const authController = {
     const { _id, phoneNumber } = req.userRefresh;
     try {
       result = await authService.getNewAccessToken(_id, phoneNumber);
-      return apiHandler.sendSuccessWithData(res, 'Access token mới', result);
+      return apiHandler.sendSuccessWithData(res, 'New access token', result);
     } catch (error) {
       return apiHandler.sendErrorMessage(res, error.message);
     }

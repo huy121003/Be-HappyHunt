@@ -1,27 +1,30 @@
 const mongoose = require('mongoose');
 const mongoose_delete = require('mongoose-delete');
 const { Schema, model } = mongoose;
-
+const applyAutoIncrement = require('../configs/autoIncrement');
 const categorySchema = new Schema(
   {
-    nameVn: String,
-    nameEn: String,
-    parent: { type: Schema.Types.ObjectId, ref: 'category', default: null },
+    _id: Number,
+    name: { type: String, required: true, trim: true },
+    parent: { type: Number, ref: 'category', default: null },
     attributes: [
       {
-        nameVn: { type: String, required: true },
-        nameEn: { type: String, required: true },
-        values: [{ type: String, required: true }], // Mảng string
+        name: { type: String, required: true },
+        values: [{ type: String, required: true }],
         _id: false,
       },
     ],
+    keywords: [{ type: String, required: true }],
     description: String,
-    url: String,
-    icon: String,
+    url: { type: String, required: true },
+    icon: { type: String, required: true },
   },
   { timestamps: true }
 );
 
+applyAutoIncrement(mongoose, categorySchema, 'category');
 categorySchema.plugin(mongoose_delete, { overrideMethods: 'all' });
+
 const Category = model('category', categorySchema);
+
 module.exports = Category;

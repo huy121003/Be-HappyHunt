@@ -7,7 +7,7 @@ const {
 const reportSchema = new Schema({
   sender: {
     type: Schema.Types.ObjectId,
-    ref: 'Account'
+    ref: 'account'
   },
   target: {
     type: Schema.Types.ObjectId,
@@ -15,9 +15,9 @@ const reportSchema = new Schema({
   },
   targetType: {
     type: String,
-    enum: ['Account', 'Post'],
+    enum: ['account', 'post'],
     // Trùng khớp với tên mô hình
-    default: 'Account'
+    default: 'account'
   },
   title: String,
   reason: String,

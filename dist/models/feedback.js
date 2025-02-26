@@ -33,7 +33,4 @@ feedbackSchema.plugin(mongoose_delete, {
 
 // Tạo mô hình Feedback
 const Feedback = model('feedback', feedbackSchema);
-module.exports = {
-  Feedback,
-  typeFeedback // Xuất đối tượng typeFeedback
-};
+module.exports = Feedback;

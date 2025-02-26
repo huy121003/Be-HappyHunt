@@ -7,7 +7,7 @@ const {
 const permissionSchema = new Schema({
   method: {
     type: String,
-    enum: ['GET', 'POST', 'PATCH', 'DELETE', 'ACL']
+    enum: ['GET', 'POST', 'PATCH', 'DELETE']
   },
   type: String,
   name: String,

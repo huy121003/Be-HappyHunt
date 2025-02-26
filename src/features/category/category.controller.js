@@ -5,38 +5,24 @@ const categoryService = require('./category.service');
 require('dotenv').config();
 
 const createCategory = async (req, res) => {
-  const { nameVn, nameEn, description, attributes, url, parent } = req.body;
-
+  console.log(req.body);
   try {
-    const nameVnExist = await Category.findOne({ nameVn });
-    if (nameVnExist) {
+    const nameExist = await Category.findOne({ name: req.body.name });
+    if (nameExist) {
       return apiHandler.sendValidationError(
         res,
-        'Tên danh mục tiếng việt đã tồn tại'
-      );
-    }
-    const nameEnExist = await Category.findOne({ nameEn });
-    if (nameEnExist) {
-      return apiHandler.sendValidationError(
-        res,
-        'Tên danh mục tiếng anh đã tồn tại'
+        'Category name already exists'
       );
     }
     const urlExist = await Category.findOne({
-      url: url,
+      url: req.body.url,
     });
     if (urlExist) {
-      return apiHandler.sendValidationError(res, 'Url đã tồn tại');
+      return apiHandler.sendValidationError(res, 'Category url already exists');
     }
-
     const result = await categoryService.createCategory({
-      nameVn,
-      nameEn,
-      description,
-      attributes,
-      url,
-      icon: req.files.icon,
-      parent,
+      ...req.body,
+      ...(req.files && { icon: req.files.icon }),
     });
     return apiHandler.sendSuccessWithData(
       res,
@@ -48,45 +34,19 @@ const createCategory = async (req, res) => {
   }
 };
 const fetchAllCategories = async (req, res) => {
-  let { sort, ...search } = req.query;
-
-  const sortObject = parseSortQuery(sort);
-  if (!search) {
-    search = {};
-  }
   try {
-    const result = await categoryService.fetchAllCategories({
-      sortObject,
-      search,
-    });
+    const result = await categoryService.fetchAllCategories(req.query);
     return apiHandler.sendSuccessWithData(res, 'List categories', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }
 };
 const fetchAllCategoriesWithPagination = async (req, res) => {
-  let { pageNumber, pageSize, sort, ...search } = req.query;
-  if (!pageNumber || pageNumber < 1) {
-    pageNumber = process.env.PAGENUMBER_DEFAULT;
-  }
-  if (!pageSize || pageSize < 1) {
-    pageSize = process.env.PAGESIZE_DEFAULT;
-  }
-  if (!sort) {
-    sort = process.env.SORT_DEFAULT;
-  }
-  console.log('sort', sort);
-  const sortObject = parseSortQuery(sort);
-  if (!search) {
-    search = {};
-  }
+  console.log('đ,', req.query);
   try {
-    const result = await categoryService.fetchAllCategoriesWithPagination({
-      pageNumber,
-      pageSize,
-      sortObject,
-      search,
-    });
+    const result = await categoryService.fetchAllCategoriesWithPagination(
+      req.query
+    );
     return apiHandler.sendSuccessWithData(res, 'List categories', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
@@ -139,8 +99,9 @@ const deleteCategory = async (req, res) => {
   }
 };
 const fetchCategoryParent = async (req, res) => {
+  console.log('đ,', req.query);
   try {
-    const result = await categoryService.fetchCategoryParent();
+    const result = await categoryService.fetchCategoryParent(req.query);
     return apiHandler.sendSuccessWithData(res, 'List categories', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);

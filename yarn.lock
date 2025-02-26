@@ -1406,6 +1406,11 @@ arraybuffer.prototype.slice@^1.0.4:
     get-intrinsic "^1.2.6"
     is-array-buffer "^3.0.4"
 
+async@^3.2.5:
+  version "3.2.6"
+  resolved "https://registry.npmjs.org/async/-/async-3.2.6.tgz"
+  integrity sha512-htCUDlxyyCLMgaM3xXg0C0LW2xqfuQ6p05pCEIsXuyQ+a1koYKTuBMzRNwmybfLgvJDMd0r1LTn4+E0Ti6C2AA==
+
 asynckit@^0.4.0:
   version "0.4.0"
   resolved "https://registry.npmjs.org/asynckit/-/asynckit-0.4.0.tgz"
@@ -1486,6 +1491,7 @@ bcrypt@^5.1.1:
     module-alias "^2.2.3"
     mongoose "^8.9.3"
     mongoose-delete "^1.0.2"
+    mongoose-sequence "^6.0.1"
     node-cron "^3.0.3"
     redis "^4.7.0"
     streamifier "^0.1.1"
@@ -3143,6 +3149,14 @@ mongoose-delete@^1.0.2:
   version "1.0.2"
   resolved "https://registry.npmjs.org/mongoose-delete/-/mongoose-delete-1.0.2.tgz"
   integrity sha512-W+p9ULLiYHcEz77wQECp6gNnh2NcXf30KRIE3nAyjjsStqmBKJDL5eXTnX0xerGG2gCGx6mI7bO3+ch88tQ+tg==
+
+mongoose-sequence@^6.0.1:
+  version "6.0.1"
+  resolved "https://registry.npmjs.org/mongoose-sequence/-/mongoose-sequence-6.0.1.tgz"
+  integrity sha512-uXnLCW9pu2V49Xw8BmdXdeRugd2mv+ntu3nT2Bbm33pNRmmvHE2GKA+8BASKoQt960McLX4VL78wkb492f6MoQ==
+  dependencies:
+    async "^3.2.5"
+    lodash "^4.17.21"
 
 mongoose@^8.9.3:
   version "8.9.5"

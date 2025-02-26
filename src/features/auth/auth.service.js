@@ -9,50 +9,58 @@ require('dotenv').config();
 const otpService = require('../otp/otp.service');
 // TODO: LoginService
 
-const login = async (phoneNumber, password, res) => {
-  const account = await Account.findOne({ phoneNumber })
-    .populate('role')
+const login = async (data, res) => {
+  const account = await Account.findOne({ phoneNumber: data.phoneNumber })
+    .select('-__v -createdAt -updatedAt')
+    .populate({
+      path: 'role',
+      select: 'name _id',
+      populate: { path: 'permissions', select: 'name _id' },
+    })
     .lean();
-  if (!account) {
-    throw new Error('Số điện thoại hoặc mật khẩu không đúng');
+
+  if (!account || account.isBanned) {
+    throw new Error(
+      account ? 'Your account has been banned' : 'The login infor is incorrect.'
+    );
+  }
+  if (
+    (account?.role?.name === 'Normal User' && data.type === 'ADMIN') ||
+    (account?.role?.name !== 'Normal User' && data.type === 'USER')
+  ) {
+    throw new Error('The login information is incorrect.');
   }
 
-  const passwordMatch = await bcrypt.compare(password, account.password);
+  const passwordMatch = await bcrypt.compare(data.password, account.password);
   if (!passwordMatch) {
-    throw new Error('Số điện thoại hoặc mật khẩu không đúng');
+    throw new Error('The login infor is incorrect.');
   }
 
-  const payload = {
-    _id: account._id,
-    phoneNumber: account.phoneNumber,
-  };
+  const payload = { _id: account._id, phoneNumber: account.phoneNumber };
 
-  const access_token = jwt.sign(payload, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
-  });
-
-  const refresh_token = jwt.sign(payload, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
-  });
+  const [access_token, refresh_token] = await Promise.all([
+    jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRES_IN,
+    }),
+    jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
+    }),
+  ]);
 
   res.cookie('refresh_token', refresh_token, {
     httpOnly: true,
     sameSite: 'strict',
+    secure: process.env.NODE_ENV === 'production',
   });
 
-  // Loại bỏ password trước khi trả về
-  delete account.password;
+  const { password: _, ...safeAccount } = account;
 
-  return {
-    access_token,
-    result: account,
-  };
+  return { access_token, ...safeAccount };
 };
 
 //TODO RegisterService
 const register = async (phoneNumber, password, res) => {
   const fullName = `Hunter${dayjs().format('DDMMYYYYHHmm')}`;
-  console.log(fullName);
   const bycryptPassword = await bcrypt.hash(password, 10);
   const role = await Role.findOne({ name: 'Normal User' });
   if (!role) {
@@ -69,7 +77,7 @@ const register = async (phoneNumber, password, res) => {
     isVip: false,
   });
   if (!account) {
-    throw new Error('Đăng ký không thành công');
+    throw new Error('Register failed');
   }
   return {
     phoneNumber: account.phoneNumber,
@@ -86,7 +94,7 @@ const forgotPassword = async (phoneNumber, otp) => {
   const newPass = uuid().slice(0, 8);
   const hashPass = await bcrypt.hash(newPass, 10);
 
-  const message = `Mật khẩu mới của bạn là ${newPass}`;
+  const message = `Your new password is ${newPass}`;
   const result = await twilioConfig.messages.create({
     from: process.env.TWILIO_PHONE_NUMBER,
     to: phoneVn,

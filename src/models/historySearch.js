@@ -1,13 +1,16 @@
 const mongoose = require('mongoose');
 const mongoose_delete = require('mongoose-delete');
 const { Schema, model } = mongoose;
+const applyAutoIncrement = require('../configs/autoIncrement');
 const historySearchSchema = new Schema(
   {
-    account: { type: Schema.Types.ObjectId, ref: 'account' },
-    keyword: String,
+    _id: Number,
+    account: { type: Number, ref: 'account', required: true },
+    keyword: { type: String, required: true, trim: true },
   },
   { timestamps: true }
 );
+applyAutoIncrement(mongoose, historySearchSchema, 'historySearch');
 historySearchSchema.plugin(mongoose_delete, { overrideMethods: 'all' });
 const HistorySearch = model('historySearch', historySearchSchema);
 module.exports = HistorySearch;
