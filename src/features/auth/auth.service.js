@@ -13,7 +13,10 @@ const login = async (data, res) => {
     .populate({
       path: 'role',
       select: 'name _id',
-      populate: { path: 'permissions', select: 'name _id' },
+      populate: {
+        path: 'permissions',
+        select: '-__v -createdAt -updatedAt -deleted',
+      },
     })
     .lean();
   if (!account || account.isBanned) {
@@ -93,7 +96,10 @@ const getAccountInfo = async (data) => {
     .populate({
       path: 'role',
       select: 'name _id',
-      populate: { path: 'permissions', select: 'name _id' },
+      populate: {
+        path: 'permissions',
+        select: '-__v -createdAt -updatedAt -deleted',
+      },
     })
     .lean();
   if (!account || account.isBanned) {

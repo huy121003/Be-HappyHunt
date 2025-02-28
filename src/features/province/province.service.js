@@ -17,8 +17,8 @@ const update = async (id, province) => {
 };
 const getAll = async (data) => {
   const {
-    pageNumber = process.env.PAGENUMBER_DEFAULT,
-    pageSize = process.env.PAGESIZE_DEFAULT,
+    page = process.env.PAGENUMBER_DEFAULT,
+    size = process.env.PAGESIZE_DEFAULT,
     sort = process.env.SORT_DEFAULT,
     ...filter
   } = data;
@@ -28,8 +28,8 @@ const getAll = async (data) => {
     Province.find(parseFilterQuery(filter))
       .select('name _id codeName')
       .sort(sort)
-      .limit(pageSize)
-      .skip((pageNumber - 1) * pageSize)
+      .limit(size)
+      .skip(page * size)
       .exec(),
   ]);
 
@@ -37,8 +37,8 @@ const getAll = async (data) => {
   return {
     documentList: result,
     totalDocuments,
-    pageSize: data.pageSize,
-    pageNumber: data.pageNumber,
+    pageSize: size,
+    pageNumber: page,
   };
 };
 const getById = async (id) => {

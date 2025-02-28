@@ -8,6 +8,8 @@ const permissionRouter = require('../permission/permission.router');
 const provinceRouter = require('../province/province.router');
 const districtRouter = require('../district/district.router');
 const wardRouter = require('../ward/ward.router');
+const roleRouter = require('../role/role.router');
+
 const express = require('express');
 const app = express();
 app.use('/account/', accountRouter);
@@ -20,4 +22,5 @@ app.use('/permission/', permissionRouter);
 app.use('/province/', provinceRouter);
 app.use('/district/', districtRouter);
 app.use('/ward/', wardRouter);
+app.use('/role/', roleRouter);
 module.exports = app;

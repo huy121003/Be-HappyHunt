@@ -11,7 +11,37 @@ const roleSchema = new Schema(
       trim: [true, 'Name is required'],
       unique: [true, 'Role name already exists'],
     },
-    permissions: [{ type: Number, ref: 'permission', default: [] }],
+    permissions: [
+      {
+        name: {
+          type: String,
+          required: [true, 'Name is required'],
+          trim: [true, 'Name is required'],
+        },
+        codeName: {
+          type: String,
+          required: [true, 'Code name is required'],
+          trim: [true, 'Code name is required'],
+        },
+        isView: {
+          type: Boolean,
+          default: true,
+        },
+        isCreate: {
+          type: Boolean,
+          default: true,
+        },
+        isUpdate: {
+          type: Boolean,
+          default: true,
+        },
+        isDelete: {
+          type: Boolean,
+          default: true,
+        },
+        _id: false,
+      },
+    ],
     description: { type: String, default: '' },
   },
   { timestamps: true }

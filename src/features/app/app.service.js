@@ -53,12 +53,20 @@ const autoCreatePermission = async () => {
   return true;
 };
 const autoCreateRole = async (permissions) => {
+  console.log('permissions', permissions);
   const res = await Role.insertMany([
     {
       _id: 1,
       name: 'Super Admin',
       description: 'Super Admin role',
-      permissions: permissions?.map((item) => item._id),
+      permissions: permissions?.map((item) => ({
+        name: item.name,
+        codeName: item.codeName,
+        isDelete: item.isDelete,
+        isUpdate: item.isUpdate,
+        isCreate: item.isCreate,
+        isView: item.isView,
+      })),
     },
     {
       _id: 2,

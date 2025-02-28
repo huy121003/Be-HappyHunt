@@ -5,34 +5,35 @@ const applyAutoIncrement = require('../configs/autoIncrement');
 const permissionSchema = new Schema(
   {
     _id: Number,
-    method: { type: String, enum: ['GET', 'POST', 'PATCH', 'DELETE'] },
-    type: {
-      type: String,
-      required: [true, 'Permission type is required'],
-      trim: [
-        true,
-        'Permission type must not have leading or trailing whitespace',
-      ],
-    },
     name: {
       type: String,
-      required: [true, 'Permission name is'],
-      trim: [
-        true,
-        'Permission name must not have leading or trailing whitespace',
-      ],
+      required: [true, 'Name is required'],
+      trim: [true, 'Name is required'],
       unique: [true, 'Permission name already exists'],
     },
-    description: { type: String, default: '' },
-    url: {
+    codeName: {
       type: String,
-      required: [true, 'Permission URL is required'],
-      unique: [true, 'Permission URL already exists'],
-      trim: [
-        true,
-        'Permission URL must not have leading or trailing whitespace',
-      ],
+      required: [true, 'Code name is required'],
+      trim: [true, 'Code name is required'],
+      unique: [true, 'Code name already exists'],
     },
+    isView: {
+      type: Boolean,
+      default: false,
+    },
+    isCreate: {
+      type: Boolean,
+      default: false,
+    },
+    isUpdate: {
+      type: Boolean,
+      default: false,
+    },
+    isDelete: {
+      type: Boolean,
+      default: false,
+    },
+    description: { type: String, default: '' },
   },
   { timestamps: true }
 );

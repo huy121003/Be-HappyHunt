@@ -19,8 +19,8 @@ const create = async (category) => {
 
 const getAllPagination = async (data) => {
   const {
-    pageNumber = process.env.PAGENUMBER_DEFAULT,
-    pageSize = process.env.PAGESIZE_DEFAULT,
+    page = process.env.PAGENUMBER_DEFAULT,
+    size = process.env.PAGESIZE_DEFAULT,
     sort = process.env.SORT_DEFAULT,
     ...filter
   } = data;
@@ -30,8 +30,8 @@ const getAllPagination = async (data) => {
     Category.find(parseFilterQuery(filter))
       .select('name _id parent')
       .sort(sort)
-      .limit(pageSize)
-      .skip((pageNumber - 1) * pageSize)
+      .limit(size)
+      .skip(page * size)
       .populate('parent', 'name _id')
 
       .exec(),
@@ -42,8 +42,8 @@ const getAllPagination = async (data) => {
   return {
     documentList: result,
     totalDocuments,
-    pageSize: data.pageSize,
-    pageNumber: data.pageNumber,
+    pageSize: size,
+    pageNumber: page,
   };
 };
 
@@ -89,13 +89,18 @@ const remove = async (id) => {
   return result;
 };
 const getAllParent = async (data) => {
-  const { pageNumber, pageSize, ...filter } = data;
+  const {
+    page = process.env.PAGENUMBER_DEFAULT,
+    size = process.env.PAGESIZE_DEFAULT,
+    sort = process.env.SORT_DEFAULT,
+    ...filter
+  } = data;
   const [totalDocuments, result] = await Promise.all([
     Category.countDocuments(parseFilterQuery(filter)),
     Category.find(parseFilterQuery(filter))
       .select('name _id parent')
-      .limit(pageSize)
-      .skip((pageNumber - 1) * pageSize)
+      .limit(size)
+      .skip(page * size)
       .populate('parent', 'name _id')
 
       .exec(),
@@ -105,8 +110,8 @@ const getAllParent = async (data) => {
   return {
     documentList: result,
     totalDocuments,
-    pageSize: data.pageSize,
-    pageNumber: data.pageNumber,
+    pageSize: size,
+    pageNumber: page,
   };
 };
 

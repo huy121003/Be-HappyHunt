@@ -44,11 +44,11 @@ const autoCreateRole = async () => {
     if (roleCount > 0) {
       return;
     }
-    const permissions = await Permission.find({});
+    const permissions = await Permission.find();
     if (permissions.length === 0) {
       return;
     }
-    const result = appService.autoCreateRole();
+    const result = appService.autoCreateRole(permissions);
     return result;
   } catch (error) {
     console.error(error);
