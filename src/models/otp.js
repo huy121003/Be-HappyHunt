@@ -5,8 +5,16 @@ const applyAutoIncrement = require('../configs/autoIncrement');
 const otpSchema = new Schema(
   {
     _id: Number,
-    phoneNumber: { type: String, required: true },
-    otp: { type: String, required: true },
+    phoneNumber: {
+      type: String,
+      required: [true, 'Phone number is required'],
+      trim: [true, 'Phone number is required'],
+    },
+    otp: {
+      type: String,
+      required: [true, 'OTP is required'],
+      trim: [true, 'OTP is required'],
+    },
   },
   { timestamps: true }
 );

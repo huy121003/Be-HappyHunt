@@ -2,31 +2,32 @@ const { Policy } = require('../../models');
 const policyData = require('./policy.data');
 require('dotenv').config();
 
-const autoCreatePolicy = async () => {
-  const result = await Policy.create(policyData);
-  if (!result) {
-    throw new Error('Create policy failed');
-  }
-  return true;
-};
-
-const fetchSettingPostPolicy = async () => {
+const getSettingPost = async () => {
   const policy = await Policy.findOne({}).select(
     'limitPost limitVipPost timeExpired minImagePost maxImagePost '
   );
-  if (!policy) {
-    throw new Error('Policy not found');
-  }
+  if (!policy) throw new Error('Setting post not found');
+
   return policy;
 };
-const updateSettingPostPolicy = async (data) => {
+const getVipActivation = async () => {
+  const policy = await Policy.findOne({}).select('coinToVip moneyToCoin');
+  if (!policy) throw new Error('Vip Activation not found');
+
+  return policy;
+};
+const updateSettingPost = async (data) => {
   const policy = await Policy.findOneAndUpdate({}, data, { new: true });
-  if (!policy) {
-    throw new Error('Update policy failed');
-  }
+  if (!policy) throw new Error('Update setting post failed');
   return policy;
 };
-const updateDefaultSettingPostPolicy = async () => {
+const updateVipActivation = async (data) => {
+  const policy = await Policy.findOneAndUpdate({}, data, { new: true });
+  if (!policy) throw new Error('Update vip activation failed');
+
+  return policy;
+};
+const updateDefaultSettingPost = async () => {
   const policy = await Policy.findOneAndUpdate(
     {},
     {
@@ -38,15 +39,28 @@ const updateDefaultSettingPostPolicy = async () => {
     },
     { new: true }
   );
-  if (!policy) {
-    throw new Error('Update policy failed');
-  }
+  if (!policy) throw new Error('Set default setting post failed');
+
+  return policy;
+};
+const updateDefaultVipActivation = async () => {
+  const policy = await Policy.findOneAndUpdate(
+    {},
+    {
+      coinToVip: process.env.COIN_TO_VIP,
+      moneyToCoin: process.env.MONEY_TO_COIN,
+    },
+    { new: true }
+  );
+  if (!policy) throw new Error('Set default vip activation failed');
   return policy;
 };
 
 module.exports = {
-  autoCreatePolicy,
-  fetchSettingPostPolicy,
-  updateSettingPostPolicy,
-  updateDefaultSettingPostPolicy,
+  getSettingPost,
+  updateSettingPost,
+  updateDefaultSettingPost,
+  getVipActivation,
+  updateVipActivation,
+  updateDefaultVipActivation,
 };

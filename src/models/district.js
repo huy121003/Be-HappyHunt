@@ -5,9 +5,21 @@ const applyAutoIncrement = require('../configs/autoIncrement');
 
 const districtSchema = new mongoose.Schema({
   _id: Number,
-  codeName: { type: String, required: true },
-  name: { type: String, required: true },
-  provinceId: { type: Number, required: true, ref: 'province' },
+  codeName: {
+    type: String,
+    required: [true, 'Code name is required'],
+    trim: [true, 'Code name is required'],
+  },
+  name: {
+    type: String,
+    required: [true, 'Name is required'],
+    trim: [true, 'Name is required'],
+  },
+  provinceId: {
+    type: Number,
+    required: [true, 'Province ID is required'],
+    ref: 'province',
+  },
 });
 
 applyAutoIncrement(mongoose, districtSchema, 'district');

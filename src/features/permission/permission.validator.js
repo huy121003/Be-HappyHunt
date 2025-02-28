@@ -7,10 +7,8 @@ const getAllPermissionWithPagination = async (req, res, next) => {
   next();
 };
 const getPermissionById = async (req, res, next) => {
-  const { id } = req.params;
-  if (!id) {
-    return apiHandler.sendValidationError(res, 'Id không được để trống');
-  }
+  if (!req.params.id)
+    return apiHandler.sendValidationError(res, 'Id is required');
   next();
 };
 const createAPermission = async (req, res, next) => {
@@ -21,21 +19,13 @@ const createAPermission = async (req, res, next) => {
   next();
 };
 const updateAPermisson = async (req, res, next) => {
-  const { id } = req.params;
-  if (!id) {
-    return apiHandler.sendValidationError(res, 'Id không được để trống');
-  }
-  const { name, method, type, url } = req.body;
-  if (!name || !method || !type || !url) {
-    return apiHandler.sendValidationError(res, 'Thiếu thông tin cần thiết');
-  }
+  if (!req.params.id)
+    return apiHandler.sendValidationError(res, 'Id is required');
   next();
 };
 const deleteAPermission = async (req, res, next) => {
-  const { id } = req.params;
-  if (!id) {
-    return apiHandler.sendValidationError(res, 'Id không được để trống');
-  }
+  if (!req.params.id)
+    return apiHandler.sendValidationError(res, 'Id is required');
   next();
 };
 

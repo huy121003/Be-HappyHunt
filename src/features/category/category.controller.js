@@ -6,17 +6,6 @@ require('dotenv').config();
 
 const create = async (req, res) => {
   try {
-    const nameExist = await Category.findOne({ name: req.body.name });
-    if (nameExist)
-      return apiHandler.sendValidationError(
-        res,
-        'Category name already exists'
-      );
-    const urlExist = await Category.findOne({
-      url: req.body.url,
-    });
-    if (urlExist)
-      return apiHandler.sendValidationError(res, 'Category url already exists');
     const result = await categoryService.create({
       ...req.body,
       ...(req.files && { icon: req.files.icon }),
@@ -73,7 +62,7 @@ const update = async (req, res) => {
 const remove = async (req, res) => {
   try {
     await categoryService.remove(req.params.id);
-    return apiHandler.sendSuccessMessage(res, 'Xóa danh mục thành công');
+    return apiHandler.sendSuccessMessage(res, 'Category deleted successfully');
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }

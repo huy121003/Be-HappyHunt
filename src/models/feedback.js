@@ -4,19 +4,31 @@ const { Schema, model } = mongoose;
 const applyAutoIncrement = require('../configs/autoIncrement');
 // Định nghĩa các loại feedback
 const typeFeedback = {
-  CONTRIBUTION: 'contribute',
-  ERROR_REPORT: 'errorReport',
-  FEEDBACK: 'feedback',
-  OTHER: 'other',
+  CONTRIBUTION: 'CONTRIBUTION',
+  ERROR_REPORT: 'ERROR_REPORT',
+  FEEDBACK: 'FEEDBACK',
+  OTHER: 'OTHER',
 };
 
 // Định nghĩa schema cho feedback
 const feedbackSchema = new Schema(
   {
     _id: Number,
-    type: { type: String, enum: Object.values(typeFeedback), required: true },
-    title: { type: String, required: true },
-    content: { type: String, required: true },
+    type: {
+      type: String,
+      enum: Object.values(typeFeedback),
+      required: [true, 'Type is required'],
+    },
+    title: {
+      type: String,
+      required: [true, 'Title is required'],
+      trim: [true, 'Title is required'],
+    },
+    content: {
+      type: String,
+      required: [true, 'Content is required'],
+      trim: [true, 'Content is required'],
+    },
     images: { type: [String], default: [] },
   },
   { timestamps: true }

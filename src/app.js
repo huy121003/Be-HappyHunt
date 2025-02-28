@@ -3,7 +3,7 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const fileUpload = require('express-fileupload');
-const { i18next, i18nextHttpMiddleware } = require('./configs').translateConfig;
+
 require('module-alias/register');
 
 const app = express();
@@ -24,9 +24,6 @@ app.use(
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
   })
 );
-
-// Middleware xử lý ngôn ngữ
-app.use(i18nextHttpMiddleware.handle(i18next));
 
 // Định tuyến API
 app.use('/api/v1/', appRouter);

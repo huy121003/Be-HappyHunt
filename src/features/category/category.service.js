@@ -57,7 +57,10 @@ const getAll = async (data) => {
   return result;
 };
 const getById = async (id) => {
-  const result = await Category.findById(id);
+  const result = await Category.findById(id)
+    .select('-createdAt -updatedAt -__v')
+    .populate('parent', 'name _id')
+    .exec();
   if (!result) throw new Error('Category not found');
   return result;
 };

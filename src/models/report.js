@@ -5,16 +5,33 @@ const applyAutoIncrement = require('../configs/autoIncrement');
 const reportSchema = new Schema(
   {
     _id: Number,
-    sender: { type: Number, ref: 'account', required: true },
-    target: { type: Number, ref: 'account', required: true },
+    sender: {
+      type: Number,
+      ref: 'account',
+      required: [true, 'Sender is required'],
+    },
+    target: {
+      type: Number,
+      ref: 'account',
+      required: [true, 'Target is required'],
+    },
     targetType: { type: String, enum: ['account', 'post'], default: 'account' },
-    title: { type: String, required: true },
-    reason: { type: String, required: true },
-    images: [{ type: String }],
+    title: {
+      type: String,
+      required: [true, 'Title is required'],
+      trim: [true, 'Title is required '],
+    },
+    reason: {
+      type: String,
+      required: [true, 'Reason is required'],
+      trim: [true, 'Reason is required'],
+    },
+    images: [{ type: String, default: [] }],
     status: {
       type: String,
       enum: ['PENDING', 'APPROVED', 'REJECTED'],
       default: 'PENDING',
+      required: [true, 'Status is required'],
     },
   },
   { timestamps: true }

@@ -1,7 +1,8 @@
-const { Permission, Role, Account } = require('../../models');
+const { Permission, Role, Account, Policy } = require('../../models');
 const District = require('../../models/district');
 const Province = require('../../models/province');
 const Ward = require('../../models/ward');
+const policyService = require('../policy/policy.service');
 const appService = require('./app.service');
 require('dotenv').config();
 const API_PROVINCE = process.env.API_PROVINCE;
@@ -69,9 +70,23 @@ const autoCreateAdmin = async () => {
     console.error(error);
   }
 };
+
+const autoCreatePolicy = async () => {
+  try {
+    const policy = await Policy.find({});
+    if (policy.length === 0) {
+      await policyService.autoCreatePolicy();
+      return true;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+};
+
 module.exports = {
   createAutoAddress,
   autoCreatePermission,
   autoCreateRole,
   autoCreateAdmin,
+  autoCreatePolicy,
 };

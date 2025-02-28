@@ -5,8 +5,16 @@ const applyAutoIncrement = require('../configs/autoIncrement');
 const historySearchSchema = new Schema(
   {
     _id: Number,
-    account: { type: Number, ref: 'account', required: true },
-    keyword: { type: String, required: true, trim: true },
+    account: {
+      type: Number,
+      ref: 'account',
+      required: [true, 'Account is required'],
+    },
+    keyword: {
+      type: String,
+      required: true,
+      trim: [true, 'Keyword is required'],
+    },
   },
   { timestamps: true }
 );

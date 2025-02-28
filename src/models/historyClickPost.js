@@ -5,8 +5,12 @@ const applyAutoIncrement = require('../configs/autoIncrement');
 const historyClickPostSchema = new Schema(
   {
     _id: Number,
-    account: { type: Number, ref: 'account', required: true },
-    post: { type: Number, ref: 'post', required: true },
+    account: {
+      type: Number,
+      ref: 'account',
+      required: [true, 'Account is required'],
+    },
+    post: { type: Number, ref: 'post', required: [true, 'Post is required'] },
   },
   { timestamps: true }
 );

@@ -5,8 +5,16 @@ const applyAutoIncrement = require('../configs/autoIncrement');
 const blockedSchema = new Schema(
   {
     _id: Number,
-    accountId: { type: Number, ref: 'account', required: true },
-    blockedId: { type: Number, ref: 'account', required: true },
+    accountId: {
+      type: Number,
+      ref: 'account',
+      required: [true, 'Account ID is required'],
+    },
+    blockedId: {
+      type: Number,
+      ref: 'account',
+      required: [true, 'Blocked ID is required'],
+    },
     reason: { type: String, required: true },
   },
   { timestamps: true }
