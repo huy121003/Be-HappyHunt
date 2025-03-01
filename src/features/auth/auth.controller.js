@@ -77,7 +77,7 @@ const getAccountInfo = async (req, res) => {
     const result = await authService.getAccountInfo(req.userAccess);
     return apiHandler.sendSuccessWithData(res, 'Account information', result);
   } catch (error) {
-    return apiHandler.sendErrorMessage(res, error.message);
+    return apiHandler.sendValidationError(res, error.message);
   }
 };
 

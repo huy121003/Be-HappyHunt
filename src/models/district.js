@@ -20,6 +20,15 @@ const districtSchema = new mongoose.Schema({
     required: [true, 'Province ID is required'],
     ref: 'province',
   },
+  divisionType: {
+    type: String,
+    default: 'district',
+  },
+  shortCodeName: {
+    type: String,
+    required: [true, 'Short code name is required'],
+    trim: [true, 'Short code name is required'],
+  },
 });
 
 applyAutoIncrement(mongoose, districtSchema, 'district');

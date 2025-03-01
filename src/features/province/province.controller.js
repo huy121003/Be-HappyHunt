@@ -48,7 +48,7 @@ const remove = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const result = await provinceService.deleteById(id);
+    const result = await provinceService.remove(id);
     return apiHandler.sendSuccessWithData(
       res,
       'Province deleted successfully',

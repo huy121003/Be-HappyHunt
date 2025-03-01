@@ -1,5 +1,5 @@
 const { apiHandler } = require('../../helpers');
-const District = require('../../models/district');
+const districtService = require('./district.service');
 
 const getAll = async (req, res) => {
   try {

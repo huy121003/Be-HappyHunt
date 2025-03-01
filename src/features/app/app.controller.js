@@ -75,7 +75,7 @@ const autoCreatePolicy = async () => {
   try {
     const policy = await Policy.find({});
     if (policy.length === 0) {
-      await policyService.autoCreatePolicy();
+      await appService.autoCreatePolicy();
       return true;
     }
   } catch (err) {

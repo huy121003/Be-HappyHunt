@@ -25,6 +25,15 @@ const wardSchema = new Schema({
     required: [true, 'District ID is required'],
     ref: 'district',
   },
+  divisionType: {
+    type: String,
+    default: 'ward',
+  },
+  shortCodeName: {
+    type: String,
+    required: [true, 'Short code name is required'],
+    trim: [true, 'Short code name is required'],
+  },
 });
 
 applyAutoIncrement(mongoose, wardSchema, 'ward');

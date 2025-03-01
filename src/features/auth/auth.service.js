@@ -92,7 +92,7 @@ const forgotPassword = async (data) => {
 
 const getAccountInfo = async (data) => {
   const account = await Account.findOne({ _id: data._id })
-    .select('-__v -createdAt -updatedAt')
+    .select('-__v -createdAt -updatedAt -password -deleted')
     .populate({
       path: 'role',
       select: 'name _id',

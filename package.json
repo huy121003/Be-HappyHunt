@@ -28,6 +28,7 @@
     "prettier": "^3.4.2"
   },
   "dependencies": {
+    "@vitalets/google-translate-api": "^9.2.1",
     "@vonage/server-sdk": "^3.19.3",
     "api-query-params": "^5.4.0",
     "bcrypt": "^5.1.1",
@@ -40,6 +41,7 @@
     "express": "^4.21.2",
     "express-fileupload": "^1.5.1",
     "express-list-endpoints": "^7.1.1",
+    "google-translate-api": "^2.3.0",
     "i18next": "^24.2.1",
     "i18next-http-middleware": "^3.7.1",
     "jsonwebtoken": "^9.0.2",

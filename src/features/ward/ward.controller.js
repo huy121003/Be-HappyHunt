@@ -49,7 +49,7 @@ const remove = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const result = await wardService.deleteById(id);
+    const result = await wardService.remove(id);
     return apiHandler.sendSuccessWithData(
       res,
       'Province deleted successfully',

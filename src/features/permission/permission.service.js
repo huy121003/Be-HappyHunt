@@ -55,7 +55,7 @@ const update = async (id, data) => {
   return result;
 };
 const remove = async (id) => {
-  const result = await Permission.findByIdAndDelete(id);
+  const result = await Permission.deleteById(id);
   if (!result) throw new Error('Permission delete failed');
   return result;
 };

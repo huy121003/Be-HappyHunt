@@ -26,7 +26,7 @@ const getAll = async (data) => {
   const [totalDocuments, result] = await Promise.all([
     Province.countDocuments(parseFilterQuery(filter)),
     Province.find(parseFilterQuery(filter))
-      .select('name _id codeName')
+      .select('name _id codeName phoneCode')
       .sort(sort)
       .limit(size)
       .skip(page * size)
@@ -42,12 +42,14 @@ const getAll = async (data) => {
   };
 };
 const getById = async (id) => {
-  const result = await Province.findById(id).select('name _id codeName').exec();
+  const result = await Province.findById(id)
+    .select('name codeName phoneCode')
+    .exec();
   if (!result) throw new Error('Province not found');
   return result;
 };
 const remove = async (id) => {
-  const result = await Province.deleteById(id).exec();
+  const result = await Province.deleteById(id);
   if (!result) throw new Error('Delete province failed');
   return result;
 };

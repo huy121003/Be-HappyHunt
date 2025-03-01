@@ -46,7 +46,7 @@ const update = async (id, data) => {
   return result;
 };
 const remove = async (id) => {
-  const result = await Role.findByIdAndDelete(id);
+  const result = await Role.deleteById(id);
   if (!result) throw new Error('Role delete failed');
   return result;
 };

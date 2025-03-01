@@ -11,11 +11,15 @@ const getAll = async (data) => {
   const [totalDocuments, result] = await Promise.all([
     District.countDocuments(parseFilterQuery(filter)),
     District.find({ ...parseFilterQuery(filter) })
-      .select('name _id codeName')
+      .select('name _id codeName shortCodeName createdAt')
       .sort(sort)
       .limit(size)
       .skip(page * size)
-      .populate('provinceId', 'name _id codeName')
+      .populate({
+        path: 'provinceId', // Đúng với ref trong schema
+        select: 'name _id', // Chỉ lấy 2 field này
+        model: 'province', // Đảm bảo trùng tên model
+      })
       .exec(),
   ]);
   if (!result || !totalDocuments) throw new Error('Fetch districts failed');
@@ -29,8 +33,8 @@ const getAll = async (data) => {
 const getById = async (id) => {
   const result = await District.findById(id)
     .lean()
-    .select('name _id codeName')
-    .populate('provinceId', 'name _id codeName')
+    .select('name _id codeName shortCodeName')
+    .populate('provinceId', 'name _id ')
     .exec();
   if (!result) throw new Error('District not found');
   return result;

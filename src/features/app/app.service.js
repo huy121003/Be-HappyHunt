@@ -3,45 +3,56 @@ const DistrictService = require('../district/district.service');
 const WardService = require('../ward/ward.service');
 const perimissionData = require('../permission/permission.data');
 const { Permission, Account, Role, Policy } = require('../../models');
+
 require('dotenv').config();
 const bcrypt = require('bcrypt');
 
-const createAutoAddress = async (provincesData) => {
-  const provincePromises = provincesData?.map(async (province) => {
-    await ProvinceService.create({
-      name: province.name,
-      _id: province.code,
-      codeName: province.codename,
-    });
+const policyData = require('../policy/policy.data');
 
-    const districtPromises = province.districts.map(async (district) => {
-      await DistrictService.create({
-        name: district.name,
-        _id: district.code,
-        provinceId: province.code,
-        codeName: district.codename,
+const createAutoAddress = async (provincesData) => {
+  try {
+    const provincePromises = provincesData.map(async (province) => {
+      const createdProvince = await ProvinceService.create({
+        name: province.name,
+        codeName: province.codename,
+        divisionType: province.division_type,
+        phoneCode: province.phone_code,
       });
 
-      const wardPromises = district.wards.map((ward) =>
-        WardService.create({
-          name: ward.name,
-          _id: ward.code,
-          provinceId: province.code,
-          districtId: district.code,
-          codeName: ward.codename,
-        })
-      );
+      const districtPromises = province.districts.map(async (district) => {
+        const createdDistrict = await DistrictService.create({
+          name: district.name,
+          provinceId: createdProvince._id,
+          codeName: district.codename,
+          divisionType: district.division_type,
+          shortCodeName: district.short_codename,
+        });
 
-      return Promise.all(wardPromises);
+        const wardPromises = district.wards.map((ward) =>
+          WardService.create({
+            name: ward.name,
+            provinceId: createdProvince._id,
+            districtId: createdDistrict._id,
+            codeName: ward.codename,
+            divisionType: ward.division_type,
+            shortCodeName: ward.short_codename,
+          })
+        );
+
+        return Promise.all(wardPromises);
+      });
+
+      return Promise.all(districtPromises);
     });
 
-    return Promise.all(districtPromises);
-  });
-
-  await Promise.all(provincePromises);
-
-  return true;
+    await Promise.all(provincePromises);
+    return true;
+  } catch (error) {
+    console.error('❌ Lỗi khi tạo địa chỉ:', error);
+    return false;
+  }
 };
+
 const autoCreatePermission = async () => {
   for (const permission of perimissionData) {
     await Permission.create(permission);

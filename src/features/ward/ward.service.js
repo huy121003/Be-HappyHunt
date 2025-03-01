@@ -11,11 +11,11 @@ const getAll = async (data) => {
   const [totalDocuments, result] = await Promise.all([
     Ward.countDocuments(parseFilterQuery(filter)),
     Ward.find({ ...parseFilterQuery(filter) })
-      .select('name _id codeName')
+      .select('name _id codeName shortCodeName')
       .sort(sort)
-      .limit(page)
+      .limit(size)
       .skip(page * size)
-      .populate('districtId provinceId', 'name _id codeName')
+      .populate('districtId provinceId', 'name _id ')
       .exec(),
   ]);
   if (!result || !totalDocuments) throw new Error('Fetch wards failed');
@@ -29,8 +29,8 @@ const getAll = async (data) => {
 const getById = async (id) => {
   const result = await Ward.findById(id)
     .lean()
-    .select('name _id codeName')
-    .populate('districtId provinceId', 'name _id codeName')
+    .select('name _id codeName shortCodeName')
+    .populate('districtId provinceId', 'name _id')
     .exec();
   if (!result) throw new Error('Ward not found');
   return result;
