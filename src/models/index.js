@@ -15,6 +15,7 @@ const Post = require('./post');
 const Report = require('./report');
 const Role = require('./role');
 const SampleMessage = require('./sampleMessage');
+const Banner = require('./banner');
 
 module.exports = {
   Account,
@@ -34,4 +35,5 @@ module.exports = {
   Report,
   Role,
   SampleMessage,
+  Banner,
 };

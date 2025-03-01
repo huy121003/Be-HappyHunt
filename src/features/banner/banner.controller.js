@@ -1,17 +1,15 @@
 const { apiHandler, parseSortQuery } = require('../../helpers');
-const categoryService = require('./category.service');
-
+const bannerService = require('./banner.service');
 require('dotenv').config();
-
 const create = async (req, res) => {
   try {
-    const result = await categoryService.create({
+    const result = await bannerService.create({
       ...req.body,
-      ...(req.files && { icon: req.files.icon }),
+      ...(req.files && { image: req.files.image }),
     });
     return apiHandler.sendSuccessWithData(
       res,
-      'Category created successfully',
+      'Banner created successfully',
       result
     );
   } catch (error) {
@@ -20,56 +18,63 @@ const create = async (req, res) => {
 };
 const getAll = async (req, res) => {
   try {
-    const result = await categoryService.getAll(req.query);
-    return apiHandler.sendSuccessWithData(res, 'List categories', result);
+    const result = await bannerService.getAll(req.query);
+    return apiHandler.sendSuccessWithData(res, 'List banners', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }
 };
 const getAllPagination = async (req, res) => {
   try {
-    const result = await categoryService.getAllPagination(req.query);
-    return apiHandler.sendSuccessWithData(res, 'List categories', result);
+    const result = await bannerService.getAllPagination(req.query);
+    return apiHandler.sendSuccessWithData(res, 'List banners', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }
 };
 const getById = async (req, res) => {
   try {
-    const result = await categoryService.getById(req.params.id);
-    return apiHandler.sendSuccessWithData(res, 'Category', result);
+    const result = await bannerService.getById(req.params.id);
+    return apiHandler.sendSuccessWithData(res, 'Banner', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }
 };
 const update = async (req, res) => {
   try {
-    const result = await categoryService.update(req.params.id, {
+    const result = await bannerService.update(req.params.id, {
       ...req.body,
-      ...(req.files && { icon: req.files.icon }),
+      ...(req.files && { image: req.files.image }),
     });
     return apiHandler.sendSuccessWithData(
       res,
-      'Category created successfully',
+      'Banner updated successfully',
       result
     );
   } catch (error) {
-    console.log(error);
     return apiHandler.sendErrorMessage(res, error.message);
   }
 };
 const remove = async (req, res) => {
   try {
-    await categoryService.remove(req.params.id);
-    return apiHandler.sendSuccessMessage(res, 'Category deleted successfully');
+    const result = await bannerService.remove(req.params.id);
+    return apiHandler.sendSuccessWithData(
+      res,
+      'Banner deleted successfully',
+      result
+    );
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }
 };
-const getAllParent = async (req, res) => {
+const show = async (req, res) => {
   try {
-    const result = await categoryService.getAllParent(req.query);
-    return apiHandler.sendSuccessWithData(res, 'List categories', result);
+    const result = await bannerService.show(req.params.id, req.body.isShow);
+    return apiHandler.sendSuccessWithData(
+      res,
+      'Banner updated successfully',
+      result
+    );
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }
@@ -78,9 +83,9 @@ const getAllParent = async (req, res) => {
 module.exports = {
   create,
   getAll,
+  getAllPagination,
   getById,
   update,
   remove,
-  getAllParent,
-  getAllPagination,
+  show,
 };
