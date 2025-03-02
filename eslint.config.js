@@ -15,7 +15,7 @@ module.exports = [
     },
     rules: {
       // Prettier
-      'prettier/prettier': 'error',
+      'prettier/prettier': 'auto',
 
       // Cơ bản
       'semi': ['error', 'always'], // Bắt buộc dấu chấm phẩy

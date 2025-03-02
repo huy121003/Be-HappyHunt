@@ -11,12 +11,7 @@ router.post(
   authValidator.sendOtpRegister,
   authController.sendOtpRegister
 );
-router.post(
-  '/logout',
-  authJwt.accessToken,
-  // authValidator.logout,
-  authController.logout
-);
+router.post('/logout', authJwt.accessToken, authController.logout);
 router.post(
   '/forgot-password',
   authValidator.forgotPassword,
@@ -27,11 +22,7 @@ router.post(
   authValidator.sendOtpForgotPassword,
   authController.sendOtpForgotPassword
 );
-router.post(
-  '/reset-password',
-  authJwt.accessToken,
-  authController.resetPassword
-);
+
 router.get(
   '/get-account-info',
   authJwt.accessToken,
@@ -43,5 +34,15 @@ router.get(
   authJwt.refreshToken,
   authValidator.getNewAccessToken,
   authController.getNewAccessToken
+);
+router.patch(
+  '/change-password',
+  authJwt.accessToken,
+  authController.changePassword
+);
+router.patch(
+  '/update-profile',
+  authJwt.accessToken,
+  authController.updateProfile
 );
 module.exports = router;

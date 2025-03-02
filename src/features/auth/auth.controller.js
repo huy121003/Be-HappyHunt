@@ -40,6 +40,8 @@ const sendOtpRegister = async (req, res) => {
 
 const logout = async (req, res) => {
   // logout logic
+  res.clearCookie('refresh_token');
+  return apiHandler.sendSuccessMessage(res, 'Logout success');
 };
 
 const sendOtpForgotPassword = async (req, res) => {
@@ -68,10 +70,6 @@ const forgotPassword = async (req, res) => {
   }
 };
 
-const resetPassword = async (req, res) => {
-  // reset password logic
-};
-
 const getAccountInfo = async (req, res) => {
   try {
     const result = await authService.getAccountInfo(req.userAccess);
@@ -89,6 +87,30 @@ const getNewAccessToken = async (req, res) => {
     return apiHandler.sendErrorMessage(res, error.message);
   }
 };
+const changePassword = async (req, res) => {
+  try {
+    await authService.changePassword(req.userAccess._id, req.body);
+    res.clearCookie('refresh_token');
+    return apiHandler.sendSuccessMessage(res, 'Change password success');
+  } catch (error) {
+    return apiHandler.sendErrorMessage(res, error.message);
+  }
+};
+const updateProfile = async (req, res) => {
+  try {
+    const result = await authService.updateProfile(req.userAccess._id, {
+      ...req.body,
+      ...(req.files && { avatar: req.files.avatar }),
+    });
+    return apiHandler.sendSuccessWithData(
+      res,
+      'Update profile success',
+      result
+    );
+  } catch (error) {
+    return apiHandler.sendErrorMessage(res, error.message);
+  }
+};
 
 module.exports = {
   login,
@@ -97,7 +119,8 @@ module.exports = {
   logout,
   sendOtpForgotPassword,
   forgotPassword,
-  resetPassword,
   getAccountInfo,
   getNewAccessToken,
+  changePassword,
+  updateProfile,
 };

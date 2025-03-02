@@ -4,9 +4,13 @@ const categoryValidator = require('./category.validator');
 const router = express.Router();
 const { authJwt } = require('../../middlewares');
 router.post('/', authJwt.accessToken, categoryController.create);
-router.get('/pagination', categoryController.getAllPagination);
-router.get('/', categoryController.getAll);
-router.get('/parent', categoryController.getAllParent);
+router.get(
+  '/pagination',
+  authJwt.accessToken,
+  categoryController.getAllPagination
+);
+router.get('/', authJwt.accessToken, categoryController.getAll);
+router.get('/parent', authJwt.accessToken, categoryController.getAllParent);
 router.get(
   '/:id',
   authJwt.accessToken,

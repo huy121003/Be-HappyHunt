@@ -5,14 +5,14 @@ const applyAutoIncrement = require('../configs/autoIncrement');
 const accountSchema = new Schema(
   {
     _id: Number,
-    fullName: {
+
+    name: {
       type: String,
-      required: [true, 'Full name is required'],
-      trim: [true, 'Full name is required'],
+      default: '',
+      trim: [true, 'Username is required'],
     },
     username: {
       type: String,
-      default: '',
       unique: [true, 'Username already exists'],
       trim: [true, 'Username is required'],
     },
@@ -22,17 +22,18 @@ const accountSchema = new Schema(
       unique: [true, 'Phone number already'],
       trim: [true, 'Phone number is required'],
     },
-    email: {
-      type: String,
-      unique: [true, 'Email already exists'],
-      default: '',
-    },
+
     password: { type: String, required: [true, 'Password is required'] },
     isBanned: { type: Boolean, default: false },
     avatar: { type: String, default: '' },
     isVip: { type: Boolean, default: false },
-    address: { type: String, default: '' },
-    role: { type: Number, ref: 'role', required: [true, 'Role is required'] },
+    address: {
+      provinceId: { type: Number, ref: 'province', default: null },
+      districtId: { type: Number, ref: 'district', default: null },
+      wardId: { type: Number, ref: 'ward', default: null },
+      specificAddress: { type: String, default: '' },
+    },
+    role: { type: Number, ref: 'role', default: null },
     description: { type: String, default: '' },
   },
   { timestamps: true }

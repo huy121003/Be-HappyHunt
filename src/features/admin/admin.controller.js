@@ -1,8 +1,11 @@
-const accountService = require('./account.service');
+const adminService = require('./admin.service');
 const { apiHandler } = require('../../helpers');
 const create = async (req, res) => {
   try {
-    const result = await accountService.create(req.body);
+    const result = await adminService.create({
+      ...req.body,
+      ...(req.files && { avatar: req.files.avatar }),
+    });
     return apiHandler.sendSuccessWithData(
       res,
       'Account created successfully',
@@ -14,7 +17,7 @@ const create = async (req, res) => {
 };
 const getAll = async (req, res) => {
   try {
-    const result = await accountService.getAll(req.query);
+    const result = await adminService.getAll(req.query);
     return apiHandler.sendSuccessWithData(res, 'List accounts', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
@@ -22,7 +25,7 @@ const getAll = async (req, res) => {
 };
 const getById = async (req, res) => {
   try {
-    const result = await accountService.getById(req.params.id);
+    const result = await adminService.getById(req.params.id);
     return apiHandler.sendSuccessWithData(res, 'Account', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
@@ -30,7 +33,10 @@ const getById = async (req, res) => {
 };
 const update = async (req, res) => {
   try {
-    const result = await accountService.update(req.params.id, req.body);
+    const result = await adminService.update(req.params.id, {
+      ...req.body,
+      ...(req.files && { avatar: req.files.avatar }),
+    });
     return apiHandler.sendSuccessWithData(
       res,
       'Account updated successfully',
@@ -42,7 +48,7 @@ const update = async (req, res) => {
 };
 const remove = async (req, res) => {
   try {
-    const result = await accountService.remove(req.params.id);
+    const result = await adminService.remove(req.params.id);
     return apiHandler.sendSuccessWithData(
       res,
       'Account removed successfully',
@@ -54,7 +60,7 @@ const remove = async (req, res) => {
 };
 const banned = async (req, res) => {
   try {
-    const result = await accountService.banned(req.params.id, req.body.banned);
+    const result = await adminService.banned(req.params.id, req.body.banned);
     return apiHandler.sendSuccessWithData(
       res,
       'Account banned successfully',
@@ -64,6 +70,7 @@ const banned = async (req, res) => {
     return apiHandler.sendErrorMessage(res, error.message);
   }
 };
+
 module.exports = {
   create,
   getAll,
@@ -71,4 +78,5 @@ module.exports = {
   update,
   remove,
   banned,
+
 };

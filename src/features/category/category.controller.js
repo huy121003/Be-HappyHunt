@@ -54,7 +54,6 @@ const update = async (req, res) => {
       result
     );
   } catch (error) {
-    console.log(error);
     return apiHandler.sendErrorMessage(res, error.message);
   }
 };

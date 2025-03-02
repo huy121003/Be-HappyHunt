@@ -22,7 +22,6 @@ const getAll = async (data) => {
     sort = process.env.SORT_DEFAULT,
     ...filter
   } = data;
-  console.log('filter', data);
   const [totalDocuments, result] = await Promise.all([
     Province.countDocuments(parseFilterQuery(filter)),
     Province.find(parseFilterQuery(filter))

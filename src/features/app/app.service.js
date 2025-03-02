@@ -51,15 +51,11 @@ const createAutoAddress = async (provincesData) => {
 const autoCreatePermission = async () => {
   for (const permission of perimissionData) {
     await Permission.create(permission);
-    console.log('Inserted permission:', permission);
   }
-  if (perimissionData.length > 0) {
-    console.log('All permissions inserted successfully');
-  }
+
   return true;
 };
-const autoCreateRole = async (permissions) => {
-  console.log('permissions', permissions);
+const autoCreateRole = async (permissions) => {;
   const res = await Role.insertMany([
     {
       _id: 1,
@@ -75,20 +71,24 @@ const autoCreateRole = async (permissions) => {
       })),
     },
   ]);
-  if (res) {
-    console.log('Roles created successfully');
-  }
+ 
   return true;
 };
 const autoCreateAdmin = async (roleId) => {
   const bycryptedPassword = await bcrypt.hash(process.env.PASSWORD_ADMIN, 10);
 
   await Account.create({
-    fullName: process.env.FULLNAME_ADMIN,
+    name: process.env.FULLNAME_ADMIN,
     password: bycryptedPassword,
     phoneNumber: process.env.PHONE_ADMIN,
+    username: 'super.admin',
     isBanned: false,
-    address: '',
+    address: {
+      provinceId: null,
+      districtId: null,
+      wardId: null,
+      specificAddress: '',
+    },
     avatar: '',
     isVip: true,
     role: roleId,

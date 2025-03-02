@@ -17,7 +17,6 @@ const uploadMultiple = async (req, res) => {
   if (!req.files || Object.keys(req.files).length === 0) {
     return apiHandler.sendValidationError(res, 'File is required');
   }
-  console.log(req.files);
   try {
     if (Array.isArray(req.files.image)) {
       const result = await fileService.uploadMultiple(req.files.image);

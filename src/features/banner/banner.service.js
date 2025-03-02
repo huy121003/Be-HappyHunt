@@ -4,7 +4,6 @@ const { uploadSingle } = require('../file/file.service');
 require('dotenv').config();
 const create = async (banner) => {
   const imageUrl = banner.image ? await uploadSingle(banner.image) : null;
-  if (!imageUrl) throw new Error('Image upload failed');
   const result = await Banner.create({
     ...banner,
     image: imageUrl,

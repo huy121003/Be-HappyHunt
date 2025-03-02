@@ -10,15 +10,17 @@ const getAll = async (data) => {
     sort = process.env.SORT_DEFAULT,
     ...filter
   } = data;
-
+  const roleFilter = filter.role
+    ? { role: filter.role }
+    : { role: { $ne: null } };
   const [totalDocuments, result] = await Promise.all([
-    Account.countDocuments(parseFilterQuery(filter)),
-    Account.find({ ...parseFilterQuery(filter) })
+    Account.countDocuments({
+      ...parseFilterQuery(filter),
+      ...roleFilter,
+    }),
+    Account.find({ ...parseFilterQuery(filter), ...roleFilter })
       .select('-password -__v  -updatedAt -deleted')
-      .populate(
-        'address.provinceId address.districtId address.wardId role',
-        'name _id '
-      )
+      .populate('role', 'name _id')
       .sort(sort)
       .limit(size)
       .skip(page * size)
@@ -37,30 +39,29 @@ const getAll = async (data) => {
 const getById = async (id) => {
   const result = await Account.findById(id)
     .select('-password -__v  -updatedAt -deleted')
-    .populate(
-      'address.provinceId address.districtId address.wardId role',
-      'name _id'
-    )
+    .populate('role', 'name _id')
     .lean()
     .exec();
   if (!result) throw new Error('Account not found');
   return result;
 };
 const create = async (data) => {
+  const avatarUrl = data.avatar ? await uploadSingle(data.avatar) : null;
   const hashPassword = await bcrypt.hash('123@123a', 10);
   const result = await Account.create({
     ...data,
     password: hashPassword,
+    ...(avatarUrl && { avatar: avatarUrl }),
   });
-  if (!result) throw new Error('Create account failed');
+  if (!result) throw new Error('Create admin failed');
   return result;
 };
-const update = async (id, account) => {
-  const avatarUrl = account.avatar ? await uploadSingle(account.avatar) : null;
+const update = async (id, data) => {
+  const avatarUrl = data.avatar ? await uploadSingle(data.avatar) : null;
   const result = await Account.findByIdAndUpdate(
     id,
     {
-      ...account,
+      ...data,
       ...(avatarUrl && { avatar: avatarUrl }),
     },
     {
