@@ -30,6 +30,8 @@ const feedbackSchema = new Schema(
       trim: [true, 'Content is required'],
     },
     images: { type: [String], default: [] },
+    createdBy: { type: Number, ref: 'account', default: null },
+    updatedBy: { type: Number, ref: 'account', default: null },
   },
   { timestamps: true }
 );

@@ -4,6 +4,7 @@ const HTTP_STATUS = {
   BAD_REQUEST: 400,
   UNAUTHORIZED: 401,
   NOT_FOUND: 404,
+  NO_PERMISSION: 403,
   INTERNAL_SERVER_ERROR: 500,
 };
 
@@ -114,4 +115,6 @@ const apiHandler = {
     return res.status(HTTP_STATUS.UNAUTHORIZED).json(response);
   },
 };
+
+
 module.exports = apiHandler;

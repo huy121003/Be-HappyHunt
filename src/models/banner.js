@@ -31,6 +31,8 @@ const bannerSchema = new Schema(
       required: [true, 'Is show is required'],
       default: true,
     },
+    createdBy: { type: Number, ref: 'account', default: null },
+    updatedBy: { type: Number, ref: 'account', default: null },
   },
   { timestamps: true }
 );

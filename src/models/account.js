@@ -35,6 +35,8 @@ const accountSchema = new Schema(
     },
     role: { type: Number, ref: 'role', default: null },
     description: { type: String, default: '' },
+    createdBy: { type: Number, ref: 'account', default: null },
+    updatedBy: { type: Number, ref: 'account', default: null },
   },
   { timestamps: true }
 );

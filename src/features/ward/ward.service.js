@@ -15,7 +15,7 @@ const getAll = async (data) => {
       .sort(sort)
       .limit(size)
       .skip(page * size)
-      .populate('districtId provinceId', 'name _id ')
+      .populate('districtId provinceId createdBy', 'name _id ')
       .exec(),
   ]);
   if (!result || !totalDocuments) throw new Error('Fetch wards failed');

@@ -15,11 +15,7 @@ const getAll = async (data) => {
       .sort(sort)
       .limit(size)
       .skip(page * size)
-      .populate({
-        path: 'provinceId', // Đúng với ref trong schema
-        select: 'name _id', // Chỉ lấy 2 field này
-        model: 'province', // Đảm bảo trùng tên model
-      })
+      .populate('provinceId createdBy', 'name _id ')
       .exec(),
   ]);
   if (!result || !totalDocuments) throw new Error('Fetch districts failed');

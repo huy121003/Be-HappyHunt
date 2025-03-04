@@ -39,6 +39,8 @@ const categorySchema = new Schema(
       unique: [true, 'Category URL already exists'],
     },
     icon: { type: String, required: [true, 'Icon is required'], default: '' },
+    createdBy: { type: Number, ref: 'account', default: null },
+    updatedBy: { type: Number, ref: 'account', default: null },
   },
   { timestamps: true }
 );

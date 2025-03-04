@@ -31,6 +31,8 @@ const messageSchema = new Schema(
     isRead: { type: Boolean, default: false },
     timeSend: { type: Date, default: Date.now },
     timeRead: { type: Date, default: null },
+    createdBy: { type: Number, ref: 'account', default: null },
+    updatedBy: { type: Number, ref: 'account', default: null },
   },
   { timestamps: true }
 );

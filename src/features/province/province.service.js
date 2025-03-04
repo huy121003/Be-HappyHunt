@@ -26,6 +26,7 @@ const getAll = async (data) => {
     Province.countDocuments(parseFilterQuery(filter)),
     Province.find(parseFilterQuery(filter))
       .select('name _id codeName phoneCode')
+      .populate('createdBy', 'name _id')
       .sort(sort)
       .limit(size)
       .skip(page * size)

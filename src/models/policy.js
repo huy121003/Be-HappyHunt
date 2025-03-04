@@ -45,6 +45,8 @@ const policySchema = new Schema(
       default: 0,
       required: [true, 'Coin to vip is required'],
     },
+    createdBy: { type: Number, ref: 'account', default: null },
+    updatedBy: { type: Number, ref: 'account', default: null },
   },
   { timestamps: true }
 );

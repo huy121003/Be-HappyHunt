@@ -16,6 +16,8 @@ const blockedSchema = new Schema(
       required: [true, 'Blocked ID is required'],
     },
     reason: { type: String, required: true },
+    createdBy: { type: Number, ref: 'account', default: null },
+    updatedBy: { type: Number, ref: 'account', default: null },
   },
   { timestamps: true }
 );

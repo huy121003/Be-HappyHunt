@@ -1,8 +1,8 @@
 const { apiHandler } = require('../../helpers');
 
 const login = async (req, res, next) => {
-  const { phoneNumber, password, type } = req.body;
-  if (!phoneNumber || !password || !type) {
+  const { phoneOrUsername, password, type } = req.body;
+  if (!phoneOrUsername || !password || !type) {
     return apiHandler.sendValidationError(
       res,
       'Please submit all required fields',

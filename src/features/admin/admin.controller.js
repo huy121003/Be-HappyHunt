@@ -4,6 +4,7 @@ const create = async (req, res) => {
   try {
     const result = await adminService.create({
       ...req.body,
+      createdBy: req.userAccess._id,
       ...(req.files && { avatar: req.files.avatar }),
     });
     return apiHandler.sendSuccessWithData(
@@ -36,6 +37,7 @@ const update = async (req, res) => {
     const result = await adminService.update(req.params.id, {
       ...req.body,
       ...(req.files && { avatar: req.files.avatar }),
+      updatedBy: req.userAccess._id,
     });
     return apiHandler.sendSuccessWithData(
       res,
@@ -60,7 +62,10 @@ const remove = async (req, res) => {
 };
 const banned = async (req, res) => {
   try {
-    const result = await adminService.banned(req.params.id, req.body.banned);
+    const result = await adminService.banned(req.params.id, {
+      isBanned: req.body.isBanned,
+      updatedBy: req.userAccess._id,
+    });
     return apiHandler.sendSuccessWithData(
       res,
       'Account banned successfully',
@@ -78,5 +83,4 @@ module.exports = {
   update,
   remove,
   banned,
-
 };

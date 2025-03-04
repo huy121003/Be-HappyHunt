@@ -20,7 +20,7 @@ const getAll = async (data) => {
     }),
     Account.find({ ...parseFilterQuery(filter), ...roleFilter })
       .select('-password -__v  -updatedAt -deleted')
-      .populate('role', 'name _id')
+      .populate('role createdBy', 'name _id')
       .sort(sort)
       .limit(size)
       .skip(page * size)

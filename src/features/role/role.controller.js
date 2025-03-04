@@ -20,7 +20,10 @@ const getById = async (req, res) => {
 };
 const create = async (req, res) => {
   try {
-    const result = await roleService.create(req.body);
+    const result = await roleService.create({
+      ...req.body,
+      createdBy: req.userAccess._id,
+    });
     return apiHandler.sendSuccessWithData(
       res,
       'Role created successfully',
@@ -32,7 +35,10 @@ const create = async (req, res) => {
 };
 const update = async (req, res) => {
   try {
-    const result = await roleService.update(req.params.id, req.body);
+    const result = await roleService.update(req.params.id, {
+      ...req.body,
+      updatedBy: req.userAccess._id,
+    });
     return apiHandler.sendSuccessWithData(
       res,
       'Role updated successfully',

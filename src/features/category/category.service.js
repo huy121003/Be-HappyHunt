@@ -96,8 +96,14 @@ const getAllParent = async (data) => {
     ...filter
   } = data;
   const [totalDocuments, result] = await Promise.all([
-    Category.countDocuments(parseFilterQuery(filter)),
-    Category.find(parseFilterQuery(filter))
+    Category.countDocuments({
+      ...parseFilterQuery(filter),
+      parent: null,
+    }),
+    Category.find({
+      ...parseFilterQuery(filter),
+      parent: null,
+    })
       .select('name _id parent')
       .limit(size)
       .skip(page * size)

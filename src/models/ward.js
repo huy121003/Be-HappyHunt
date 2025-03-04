@@ -34,6 +34,8 @@ const wardSchema = new Schema({
     required: [true, 'Short code name is required'],
     trim: [true, 'Short code name is required'],
   },
+  createdBy: { type: Number, ref: 'account', default: null },
+  updatedBy: { type: Number, ref: 'account', default: null },
 });
 
 applyAutoIncrement(mongoose, wardSchema, 'ward');

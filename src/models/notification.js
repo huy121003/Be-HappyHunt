@@ -40,6 +40,8 @@ const notificationSchema = new Schema(
       trim: [true, 'URL is required'],
     },
     read: { type: Boolean, default: false },
+    createdBy: { type: Number, ref: 'account', default: null },
+    updatedBy: { type: Number, ref: 'account', default: null },
   },
   { timestamps: true }
 );

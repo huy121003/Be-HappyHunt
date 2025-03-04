@@ -34,6 +34,8 @@ const permissionSchema = new Schema(
       default: false,
     },
     description: { type: String, default: '' },
+    createdBy: { type: Number, ref: 'account', default: null },
+    updatedBy: { type: Number, ref: 'account', default: null },
   },
   { timestamps: true }
 );

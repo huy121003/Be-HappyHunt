@@ -26,7 +26,7 @@ const getAllPagination = async (data) => {
       .exec(),
   ]);
 
-  if (!result || !totalDocuments) throw new Error('Fetch  permission failed');
+  if (!result || !totalDocuments) throw new Error('Fetch permission failed');
 
   return {
     documentList: result,
@@ -38,6 +38,7 @@ const getAllPagination = async (data) => {
 const getById = async (id) => {
   const result = await Permission.findById(id)
     .select('-__v -createdAt -updatedAt -deleted')
+    .populate('createdBy', 'name _id')
     .exec();
   if (!result) throw new Error('Permission not found');
   return result;

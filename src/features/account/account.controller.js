@@ -2,7 +2,10 @@ const accountService = require('./account.service');
 const { apiHandler } = require('../../helpers');
 const create = async (req, res) => {
   try {
-    const result = await accountService.create(req.body);
+    const result = await accountService.create({
+      ...req.body,
+      createdBy: req.userAccess._id,
+    });
     return apiHandler.sendSuccessWithData(
       res,
       'Account created successfully',
@@ -30,7 +33,10 @@ const getById = async (req, res) => {
 };
 const update = async (req, res) => {
   try {
-    const result = await accountService.update(req.params.id, req.body);
+    const result = await accountService.update(req.params.id, {
+      ...req.body,
+      updatedBy: req.userAccess._id,
+    });
     return apiHandler.sendSuccessWithData(
       res,
       'Account updated successfully',
@@ -54,7 +60,10 @@ const remove = async (req, res) => {
 };
 const banned = async (req, res) => {
   try {
-    const result = await accountService.banned(req.params.id, req.body.banned);
+    const result = await accountService.banned(req.params.id, {
+      isBanned: req.body.isBanned,
+      updatedBy: req.userAccess._id,
+    });
     return apiHandler.sendSuccessWithData(
       res,
       'Account banned successfully',

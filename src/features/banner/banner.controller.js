@@ -5,6 +5,7 @@ const create = async (req, res) => {
   try {
     const result = await bannerService.create({
       ...req.body,
+      createdBy: req.userAccess._id,
       ...(req.files && { image: req.files.image }),
     });
     return apiHandler.sendSuccessWithData(
@@ -44,6 +45,7 @@ const update = async (req, res) => {
   try {
     const result = await bannerService.update(req.params.id, {
       ...req.body,
+      updatedBy: req.userAccess._id,
       ...(req.files && { image: req.files.image }),
     });
     return apiHandler.sendSuccessWithData(
@@ -69,7 +71,10 @@ const remove = async (req, res) => {
 };
 const show = async (req, res) => {
   try {
-    const result = await bannerService.show(req.params.id, req.body.isShow);
+    const result = await bannerService.show(req.params.id, {
+      ...req.body,
+      updatedBy: req.userAccess._id,
+    });
     return apiHandler.sendSuccessWithData(
       res,
       'Banner updated successfully',

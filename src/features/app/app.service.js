@@ -16,6 +16,8 @@ const createAutoAddress = async (provincesData) => {
       codeName: province.codename,
       divisionType: province.division_type,
       phoneCode: province.phone_code,
+      createdBy: 1,
+      updatedBy: 1,
     });
 
     const districtPromises = province.districts.map(async (district) => {
@@ -25,6 +27,8 @@ const createAutoAddress = async (provincesData) => {
         codeName: district.codename,
         divisionType: district.division_type,
         shortCodeName: district.short_codename,
+        createdBy: 1,
+        updatedBy: 1,
       });
 
       const wardPromises = district.wards.map((ward) =>
@@ -35,6 +39,8 @@ const createAutoAddress = async (provincesData) => {
           codeName: ward.codename,
           divisionType: ward.division_type,
           shortCodeName: ward.short_codename,
+          createdBy: 1,
+          updatedBy: 1,
         })
       );
 
@@ -50,28 +56,40 @@ const createAutoAddress = async (provincesData) => {
 
 const autoCreatePermission = async () => {
   for (const permission of perimissionData) {
-    await Permission.create(permission);
+    await Permission.create({
+      name: permission.name,
+      codeName: permission.codeName,
+      isDelete: permission.isDelete,
+      isUpdate: permission.isUpdate,
+      isCreate: permission.isCreate,
+      isView: permission.isView,
+      createdBy: 1,
+      updatedBy: 1,
+    });
   }
 
   return true;
 };
-const autoCreateRole = async (permissions) => {;
+const autoCreateRole = async (permissions) => {
   const res = await Role.insertMany([
     {
       _id: 1,
       name: 'Super Admin',
       description: 'Super Admin role',
+      createdBy: 1,
+      updatedBy: 1,
       permissions: permissions?.map((item) => ({
-        name: item.name,
-        codeName: item.codeName,
-        isDelete: item.isDelete,
-        isUpdate: item.isUpdate,
-        isCreate: item.isCreate,
-        isView: item.isView,
+        ...item,
+        isDelete: true,
+        isUpdate: true,
+        isCreate: true,
+        isView: true,
+        createdBy: 1,
+        updatedBy: 1,
       })),
     },
   ]);
- 
+
   return true;
 };
 const autoCreateAdmin = async (roleId) => {
@@ -92,11 +110,18 @@ const autoCreateAdmin = async (roleId) => {
     avatar: '',
     isVip: true,
     role: roleId,
+    description: '',
+    createdBy: null,
+    updatedBy: null,
   });
   return true;
 };
 const autoCreatePolicy = async () => {
-  const result = await Policy.create(policyData);
+  const result = await Policy.create({
+    ...policyData,
+    createdBy: 1,
+    updatedBy: 1,
+  });
   if (!result) throw new Error('Create policy failed');
   return true;
 };

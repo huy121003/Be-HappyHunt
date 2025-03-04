@@ -27,7 +27,10 @@ const getVipActivation = async (req, res) => {
 };
 const updateSettingPost = async (req, res) => {
   try {
-    const policy = await policyService.updateSettingPost(req.body);
+    const policy = await policyService.updateSettingPost({
+      ...req.body,
+      updatedBy: req.userAccess._id,
+    });
     return apiHandler.sendSuccessWithData(
       res,
       'Policy updated successfully',
@@ -39,7 +42,10 @@ const updateSettingPost = async (req, res) => {
 };
 const updateVipActivation = async (req, res) => {
   try {
-    const policy = await policyService.updateVipActivation(req.body);
+    const policy = await policyService.updateVipActivation({
+      ...req.body,
+      updatedBy: req.userAccess._id,
+    });
     return apiHandler.sendSuccessWithData(
       res,
       'Policy updated successfully',
@@ -52,7 +58,9 @@ const updateVipActivation = async (req, res) => {
 
 const updateDefaultSettingPost = async (req, res) => {
   try {
-    const result = await policyService.updateDefaultSettingPost();
+    const result = await policyService.updateDefaultSettingPost(
+      req.userAccess._id
+    );
     return apiHandler.sendSuccessWithData(
       res,
       'Policy updated successfully',
@@ -64,7 +72,9 @@ const updateDefaultSettingPost = async (req, res) => {
 };
 const updateDefaultVipActivation = async (req, res) => {
   try {
-    const result = await policyService.updateDefaultVipActivation();
+    const result = await policyService.updateDefaultVipActivation(
+      req.userAccess._id
+    );
     return apiHandler.sendSuccessWithData(
       res,
       'Policy updated successfully',

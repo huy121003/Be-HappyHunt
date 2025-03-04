@@ -15,6 +15,8 @@ const historySearchSchema = new Schema(
       required: true,
       trim: [true, 'Keyword is required'],
     },
+    createdBy: { type: Number, ref: 'account', default: null },
+    updatedBy: { type: Number, ref: 'account', default: null },
   },
   { timestamps: true }
 );

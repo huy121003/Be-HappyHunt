@@ -25,6 +25,8 @@ const provinceSchema = new mongoose.Schema({
     required: [true, 'Phone code is required'],
     unique: [true, 'Phone code is required'],
   },
+  createdBy: { type: Number, ref: 'account', default: null },
+  updatedBy: { type: Number, ref: 'account', default: null },
 });
 applyAutoIncrement(mongoose, provinceSchema, 'province');
 provinceSchema.plugin(mongoose_delete, { overrideMethods: 'all' });

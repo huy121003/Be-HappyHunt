@@ -7,6 +7,7 @@ const create = async (req, res) => {
   try {
     const result = await categoryService.create({
       ...req.body,
+      createdBy: req.userAccess._id,
       ...(req.files && { icon: req.files.icon }),
     });
     return apiHandler.sendSuccessWithData(
@@ -46,6 +47,7 @@ const update = async (req, res) => {
   try {
     const result = await categoryService.update(req.params.id, {
       ...req.body,
+      updatedBy: req.userAccess._id,
       ...(req.files && { icon: req.files.icon }),
     });
     return apiHandler.sendSuccessWithData(

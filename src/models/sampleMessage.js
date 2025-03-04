@@ -18,6 +18,8 @@ const sampleMessageSchema = new Schema(
       ref: 'category',
       required: [true, 'Category is required'],
     },
+    createdBy: { type: Number, ref: 'account', default: null },
+    updatedBy: { type: Number, ref: 'account', default: null },
   },
   { timestamps: true }
 );

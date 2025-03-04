@@ -76,6 +76,8 @@ const postSchema = new Schema(
         ],
       },
     },
+    createdBy: { type: Number, ref: 'account', default: null },
+    updatedBy: { type: Number, ref: 'account', default: null },
   },
   { timestamps: true }
 );

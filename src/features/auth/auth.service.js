@@ -7,9 +7,14 @@ const { twilioConfig } = require('../../configs');
 require('dotenv').config();
 const otpService = require('../otp/otp.service');
 const { uploadSingle } = require('../file/file.service');
-
+const isPhoneNumber = (input) => {
+  return /^[0-9]{9,15}$/.test(input);
+};
 const login = async (data, res) => {
-  const account = await Account.findOne({ phoneNumber: data.phoneNumber })
+  const query = isPhoneNumber(data.phoneOrUsername)
+    ? { phoneNumber: data.phoneOrUsername }
+    : { username: data.phoneOrUsername };
+  const account = await Account.findOne(query)
     .select('-__v -createdAt -updatedAt')
     .populate({
       path: 'role address.provinceId address.districtId address.wardId',

@@ -2,7 +2,10 @@ const { apiHandler } = require('../../helpers');
 const provinceService = require('./province.service');
 const create = async (req, res) => {
   try {
-    const result = await provinceService.create(req.body);
+    const result = await provinceService.create({
+      ...req.body,
+      createdBy: req.userAccess._id,
+    });
     return apiHandler.sendSuccessWithData(
       res,
       'Province created successfully',
@@ -34,7 +37,10 @@ const update = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const result = await provinceService.update(id, req.body);
+    const result = await provinceService.update(id, {
+      ...req.body,
+      updatedBy: req.userAccess._id,
+    });
     return apiHandler.sendSuccessWithData(
       res,
       'Province updated successfully',

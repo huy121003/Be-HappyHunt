@@ -43,6 +43,8 @@ const roleSchema = new Schema(
       },
     ],
     description: { type: String, default: '' },
+    createdBy: { type: Number, ref: 'account', default: null },
+    updatedBy: { type: Number, ref: 'account', default: null },
   },
   { timestamps: true }
 );

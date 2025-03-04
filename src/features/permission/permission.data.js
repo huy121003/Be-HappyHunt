@@ -1,47 +1,51 @@
 const perimissionData = [
   {
     name: 'Category',
-    codeName: 'category',
+    codeName: 'categories',
   },
   {
     name: 'Product',
-    codeName: 'product',
+    codeName: 'products',
   },
   {
     name: 'User',
-    codeName: 'user',
+    codeName: 'users',
   },
   {
     name: 'Role',
-    codeName: 'role',
+    codeName: 'roles',
   },
   {
     name: 'Permission',
-    codeName: 'permission',
+    codeName: 'permissions',
   },
   {
     name: 'District',
-    codeName: 'district',
+    codeName: 'districts',
   },
   {
     name: 'Province',
-    codeName: 'province',
+    codeName: 'provinces',
   },
   {
     name: 'Ward',
-    codeName: 'ward',
+    codeName: 'wards',
   },
   {
     name: 'Post Setting',
-    codeName: 'post-setting',
+    codeName: 'post-settings',
   },
   {
     name: 'Vip Activation',
-    codeName: 'vip-activation',
+    codeName: 'vip-activations',
   },
   {
     name: 'Message',
-    codeName: 'message',
+    codeName: 'messages',
+  },
+  {
+    name: 'Admins',
+    codeName: 'admins',
   },
 ];
 

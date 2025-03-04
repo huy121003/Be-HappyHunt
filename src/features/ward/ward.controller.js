@@ -21,7 +21,10 @@ const getById = async (req, res) => {
 };
 const create = async (req, res) => {
   try {
-    const result = await wardService.create(req.body);
+    const result = await wardService.create({
+      ...req.body,
+      createdBy: req.userAccess._id,
+    });
     return apiHandler.sendSuccessWithData(
       res,
       'Province created successfully',
@@ -35,7 +38,10 @@ const update = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const result = await wardService.update(id, req.body);
+    const result = await wardService.update(id, {
+      ...req.body,
+      updatedBy: req.userAccess._id,
+    });
     return apiHandler.sendSuccessWithData(
       res,
       'Province updated successfully',

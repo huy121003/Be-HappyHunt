@@ -27,7 +27,7 @@ const updateVipActivation = async (data) => {
 
   return policy;
 };
-const updateDefaultSettingPost = async () => {
+const updateDefaultSettingPost = async (id) => {
   const policy = await Policy.findOneAndUpdate(
     {},
     {
@@ -36,6 +36,7 @@ const updateDefaultSettingPost = async () => {
       timeExpired: process.env.TIME_EXPIRED,
       minImagePost: process.env.MIN_IMAGE_POST,
       maxImagePost: process.env.MAX_IMAGE_POST,
+      updateBy: id,
     },
     { new: true }
   );
@@ -43,12 +44,13 @@ const updateDefaultSettingPost = async () => {
 
   return policy;
 };
-const updateDefaultVipActivation = async () => {
+const updateDefaultVipActivation = async (id) => {
   const policy = await Policy.findOneAndUpdate(
     {},
     {
       coinToVip: process.env.COIN_TO_VIP,
       moneyToCoin: process.env.MONEY_TO_COIN,
+      updateBy: id,
     },
     { new: true }
   );

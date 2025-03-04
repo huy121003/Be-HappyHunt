@@ -33,6 +33,8 @@ const reportSchema = new Schema(
       default: 'PENDING',
       required: [true, 'Status is required'],
     },
+    createdBy: { type: Number, ref: 'account', default: null },
+    updatedBy: { type: Number, ref: 'account', default: null },
   },
   { timestamps: true }
 );

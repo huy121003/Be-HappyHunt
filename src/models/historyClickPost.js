@@ -11,6 +11,8 @@ const historyClickPostSchema = new Schema(
       required: [true, 'Account is required'],
     },
     post: { type: Number, ref: 'post', required: [true, 'Post is required'] },
+    createdBy: { type: Number, ref: 'account', default: null },
+    updatedBy: { type: Number, ref: 'account', default: null },
   },
   { timestamps: true }
 );

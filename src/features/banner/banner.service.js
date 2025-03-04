@@ -23,7 +23,8 @@ const getAllPagination = async (data) => {
   const [totalDocuments, result] = await Promise.all([
     Banner.countDocuments(parseFilterQuery(filter)),
     Banner.find(parseFilterQuery(filter))
-      .select('name _id image isShow link')
+      .select('name _id image isShow link ')
+      .populate('createdBy', 'name _id')
       .sort(sort)
       .limit(size)
       .skip(page * size)

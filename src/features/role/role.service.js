@@ -13,6 +13,7 @@ const getAll = async (data) => {
     Role.countDocuments(parseFilterQuery(filter)),
     Role.find(parseFilterQuery(filter))
       .select('name _id description createdAt')
+      .populate('createdBy', 'name _id')
       .sort(sort)
       .limit(size)
       .skip(page * size)

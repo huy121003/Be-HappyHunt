@@ -19,7 +19,10 @@ const getById = async (req, res) => {
 };
 const create = async (req, res) => {
   try {
-    const result = await districtService.create(req.body);
+    const result = await districtService.create({
+      ...req.body,
+      createdBy: req.userAccess._id,
+    });
     return apiHandler.sendSuccessWithData(res, 'District created', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
@@ -27,7 +30,10 @@ const create = async (req, res) => {
 };
 const update = async (req, res) => {
   try {
-    const result = await districtService.update(request.params.id, req.body);
+    const result = await districtService.update(request.params.id, {
+      ...req.body,
+      updatedBy: req.userAccess._id,
+    });
     return apiHandler.sendSuccessWithData(res, 'District updated', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
