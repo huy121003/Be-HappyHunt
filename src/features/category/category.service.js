@@ -1,6 +1,6 @@
-const parseFilterQuery = require('../../helpers/parseFilterQuery');
 const { Category } = require('../../models');
 const { uploadSingle } = require('../file/file.service');
+const exportFilter = require('./category.filter');
 require('dotenv').config();
 const create = async (category) => {
   const iconUrl = category.icon ? await uploadSingle(category.icon) : null;
@@ -18,16 +18,11 @@ const create = async (category) => {
 };
 
 const getAllPagination = async (data) => {
-  const {
-    page = process.env.PAGENUMBER_DEFAULT,
-    size = process.env.PAGESIZE_DEFAULT,
-    sort = process.env.SORT_DEFAULT,
-    ...filter
-  } = data;
+  const { page, size, sort, ...filter } = exportFilter(data);
 
   const [totalDocuments, result] = await Promise.all([
-    Category.countDocuments(parseFilterQuery(filter)),
-    Category.find(parseFilterQuery(filter))
+    Category.countDocuments(filter),
+    Category.find(filter)
       .select('name _id parent')
       .sort(sort)
       .limit(size)
@@ -48,7 +43,8 @@ const getAllPagination = async (data) => {
 };
 
 const getAll = async (data) => {
-  const result = await Category.find(parseFilterQuery(data))
+  const { page, size, sort, ...filter } = exportFilter(data);
+  const result = await Category.find(filter)
     .select('name _id parent')
     .populate('parent', 'name _id')
     .exec();
@@ -89,19 +85,14 @@ const remove = async (id) => {
   return result;
 };
 const getAllParent = async (data) => {
-  const {
-    page = process.env.PAGENUMBER_DEFAULT,
-    size = process.env.PAGESIZE_DEFAULT,
-    sort = process.env.SORT_DEFAULT,
-    ...filter
-  } = data;
+  const { page, size, sort, ...filter } = exportFilter(data);
   const [totalDocuments, result] = await Promise.all([
     Category.countDocuments({
-      ...parseFilterQuery(filter),
+      ...filter,
       parent: null,
     }),
     Category.find({
-      ...parseFilterQuery(filter),
+      ...filter,
       parent: null,
     })
       .select('name _id parent')

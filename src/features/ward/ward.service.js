@@ -1,16 +1,12 @@
-const parseFilterQuery = require('../../helpers/parseFilterQuery');
+
 const Ward = require('../../models/ward');
+const exportFilter = require('./ward.filter');
 require('dotenv').config();
 const getAll = async (data) => {
-  const {
-    page = process.env.PAGENUMBER_DEFAULT,
-    size = process.env.PAGESIZE_DEFAULT,
-    sort = process.env.SORT_DEFAULT,
-    ...filter
-  } = data;
+  const { page, size, sort, ...filter } = exportFilter(data);
   const [totalDocuments, result] = await Promise.all([
-    Ward.countDocuments(parseFilterQuery(filter)),
-    Ward.find({ ...parseFilterQuery(filter) })
+    Ward.countDocuments(filter),
+    Ward.find(filter)
       .select('name _id codeName shortCodeName')
       .sort(sort)
       .limit(size)

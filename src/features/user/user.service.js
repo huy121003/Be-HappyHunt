@@ -1,29 +1,12 @@
 require('dotenv').config();
 const { Account } = require('@models');
-const parseFilterQuery = require('../../helpers/parseFilterQuery');
+const exportFilter = require('./user.filter');
 const getAll = async (data) => {
-  const {
-    page = process.env.PAGENUMBER_DEFAULT,
-    size = process.env.PAGESIZE_DEFAULT,
-    sort = process.env.SORT_DEFAULT,
-    ...filter
-  } = data;
+  const { page, size, sort, ...filter } = exportFilter(data);
+  console.log('filter', filter);
   const [totalDocuments, result] = await Promise.all([
-    Account.countDocuments({
-      ...parseFilterQuery(filter),
-      ...(filter.phoneNumber
-        ? { phoneNumber: { $regex: filter.phoneNumber, $options: 'i' } }
-        : {}),
-      $or: [{ role: null }, { role: { $exists: false } }],
-    }),
-    Account.find({
-      ...parseFilterQuery(filter),
-      ...(filter.phoneNumber
-        ? { phoneNumber: { $regex: filter.phoneNumber, $options: 'i' } }
-        : {}),
-
-      $or: [{ role: null }, { role: { $exists: false } }],
-    })
+    Account.countDocuments(filter),
+    Account.find(filter)
       .select('-password -__v -updatedAt -deleted')
       .populate(
         'address.provinceId address.districtId address.wardId',
@@ -65,7 +48,7 @@ const remove = async (id) => {
 
 const banned = async (id, data) => {
   const result = await Account.findByIdAndUpdate(id, data).exec();
-  if (!result) throw new Error('Ban account failed');
+  if (!result) throw new Error('Update status account failed');
   return result;
 };
 

@@ -10,7 +10,7 @@ const accountSchema = new Schema(
     username: { type: String, unique: true, trim: true },
     phoneNumber: { type: String, required: true, unique: true, trim: true },
     password: { type: String, required: true },
-    isBanned: { type: Boolean, default: false },
+    isBanned: { type: Boolean, default: true },
     avatar: { type: String, default: '' },
     isVip: { type: Boolean, default: false },
     address: {

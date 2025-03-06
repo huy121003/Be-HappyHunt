@@ -2,23 +2,14 @@ require('dotenv').config();
 const bcrypt = require('bcrypt');
 const { Account } = require('@models');
 const { uploadSingle } = require('../file/file.service');
-const parseFilterQuery = require('../../helpers/parseFilterQuery');
+
+const exportFilter = require('./admin.filter');
 const getAll = async (data) => {
-  const {
-    page = process.env.PAGENUMBER_DEFAULT,
-    size = process.env.PAGESIZE_DEFAULT,
-    sort = process.env.SORT_DEFAULT,
-    ...filter
-  } = data;
-  const roleFilter = filter.role
-    ? { role: filter.role }
-    : { role: { $ne: null } };
+  const { page, size, sort, ...filter } = exportFilter(data);
+  console.log('filter', filter);
   const [totalDocuments, result] = await Promise.all([
-    Account.countDocuments({
-      ...parseFilterQuery(filter),
-      ...roleFilter,
-    }),
-    Account.find({ ...parseFilterQuery(filter), ...roleFilter })
+    Account.countDocuments(filter),
+    Account.find(filter)
       .select('-password -__v  -updatedAt -deleted')
       .populate('role createdBy', 'name _id')
       .sort(sort)
@@ -87,7 +78,7 @@ const remove = async (id) => {
 };
 const banned = async (id, data) => {
   const result = await Account.findByIdAndUpdate(id, data).exec();
-  if (!result) throw new Error('Ban account failed');
+  if (!result) throw new Error('Update status account failed');
   return result;
 };
 

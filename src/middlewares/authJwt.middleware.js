@@ -34,7 +34,7 @@ const verifyToken = async (token) => {
     .lean();
   if (!account) throw new Error('Account not found');
 
-  if (account.isBanned) throw new Error('Account is banned');
+  if (!account.isBanned) throw new Error('Account is banned');
   const accountPermissions = account?.role?.permissions || [];
   const decodedPermissions = decoded?.role?.permissions || [];
 

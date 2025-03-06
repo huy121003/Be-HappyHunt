@@ -27,5 +27,12 @@ app.use(
 
 // Định tuyến API
 app.use('/api/v1/', appRouter);
+app.use((err, req, res, next) => {
+  if (err.name === 'ValidationError') {
+    console.log('err', err.details.query);
+    return res.status(400).json({ error: err.message });
+  }
+  return res.status(500).json({ error: 'Internal Server Error' });
+});
 
 module.exports = app;

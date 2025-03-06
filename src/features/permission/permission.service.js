@@ -1,24 +1,20 @@
-const parseFilterQuery = require('../../helpers/parseFilterQuery');
 const { Permission } = require('../../models');
+const exportFilter = require('./permission.filter');
 
 const getAll = async () => {
-  const result = Permission.find()
+  const { page, size, sort, ...filter } = exportFilter(data);
+  const result = Permission.find(filter)
     .select('-__v -createdAt -updatedAt -deleted')
     .exec();
   if (!result) throw new Error('Fetch permissions failed');
   return result;
 };
 const getAllPagination = async (data) => {
-  const {
-    page = process.env.PAGENUMBER_DEFAULT,
-    size = process.env.PAGESIZE_DEFAULT,
-    sort = process.env.SORT_DEFAULT,
-    ...filter
-  } = data;
+  const { page, size, sort, ...filter } = exportFilter(data);
 
   const [totalDocuments, result] = await Promise.all([
-    Permission.countDocuments(parseFilterQuery(filter)),
-    Permission.find(parseFilterQuery(filter))
+    Permission.countDocuments(filter),
+    Permission.find(filter)
       .select('name _id description codeName')
       .sort(sort)
       .limit(size)

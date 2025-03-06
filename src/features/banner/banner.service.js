@@ -1,6 +1,6 @@
-const parseFilterQuery = require('../../helpers/parseFilterQuery');
 const { Banner } = require('../../models');
 const { uploadSingle } = require('../file/file.service');
+const exportFilter = require('./banner.filter');
 require('dotenv').config();
 const create = async (banner) => {
   const imageUrl = banner.image ? await uploadSingle(banner.image) : null;
@@ -8,21 +8,14 @@ const create = async (banner) => {
     ...banner,
     image: imageUrl,
   });
-
   if (!result) throw new Error('Banner creation failed');
   return result;
 };
 const getAllPagination = async (data) => {
-  const {
-    page = process.env.PAGENUMBER_DEFAULT,
-    size = process.env.PAGESIZE_DEFAULT,
-    sort = process.env.SORT_DEFAULT,
-    ...filter
-  } = data;
-
+  const { page, size, sort, ...filter } = exportFilter(data);
   const [totalDocuments, result] = await Promise.all([
-    Banner.countDocuments(parseFilterQuery(filter)),
-    Banner.find(parseFilterQuery(filter))
+    Banner.countDocuments(filter),
+    Banner.find(filter)
       .select('name _id image isShow link ')
       .populate('createdBy', 'name _id')
       .sort(sort)
@@ -30,9 +23,7 @@ const getAllPagination = async (data) => {
       .skip(page * size)
       .exec(),
   ]);
-
   if (!result || !totalDocuments) throw new Error('Fetch  banner failed');
-
   return {
     documentList: result,
     totalDocuments,
@@ -41,7 +32,9 @@ const getAllPagination = async (data) => {
   };
 };
 const getAll = async (data) => {
-  const result = await Banner.find(parseFilterQuery(data))
+  const { page, size, sort, ...filter } = exportFilter(data);
+  const result = await Banner.find(filter)
+    .sort(sort)
     .select('name _id image isShow link')
     .exec();
   if (!result) throw new Error('Fetch banners failed');
@@ -52,9 +45,7 @@ const getById = async (id) => {
   const result = await Banner.findById(id)
     .select('name image link description')
     .exec();
-
   if (!result) throw new Error('Banner not found');
-
   return result;
 };
 const update = async (id, banner) => {

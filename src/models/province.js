@@ -3,7 +3,7 @@ const mongoose_delete = require('mongoose-delete');
 const { Schema, model } = mongoose;
 const applyAutoIncrement = require('../configs/autoIncrement');
 
-const provinceSchema = new mongoose.Schema({
+const provinceSchema = new Schema({
   _id: Number,
   codeName: { type: String, required: true, trim: true },
   name: { type: String, required: true, trim: true },
