@@ -93,14 +93,14 @@ const autoCreateRole = async (permissions) => {
   return true;
 };
 const autoCreateAdmin = async (roleId) => {
-  const bycryptedPassword = await bcrypt.hash(process.env.PASSWORD_ADMIN, 10);
+  const bycryptedPassword = await bcrypt.hash('123@123a', 10);
 
   await Account.create({
-    name: process.env.FULLNAME_ADMIN,
+    name: 'Super Admin',
     password: bycryptedPassword,
-    phoneNumber: process.env.PHONE_ADMIN,
+    phoneNumber: '0398601186',
     username: 'super.admin',
-    isBanned: false,
+    isBanned: true,
     address: {
       provinceId: null,
       districtId: null,
