@@ -1,7 +1,7 @@
 const { Permission } = require('../../models');
 const exportFilter = require('./permission.filter');
 
-const getAll = async () => {
+const getAll = async (data) => {
   const { page, size, sort, ...filter } = exportFilter(data);
   const result = Permission.find(filter)
     .select('-__v -createdAt -updatedAt -deleted')
