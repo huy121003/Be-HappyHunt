@@ -1,5 +1,6 @@
 require('dotenv').config();
-const { Account } = require('@models');
+
+const { Account } = require('../../models');
 const exportFilter = require('./user.filter');
 const getAll = async (data) => {
   const { page, size, sort, ...filter } = exportFilter(data);

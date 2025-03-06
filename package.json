@@ -52,15 +52,7 @@
     "uuid": "^11.0.5",
     "uuidv4": "^6.2.13"
   },
-  "_moduleAliases": {
-    "@models": "./src/models",
-    "@features": "./src/features",
-    "@middlewares": "./src/middlewares",
-    "@i18n": "./src/i18n",
-    "@helpers": "./src/helpers",
-    "@configs": "./src/configs"
-  },
   "engines": {
-    "node": "18.x"
+    "node": "20.14.0"
   }
 }
