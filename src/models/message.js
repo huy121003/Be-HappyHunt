@@ -1,25 +1,26 @@
-const mongoose = require("mongoose");
-const mongoose_delete = require("mongoose-delete");
+const mongoose = require('mongoose');
+const mongoose_delete = require('mongoose-delete');
 const { Schema, model } = mongoose;
+const applyAutoIncrement = require('../configs/autoIncrement');
 const messageSchema = new Schema(
   {
-    seller: { type: Schema.Types.ObjectId, ref: "Account" },
-    buyer: { type: Schema.Types.ObjectId, ref: "Account" },
-    product: { type: Schema.Types.ObjectId, ref: "Product" },
-    url: String,
-    content: [
-      {
-        sender: { type: Schema.Types.ObjectId, ref: "Account" },
-        message: String,
-        images: String,
-        read: { type: Boolean, default: false },
-        timeSend: Date,
-        timeRead: Date,
-      },
-    ],
+    _id: Number,
+    seller: { type: Number, ref: 'account', required: true },
+    buyer: { type: Number, ref: 'account', required: true },
+    post: { type: Number, ref: 'post', required: true },
+    url: { type: String, required: true },
+    sender: { type: Number, ref: 'account', required: true },
+    message: { type: String, required: true, trim: true },
+    images: { type: String, default: '' },
+    isRead: { type: Boolean, default: false },
+    timeSend: { type: Date, default: Date.now },
+    timeRead: { type: Date, default: null },
+    createdBy: { type: Number, ref: 'account', default: null },
+    updatedBy: { type: Number, ref: 'account', default: null },
   },
   { timestamps: true }
 );
-messageSchema.plugin(mongoose_delete, { overrideMethods: "all" });
-const Message = model("message", messageSchema);
+applyAutoIncrement(mongoose, messageSchema, 'message');
+messageSchema.plugin(mongoose_delete, { overrideMethods: 'all' });
+const Message = model('message', messageSchema);
 module.exports = Message;

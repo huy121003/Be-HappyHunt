@@ -1,0 +1,10 @@
+const express = require('express');
+const provinceController = require('./province.controller');
+const router = express.Router();
+const { authJwt } = require('../../middlewares');
+router.post('/', authJwt.accessToken, provinceController.create);
+router.get('/', authJwt.accessToken, provinceController.getAll);
+router.get('/:id', authJwt.accessToken, provinceController.getById);
+router.patch('/:id', authJwt.accessToken, provinceController.update);
+router.delete('/:id', authJwt.accessToken, provinceController.remove);
+module.exports = router;

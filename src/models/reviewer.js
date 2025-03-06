@@ -1,30 +1,21 @@
-const mongoose = require("mongoose");
-const mongoose_delete = require("mongoose-delete");
+const mongoose = require('mongoose');
+const mongoose_delete = require('mongoose-delete');
 const { Schema, model } = mongoose;
 const reviewerSchema = new Schema(
   {
-    reviewer: {
-      type: Schema.Types.ObjectId,
-      ref: "Account",
-    },
-    target: {
-      type: Schema.Types.ObjectId,
-      ref: "Account",
-    },
-    product: {
-      type: Schema.Types.ObjectId,
-      ref: "Product",
-    },
-    star: {
-      type: Number,
-      min: 1,
-      max: 5,
-    },
-    content: String,
-    isSeller: Boolean,
+    _id: Number,
+    reviewer: { type: Number, ref: 'account', required: true },
+    target: { type: Number, ref: 'account', required: true },
+    post: { type: Number, ref: 'post', required: true },
+    star: { type: Number, min: 1, max: 5, required: true },
+    content: { type: String, default: '' },
+    isSeller: { type: Boolean, default: false, required: true },
+    createdBy: { type: Number, ref: 'account', default: null },
+    updatedBy: { type: Number, ref: 'account', default: null },
   },
   { timestamps: true }
 );
-reviewerSchema.plugin(mongoose_delete, { overrideMethods: "all" });
-const Reviewer = model("reviewer", reviewerSchema);
+const applyAutoIncrement = require('../configs/autoIncrement');
+reviewerSchema.plugin(mongoose_delete, { overrideMethods: 'all' });
+const Reviewer = model('reviewer', reviewerSchema);
 module.exports = Reviewer;

@@ -1,28 +1,25 @@
-require("dotenv").config();
-const express = require("express");
-const app = express();
-const port = process.env.POST;
+const app = require('./app');
+const { mongoConfig } = require('./configs');
+require('dotenv').config();
+const port = process.env.POST_SERVER;
 const hostname = process.env.HOST_NAME;
-const connection = require("./configs/database");
-const filleUpload = require("express-fileupload");
-const Account = require("./models/account");
-
-//config file upload
-app.use(filleUpload());
-//config request body
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-
-//khai bao cac routes
-
-//connect to database
+const appController = require('./features/app/app.controller');
 (async () => {
   try {
-    await connection();
+    await mongoConfig(); // Kết nối MongoDB
+
     app.listen(port, hostname, () => {
-      console.log(`Backend app listening on port http://${hostname}:${port}`);
+      console.log(`Server is running at http://${hostname}:${port}`);
     });
+    await Promise.all([
+      appController.autoCreatePermission(),
+      appController.autoCreateRole(),
+      appController.autoCreateAdmin(),
+      appController.createAutoAddress(),
+      appController.autoCreatePolicy(),
+    ]);
   } catch (error) {
-    console.log(error);
+    console.error(' Error during startup:', error);
+    process.exit(1); // Thoát chương trình nếu có lỗi
   }
 })();

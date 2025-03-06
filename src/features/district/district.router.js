@@ -1,0 +1,10 @@
+const express = require('express');
+const districtController = require('./district.controller');
+const router = express.Router();
+const { authJwt } = require('../../middlewares');
+router.post('/', authJwt.accessToken, districtController.create);
+router.get('/', authJwt.accessToken, districtController.getAll);
+router.get('/:id', authJwt.accessToken, districtController.getById);
+router.patch('/:id', authJwt.accessToken, districtController.update);
+router.delete('/:id', authJwt.accessToken, districtController.remove);
+module.exports = router;
