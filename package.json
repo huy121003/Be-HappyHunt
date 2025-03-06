@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon ./src/server.js",
     "start": "node ./dist/server.js",
-    "build": "babel ./src --out-dir dist --copy-files",
+    "build": "npx babel ./src --out-dir dist --copy-files",
     "lint": "eslint . --ext .js",
     "format": "prettier --write .",
     "lint:fix": "eslint . --ext .js --fix"
