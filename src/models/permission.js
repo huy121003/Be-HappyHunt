@@ -5,34 +5,12 @@ const applyAutoIncrement = require('../configs/autoIncrement');
 const permissionSchema = new Schema(
   {
     _id: Number,
-    name: {
-      type: String,
-      required: [true, 'Name is required'],
-      trim: [true, 'Name is required'],
-      unique: [true, 'Permission name already exists'],
-    },
-    codeName: {
-      type: String,
-      required: [true, 'Code name is required'],
-      trim: [true, 'Code name is required'],
-      unique: [true, 'Code name already exists'],
-    },
-    isView: {
-      type: Boolean,
-      default: false,
-    },
-    isCreate: {
-      type: Boolean,
-      default: false,
-    },
-    isUpdate: {
-      type: Boolean,
-      default: false,
-    },
-    isDelete: {
-      type: Boolean,
-      default: false,
-    },
+    name: { type: String, required: true, trim: true, unique: true },
+    codeName: { type: String, required: true, trim: true, unique: true },
+    isView: { type: Boolean, default: false },
+    isCreate: { type: Boolean, default: false },
+    isUpdate: { type: Boolean, default: false },
+    isDelete: { type: Boolean, default: false },
     description: { type: String, default: '' },
     createdBy: { type: Number, ref: 'account', default: null },
     updatedBy: { type: Number, ref: 'account', default: null },

@@ -10,11 +10,7 @@ const create = async (req, res) => {
       createdBy: req.userAccess._id,
       ...(req.files && { icon: req.files.icon }),
     });
-    return apiHandler.sendSuccessWithData(
-      res,
-      'Category created successfully',
-      result
-    );
+    return apiHandler.sendCreated(res, 'Category created successfully', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }
@@ -50,11 +46,7 @@ const update = async (req, res) => {
       updatedBy: req.userAccess._id,
       ...(req.files && { icon: req.files.icon }),
     });
-    return apiHandler.sendSuccessWithData(
-      res,
-      'Category created successfully',
-      result
-    );
+    return apiHandler.sendCreated(res, 'Category created successfully', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }
@@ -62,7 +54,7 @@ const update = async (req, res) => {
 const remove = async (req, res) => {
   try {
     await categoryService.remove(req.params.id);
-    return apiHandler.sendSuccessMessage(res, 'Category deleted successfully');
+    return apiHandler.sendCreated(res, 'Category deleted successfully');
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }

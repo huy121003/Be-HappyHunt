@@ -31,11 +31,7 @@ const updateSettingPost = async (req, res) => {
       ...req.body,
       updatedBy: req.userAccess._id,
     });
-    return apiHandler.sendSuccessWithData(
-      res,
-      'Policy updated successfully',
-      policy
-    );
+    return apiHandler.sendCreated(res, 'Policy updated successfully', policy);
   } catch (err) {
     return apiHandler.sendNotFound(res, err.message);
   }
@@ -46,11 +42,7 @@ const updateVipActivation = async (req, res) => {
       ...req.body,
       updatedBy: req.userAccess._id,
     });
-    return apiHandler.sendSuccessWithData(
-      res,
-      'Policy updated successfully',
-      policy
-    );
+    return apiHandler.sendCreated(res, 'Policy updated successfully', policy);
   } catch (err) {
     return apiHandler.sendNotFound(res, err.message);
   }
@@ -61,11 +53,7 @@ const updateDefaultSettingPost = async (req, res) => {
     const result = await policyService.updateDefaultSettingPost(
       req.userAccess._id
     );
-    return apiHandler.sendSuccessWithData(
-      res,
-      'Policy updated successfully',
-      result
-    );
+    return apiHandler.sendCreated(res, 'Policy updated successfully', result);
   } catch (err) {
     return apiHandler.sendNotFound(res, err.message);
   }
@@ -75,11 +63,7 @@ const updateDefaultVipActivation = async (req, res) => {
     const result = await policyService.updateDefaultVipActivation(
       req.userAccess._id
     );
-    return apiHandler.sendSuccessWithData(
-      res,
-      'Policy updated successfully',
-      result
-    );
+    return apiHandler.sendCreated(res, 'Policy updated successfully', result);
   } catch (err) {
     return apiHandler.sendNotFound(res, err.message);
   }

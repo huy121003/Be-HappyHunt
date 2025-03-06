@@ -5,28 +5,12 @@ const applyAutoIncrement = require('../configs/autoIncrement');
 const messageSchema = new Schema(
   {
     _id: Number,
-    seller: {
-      type: Number,
-      ref: 'account',
-      required: [true, 'Seller is required'],
-    },
-    buyer: {
-      type: Number,
-      ref: 'account',
-      required: [true, 'Buyer is required'],
-    },
-    post: { type: Number, ref: 'post', required: [true, 'Post is required'] },
-    url: { type: String, required: [true, 'URL is required'] },
-    sender: {
-      type: Number,
-      ref: 'account',
-      required: [true, 'Sender is required'],
-    },
-    message: {
-      type: String,
-      required: [true, 'Message is required'],
-      trim: [true, 'Message should not have leading or trailing whitespaces'],
-    },
+    seller: { type: Number, ref: 'account', required: true },
+    buyer: { type: Number, ref: 'account', required: true },
+    post: { type: Number, ref: 'post', required: true },
+    url: { type: String, required: true },
+    sender: { type: Number, ref: 'account', required: true },
+    message: { type: String, required: true, trim: true },
     images: { type: String, default: '' },
     isRead: { type: Boolean, default: false },
     timeSend: { type: Date, default: Date.now },

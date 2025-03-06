@@ -71,6 +71,7 @@ const register = async (data) => {
     name: fullName,
     password: bycryptPassword,
     phoneNumber: data.phoneNumber,
+    username: data.username,
   });
   if (!account) throw new Error('Register failed');
   return account;
@@ -88,7 +89,7 @@ const forgotPassword = async (data) => {
   });
   if (!result) throw new Error('OTP sent failed');
   const changePass = await Account.findOneAndUpdate(
-    { phoneNumber },
+    { phoneNumber: data.phoneNumber },
     { password: hashPass }
   );
   if (!changePass) throw new Error('OTP sent failed');
@@ -107,7 +108,13 @@ const getAccountInfo = async (data) => {
 };
 
 const getNewAccessToken = async (data) => {
-  const account = await Account.findOne({ _id: data._id });
+  const account = await Account.findOne({ _id: data._id })
+    .select('-__v -createdAt -updatedAt -password -deleted')
+    .populate({
+      path: 'role address.provinceId address.districtId address.wardId',
+      select: 'name _id permissions',
+    })
+    .lean();
   if (!account) throw new Error('User not found');
   const payload = {
     _id: account._id,

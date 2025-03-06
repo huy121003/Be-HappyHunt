@@ -5,23 +5,11 @@ const authValidator = require('./auth.validator');
 const { authJwt } = require('../../middlewares');
 
 router.post('/login', authValidator.login, authController.login);
-router.post('/register', authValidator.register, authController.register);
-router.post(
-  '/register-otp',
-  authValidator.sendOtpRegister,
-  authController.sendOtpRegister
-);
+router.post('/register', authController.register);
+router.post('/register-otp', authController.sendOtpRegister);
 router.post('/logout', authJwt.accessToken, authController.logout);
-router.post(
-  '/forgot-password',
-  authValidator.forgotPassword,
-  authController.forgotPassword
-);
-router.post(
-  '/forgot-password-otp',
-  authValidator.sendOtpForgotPassword,
-  authController.sendOtpForgotPassword
-);
+router.post('/forgot-password', authController.forgotPassword);
+router.post('/forgot-password-otp', authController.sendOtpForgotPassword);
 
 router.get(
   '/get-account-info',

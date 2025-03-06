@@ -10,9 +10,11 @@ const wardRouter = require('../ward/ward.router');
 const roleRouter = require('../role/role.router');
 const bannerRouter = require('../banner/banner.router');
 const adminRouter = require('../admin/admin.router');
+const userRouter = require('../user/user.router');
+
 const express = require('express');
 const app = express();
-//app.use('/account/', accountRouter);
+
 app.use('/auth/', authRouter);
 app.use('/category/', categoryRouter);
 app.use('/otp/', otpRouter);
@@ -25,4 +27,6 @@ app.use('/ward/', wardRouter);
 app.use('/role/', roleRouter);
 app.use('/banner/', bannerRouter);
 app.use('/admin/', adminRouter);
+app.use('/user/', userRouter);
+
 module.exports = app;

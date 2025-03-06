@@ -24,11 +24,7 @@ const create = async (req, res) => {
       ...req.body,
       createdBy: req.userAccess._id,
     });
-    return apiHandler.sendSuccessWithData(
-      res,
-      'Role created successfully',
-      result
-    );
+    return apiHandler.sendCreated(res, 'Role created successfully', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }
@@ -39,11 +35,7 @@ const update = async (req, res) => {
       ...req.body,
       updatedBy: req.userAccess._id,
     });
-    return apiHandler.sendSuccessWithData(
-      res,
-      'Role updated successfully',
-      result
-    );
+    return apiHandler.sendCreated(res, 'Role updated successfully', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }
@@ -51,11 +43,7 @@ const update = async (req, res) => {
 const remove = async (req, res) => {
   try {
     const result = await roleService.remove(req.params.id);
-    return apiHandler.sendSuccessWithData(
-      res,
-      'Role deleted successfully',
-      result
-    );
+    return apiHandler.sendCreated(res, 'Role deleted successfully', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }

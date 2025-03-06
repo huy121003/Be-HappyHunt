@@ -5,40 +5,19 @@ const applyAutoIncrement = require('../configs/autoIncrement');
 const categorySchema = new Schema(
   {
     _id: Number,
-    name: {
-      type: String,
-      required: [true, 'Name is required'],
-      trim: [true, 'Name is required'],
-      unique: [true, 'Category name already exists'],
-    },
+    name: { type: String, required: true, trim: true, unique: true },
     parent: { type: Number, ref: 'category', default: null },
     attributes: [
       {
-        name: {
-          type: String,
-          required: [true, 'Attribute name is required'],
-          trim: [true, 'Attribute name is required'],
-        },
-
-        values: [
-          {
-            type: String,
-            required: [true, 'Attribute value is required'],
-            trim: [true, 'Attribute value is required'],
-          },
-        ],
-
+        name: { type: String, required: true, trim: true },
+        values: [{ type: String, required: true, trim: true }],
         _id: false,
       },
     ],
-    keywords: [{ type: String, required: [true, 'Keywords is required'] }],
+    keywords: [{ type: String, required: true }],
     description: { type: String, default: '' },
-    url: {
-      type: String,
-      required: [true, 'URL is required'],
-      unique: [true, 'Category URL already exists'],
-    },
-    icon: { type: String, required: [true, 'Icon is required'], default: '' },
+    url: { type: String, required: true, unique: true },
+    icon: { type: String, required: true, default: '' },
     createdBy: { type: Number, ref: 'account', default: null },
     updatedBy: { type: Number, ref: 'account', default: null },
   },

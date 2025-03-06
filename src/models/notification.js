@@ -5,21 +5,9 @@ const applyAutoIncrement = require('../configs/autoIncrement');
 const notificationSchema = new Schema(
   {
     _id: Number,
-    target: {
-      type: Number,
-      ref: 'account',
-      required: [true, 'Target is required'],
-    },
-    title: {
-      type: String,
-      required: [true, 'Title is required'],
-      trim: [true, 'Title is required'],
-    },
-    content: {
-      type: String,
-      required: [true, 'Content is required'],
-      trim: [true, 'Content is required'],
-    },
+    target: { type: Number, ref: 'account', required: true },
+    title: { type: String, required: true, trim: true },
+    content: { type: String, required: true, trim: true },
     type: {
       type: String,
       enum: [
@@ -34,11 +22,7 @@ const notificationSchema = new Schema(
       ],
       default: 'newPost',
     },
-    url: {
-      type: String,
-      request: [true, 'URL is required'],
-      trim: [true, 'URL is required'],
-    },
+    url: { type: String, request: true, trim: true },
     read: { type: Boolean, default: false },
     createdBy: { type: Number, ref: 'account', default: null },
     updatedBy: { type: Number, ref: 'account', default: null },

@@ -1,22 +1,20 @@
 // Định nghĩa mã trạng thái HTTP
 const HTTP_STATUS = {
   OK: 200,
+  CREATED: 201,
+  NO_CONTENT: 204,
   BAD_REQUEST: 400,
   UNAUTHORIZED: 401,
+  FORBIDDEN: 403,
   NOT_FOUND: 404,
-  NO_PERMISSION: 403,
+  CONFLICT: 409,
+  UNPROCESSABLE_ENTITY: 422,
   INTERNAL_SERVER_ERROR: 500,
+  SERVICE_UNAVAILABLE: 503,
 };
 
 const apiHandler = {
-  /**
-   * Gửi phản hồi thành công chỉ chứa thông điệp
-   * Thường được sử dụng khi một thao tác thành công và không cần trả thêm dữ liệu.
-   *
-   * @param {Object} res - Đối tượng phản hồi từ Express
-   * @param {string} message - Thông điệp phản hồi
-   * @returns {Object} JSON phản hồi với trạng thái thành công
-   */
+  // Phản hồi thành công không có dữ liệu
   sendSuccessMessage: function (res, message) {
     const response = {
       status: 1,
@@ -26,15 +24,7 @@ const apiHandler = {
     return res.status(HTTP_STATUS.OK).json(response);
   },
 
-  /**
-   * Gửi phản hồi thành công với dữ liệu kèm theo
-   * Sử dụng khi cần trả về dữ liệu từ API, ví dụ danh sách, chi tiết đối tượng...
-   *
-   * @param {Object} res - Đối tượng phản hồi từ Express
-   * @param {string} message - Thông điệp phản hồi
-   * @param {Object} data - Dữ liệu trả về
-   * @returns {Object} JSON phản hồi với trạng thái thành công và dữ liệu
-   */
+  // Phản hồi thành công kèm dữ liệu
   sendSuccessWithData: function (res, message, data) {
     const response = {
       status: 1,
@@ -45,49 +35,23 @@ const apiHandler = {
     return res.status(HTTP_STATUS.OK).json(response);
   },
 
-  /**
-   * Gửi phản hồi lỗi tổng quát
-   * Sử dụng khi có lỗi xảy ra ở phía máy chủ, như lỗi không xác định hoặc ngoại lệ.
-   *
-   * @param {Object} res - Đối tượng phản hồi từ Express
-   * @param {string} message - Thông điệp mô tả lỗi
-   * @returns {Object} JSON phản hồi với trạng thái lỗi
-   */
-  sendErrorMessage: function (res, message) {
+  // Phản hồi thành công khi tạo mới dữ liệu
+  sendCreated: function (res, message, data) {
     const response = {
-      status: 0,
-      statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR,
+      status: 1,
+      statusCode: HTTP_STATUS.CREATED,
       message: message,
+      data: data,
     };
-    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json(response);
+    return res.status(HTTP_STATUS.CREATED).json(response);
   },
 
-  /**
-   * Gửi phản hồi không tìm thấy
-   * Sử dụng khi không tìm thấy tài nguyên được yêu cầu, ví dụ đường dẫn hoặc dữ liệu không tồn tại.
-   *
-   * @param {Object} res - Đối tượng phản hồi từ Express
-   * @param {string} message - Thông điệp mô tả lỗi
-   * @returns {Object} JSON phản hồi với trạng thái lỗi không tìm thấy
-   */
-  sendNotFound: function (res, message) {
-    const response = {
-      status: 0,
-      statusCode: HTTP_STATUS.NOT_FOUND,
-      message: message,
-    };
-    return res.status(HTTP_STATUS.NOT_FOUND).json(response);
+  // Phản hồi thành công nhưng không có nội dung trả về
+  sendNoContent: function (res) {
+    return res.status(HTTP_STATUS.NO_CONTENT).send();
   },
 
-  /**
-   * Gửi phản hồi lỗi do dữ liệu không hợp lệ
-   * Sử dụng khi dữ liệu đầu vào không hợp lệ, ví dụ thiếu thông tin bắt buộc hoặc dữ liệu sai định dạng.
-   *
-   * @param {Object} res - Đối tượng phản hồi từ Express
-   * @param {string} message - Thông điệp mô tả lỗi
-   * @param {Object} data - Dữ liệu lỗi chi tiết (nếu có)
-   * @returns {Object} JSON phản hồi với trạng thái lỗi dữ liệu không hợp lệ
-   */
+  // Lỗi 400 - Request không hợp lệ
   sendValidationError: function (res, message, data) {
     const response = {
       status: 0,
@@ -98,14 +62,7 @@ const apiHandler = {
     return res.status(HTTP_STATUS.BAD_REQUEST).json(response);
   },
 
-  /**
-   * Gửi phản hồi lỗi không được phép
-   * Sử dụng khi người dùng không có quyền thực hiện thao tác, ví dụ chưa đăng nhập hoặc không đủ quyền.
-   *
-   * @param {Object} res - Đối tượng phản hồi từ Express
-   * @param {string} message - Thông điệp mô tả lỗi
-   * @returns {Object} JSON phản hồi với trạng thái lỗi không được phép
-   */
+  // Lỗi 401 - Không có quyền truy cập
   sendUnauthorizedError: function (res, message) {
     const response = {
       status: 0,
@@ -114,7 +71,95 @@ const apiHandler = {
     };
     return res.status(HTTP_STATUS.UNAUTHORIZED).json(response);
   },
-};
 
+  // Lỗi 403 - Không đủ quyền
+  sendForbidden: function (res, message) {
+    const response = {
+      status: 0,
+      statusCode: HTTP_STATUS.FORBIDDEN,
+      message: message,
+    };
+    return res.status(HTTP_STATUS.FORBIDDEN).json(response);
+  },
+
+  // Lỗi 404 - Không tìm thấy tài nguyên
+  sendNotFound: function (res, message) {
+    const response = {
+      status: 0,
+      statusCode: HTTP_STATUS.NOT_FOUND,
+      message: message,
+    };
+    return res.status(HTTP_STATUS.NOT_FOUND).json(response);
+  },
+
+  // Lỗi 409 - Xung đột dữ liệu
+  sendConflict: function (res, message) {
+    const response = {
+      status: 0,
+      statusCode: HTTP_STATUS.CONFLICT,
+      message: message,
+    };
+    return res.status(HTTP_STATUS.CONFLICT).json(response);
+  },
+
+  // Lỗi 422 - Dữ liệu không hợp lệ
+  sendUnprocessableEntity: function (res, message, data) {
+    const response = {
+      status: 0,
+      statusCode: HTTP_STATUS.UNPROCESSABLE_ENTITY,
+      message: message,
+      data: data,
+    };
+    return res.status(HTTP_STATUS.UNPROCESSABLE_ENTITY).json(response);
+  },
+
+  // Lỗi 500 - Lỗi server
+  sendErrorMessage: function (res, message) {
+    const response = {
+      status: 0,
+      statusCode: HTTP_STATUS.INTERNAL_SERVER_ERROR,
+      message: message,
+    };
+    return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json(response);
+  },
+
+  // Lỗi 503 - Server quá tải hoặc bảo trì
+  sendServiceUnavailable: function (res, message) {
+    const response = {
+      status: 0,
+      statusCode: HTTP_STATUS.SERVICE_UNAVAILABLE,
+      message: message,
+    };
+    return res.status(HTTP_STATUS.SERVICE_UNAVAILABLE).json(response);
+  },
+};
+const sendResponse = (res, statusCode, message, data) => {
+  switch (statusCode) {
+    case HTTP_STATUS.OK:
+      return apiHandler.sendSuccessWithData(res, message, data);
+    case HTTP_STATUS.CREATED:
+      return apiHandler.sendCreated(res, message, data);
+    case HTTP_STATUS.NO_CONTENT:
+      return apiHandler.sendNoContent(res);
+    case HTTP_STATUS.BAD_REQUEST:
+      return apiHandler.sendValidationError(res, message, data);
+    case HTTP_STATUS.UNAUTHORIZED:
+      return apiHandler.sendUnauthorizedError(res, message);
+    case HTTP_STATUS.FORBIDDEN:
+      return apiHandler.sendForbidden(res, message);
+    case HTTP_STATUS.NOT_FOUND:
+      return apiHandler.sendNotFound(res, message);
+    case HTTP_STATUS.CONFLICT:
+      return apiHandler.sendConflict(res, message);
+    case HTTP_STATUS.UNPROCESSABLE_ENTITY:
+      return apiHandler.sendUnprocessableEntity(res, message, data);
+    case HTTP_STATUS.INTERNAL_SERVER_ERROR:
+      return apiHandler.sendErrorMessage(res, message);
+    case HTTP_STATUS.SERVICE_UNAVAILABLE:
+      return apiHandler.sendServiceUnavailable(res, message);
+    default:
+      return apiHandler.sendErrorMessage(res, 'Unknown error');
+  }
+};
 
 module.exports = apiHandler;

@@ -26,7 +26,7 @@ const verifyOtp = async (data) => {
   const otpDelete = await Otp.delete({
     phoneNumber: data.phoneNumber,
   });
-  if (!otpDelete) throw new Error('OTP is incorrect');
+
   return true;
 };
 module.exports = {

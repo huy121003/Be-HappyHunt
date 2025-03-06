@@ -25,11 +25,7 @@ const create = async (req, res) => {
       ...req.body,
       createdBy: req.userAccess._id,
     });
-    return apiHandler.sendSuccessWithData(
-      res,
-      'Province created successfully',
-      result
-    );
+    return apiHandler.sendCreated(res, 'Province created successfully', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }
@@ -42,11 +38,7 @@ const update = async (req, res) => {
       ...req.body,
       updatedBy: req.userAccess._id,
     });
-    return apiHandler.sendSuccessWithData(
-      res,
-      'Province updated successfully',
-      result
-    );
+    return apiHandler.sendCreated(res, 'Province updated successfully', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }
@@ -56,11 +48,7 @@ const remove = async (req, res) => {
 
   try {
     const result = await wardService.remove(id);
-    return apiHandler.sendSuccessWithData(
-      res,
-      'Province deleted successfully',
-      result
-    );
+    return apiHandler.sendCreated(res, 'Province deleted successfully', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }

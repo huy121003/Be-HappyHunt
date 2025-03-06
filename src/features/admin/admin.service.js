@@ -46,16 +46,25 @@ const getById = async (id) => {
   return result;
 };
 const create = async (data) => {
-  const avatarUrl = data.avatar ? await uploadSingle(data.avatar) : null;
+  let avatarUrl = null;
+  if (data.avatar) {
+    avatarUrl = (await uploadSingle(data.avatar)) || null;
+  }
   const hashPassword = await bcrypt.hash('123@123a', 10);
+
   const result = await Account.create({
     ...data,
     password: hashPassword,
     ...(avatarUrl && { avatar: avatarUrl }),
   });
-  if (!result) throw new Error('Create admin failed');
+
+  if (!result) {
+    throw new Error('Create admin failed');
+  }
+
   return result;
 };
+
 const update = async (id, data) => {
   const avatarUrl = data.avatar ? await uploadSingle(data.avatar) : null;
   const result = await Account.findByIdAndUpdate(
@@ -76,10 +85,8 @@ const remove = async (id) => {
   if (!result) throw new Error('Delete account failed');
   return result;
 };
-const banned = async (id, banned) => {
-  const result = await Account.findByIdAndUpdate(id, {
-    isBanned: banned,
-  }).exec();
+const banned = async (id, data) => {
+  const result = await Account.findByIdAndUpdate(id, data).exec();
   if (!result) throw new Error('Ban account failed');
   return result;
 };

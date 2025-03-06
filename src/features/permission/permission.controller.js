@@ -31,7 +31,7 @@ const create = async (req, res) => {
       ...req.body,
       createdBy: req.userAccess._id,
     });
-    return apiHandler.sendSuccessWithData(
+    return apiHandler.sendCreated(
       res,
       'Permission created successfully',
       result
@@ -46,7 +46,7 @@ const update = async (req, res) => {
       ...req.body,
       updatedBy: req.userAccess._id,
     });
-    return apiHandler.sendSuccessWithData(
+    return apiHandler.sendCreated(
       res,
       'Permission updated successfully',
       result
@@ -58,7 +58,7 @@ const update = async (req, res) => {
 const remove = async (req, res) => {
   try {
     const result = await permissionService.remove(req.params.id);
-    return apiHandler.sendSuccessWithData(
+    return apiHandler.sendCreated(
       res,
       'Permission deleted successfully',
       result

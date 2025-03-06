@@ -6,7 +6,7 @@ const otpService = require('../otp/otp.service');
 const login = async (req, res) => {
   try {
     const result = await authService.login(req.body, res);
-    return apiHandler.sendSuccessWithData(res, 'Login success', result);
+    return apiHandler.sendCreated(res, 'Login success', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }
@@ -15,11 +15,7 @@ const login = async (req, res) => {
 const register = async (req, res) => {
   try {
     const registerResult = await authService.register(req.body);
-    return apiHandler.sendSuccessWithData(
-      res,
-      'Register success',
-      registerResult
-    );
+    return apiHandler.sendCreated(res, 'Register success', registerResult);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }
@@ -30,9 +26,13 @@ const sendOtpRegister = async (req, res) => {
     const account = await Account.findOne({
       phoneNumber: req.body.phoneNumber,
     });
-    if (account) return sendValidationError(res, 'Phone number already exists');
+    if (account) return apiHandler.sendErrorMessage(res, 'Phone number exists');
+    const user = await Account.findOne({
+      username: req.body.username,
+    });
+    if (user) return apiHandler.sendErrorMessage(res, 'Username exists');
     await otpService.sendOtp(req.body.phoneNumber);
-    return apiHandler.sendSuccessMessage(res, 'OTP has been sent');
+    return apiHandler.sendCreated(res, 'OTP has been sent');
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }
@@ -41,7 +41,7 @@ const sendOtpRegister = async (req, res) => {
 const logout = async (req, res) => {
   // logout logic
   res.clearCookie('refresh_token');
-  return apiHandler.sendSuccessMessage(res, 'Logout success');
+  return apiHandler.sendCreated(res, 'Logout success');
 };
 
 const sendOtpForgotPassword = async (req, res) => {
@@ -50,9 +50,9 @@ const sendOtpForgotPassword = async (req, res) => {
       phoneNumber: req.body.phoneNumber,
     });
     if (!account)
-      return sendValidationError(res, 'Phone number does not exist');
+      return apiHandler.sendValidationError(res, 'Phone number does not exist');
     await otpService.sendOtp(req.body.phoneNumber);
-    return apiHandler.sendSuccessMessage(res, 'OTP has been sent');
+    return apiHandler.sendCreated(res, 'OTP has been sent');
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }
@@ -61,7 +61,7 @@ const sendOtpForgotPassword = async (req, res) => {
 const forgotPassword = async (req, res) => {
   try {
     await authService.forgotPassword(req.body);
-    return apiHandler.sendSuccessMessage(
+    return apiHandler.sendCreated(
       res,
       `Reset password success, please check your phone number ${req.body.phoneNumber} to get new password`
     );
@@ -91,7 +91,7 @@ const changePassword = async (req, res) => {
   try {
     await authService.changePassword(req.userAccess._id, req.body);
     res.clearCookie('refresh_token');
-    return apiHandler.sendSuccessMessage(res, 'Change password success');
+    return apiHandler.sendCreated(res, 'Change password success');
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }
@@ -102,11 +102,7 @@ const updateProfile = async (req, res) => {
       ...req.body,
       ...(req.files && { avatar: req.files.avatar }),
     });
-    return apiHandler.sendSuccessWithData(
-      res,
-      'Update profile success',
-      result
-    );
+    return apiHandler.sendCreated(res, 'Update profile success', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }

@@ -6,18 +6,10 @@ const applyAutoIncrement = require('../configs/autoIncrement');
 const sampleMessageSchema = new Schema(
   {
     _id: Number,
-    message: {
-      type: String,
-      required: [true, 'Message is required'],
-      trim: [true, 'Message is required'],
-    },
-    seller: { type: String, required: [true, 'Seller is required'] },
-    buyer: { type: String, required: [true, 'Buyer is required'] },
-    category: {
-      type: Number,
-      ref: 'category',
-      required: [true, 'Category is required'],
-    },
+    message: { type: String, required: true, trim: true },
+    seller: { type: String, required: true },
+    buyer: { type: String, required: true },
+    category: { type: Number, ref: 'category', required: true },
     createdBy: { type: Number, ref: 'account', default: null },
     updatedBy: { type: Number, ref: 'account', default: null },
   },

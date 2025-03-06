@@ -47,9 +47,8 @@ const verifyToken = async (token) => {
 const accessToken = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    if (!authHeader || !authHeader.startsWith('Bearer '))
       return apiHandler.sendUnauthorizedError(res, 'Token is required');
-    }
 
     const token = authHeader.split(' ')[1];
     const account = await verifyToken(token);
@@ -73,25 +72,10 @@ const accessToken = async (req, res, next) => {
 const refreshToken = async (req, res, next) => {
   try {
     const token = req.cookies.refresh_token;
-    if (!token) {
+    if (!token)
       return apiHandler.sendValidationError(res, 'Refresh token is required');
-    }
 
     const account = await verifyToken(token);
-
-    // Tạo access_token mới
-    const newAccessToken = jwt.sign(
-      {
-        _id: account._id,
-        phoneNumber: account.phoneNumber,
-        username: account.username,
-        role: account.role,
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN }
-    );
-
-    res.json({ access_token: newAccessToken });
 
     req.userRefresh = {
       _id: account._id,

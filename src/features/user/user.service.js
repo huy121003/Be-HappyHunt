@@ -1,7 +1,5 @@
 require('dotenv').config();
-const bcrypt = require('bcrypt');
 const { Account } = require('@models');
-const { uploadSingle } = require('../file/file.service');
 const parseFilterQuery = require('../../helpers/parseFilterQuery');
 const getAll = async (data) => {
   const {
@@ -10,14 +8,26 @@ const getAll = async (data) => {
     sort = process.env.SORT_DEFAULT,
     ...filter
   } = data;
-
   const [totalDocuments, result] = await Promise.all([
-    Account.countDocuments(parseFilterQuery(filter)),
-    Account.find({ ...parseFilterQuery(filter) })
-      .select('-password -__v  -updatedAt -deleted')
+    Account.countDocuments({
+      ...parseFilterQuery(filter),
+      ...(filter.phoneNumber
+        ? { phoneNumber: { $regex: filter.phoneNumber, $options: 'i' } }
+        : {}),
+      $or: [{ role: null }, { role: { $exists: false } }],
+    }),
+    Account.find({
+      ...parseFilterQuery(filter),
+      ...(filter.phoneNumber
+        ? { phoneNumber: { $regex: filter.phoneNumber, $options: 'i' } }
+        : {}),
+
+      $or: [{ role: null }, { role: { $exists: false } }],
+    })
+      .select('-password -__v -updatedAt -deleted')
       .populate(
-        'address.provinceId address.districtId address.wardId role',
-        'name _id '
+        'address.provinceId address.districtId address.wardId',
+        'name _id'
       )
       .sort(sort)
       .limit(size)
@@ -38,7 +48,7 @@ const getById = async (id) => {
   const result = await Account.findById(id)
     .select('-password -__v  -updatedAt -deleted')
     .populate(
-      'address.provinceId address.districtId address.wardId role',
+      'address.provinceId address.districtId address.wardId ',
       'name _id'
     )
     .lean()
@@ -46,46 +56,20 @@ const getById = async (id) => {
   if (!result) throw new Error('Account not found');
   return result;
 };
-const create = async (data) => {
-  const hashPassword = await bcrypt.hash('123@123a', 10);
-  const result = await Account.create({
-    ...data,
-    password: hashPassword,
-  });
-  if (!result) throw new Error('Create account failed');
-  return result;
-};
-const update = async (id, account) => {
-  const avatarUrl = account.avatar ? await uploadSingle(account.avatar) : null;
-  const result = await Account.findByIdAndUpdate(
-    id,
-    {
-      ...account,
-      ...(avatarUrl && { avatar: avatarUrl }),
-    },
-    {
-      new: true,
-    }
-  ).exec();
-  if (!result) throw new Error('Update account failed');
-  return result;
-};
+
 const remove = async (id) => {
   const result = await Account.deleteById(id).exec();
   if (!result) throw new Error('Delete account failed');
   return result;
 };
-const banned = async (id, banned) => {
-  const result = await Account.findByIdAndUpdate(id, {
-    isBanned: banned,
-  }).exec();
+
+const banned = async (id, data) => {
+  const result = await Account.findByIdAndUpdate(id, data).exec();
   if (!result) throw new Error('Ban account failed');
   return result;
 };
 
 module.exports = {
-  create,
-  update,
   getAll,
   remove,
   getById,

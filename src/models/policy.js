@@ -5,46 +5,14 @@ const applyAutoIncrement = require('../configs/autoIncrement');
 const policySchema = new Schema(
   {
     _id: Number,
-    limitPost: {
-      type: Number,
-      default: 0,
-      required: [true, 'Limit post is required'],
-    },
-    limitVipPost: {
-      type: Number,
-      default: 0,
-      required: [true, 'Limit vip post is required'],
-    },
-    timeExpired: {
-      type: Number,
-      default: 0,
-      required: [true, 'Time expired is required'],
-    },
-    minImagePost: {
-      type: Number,
-      default: 0,
-      required: [true, 'Min image post is required'],
-    },
-    maxImagePost: {
-      type: Number,
-      default: 0,
-      required: [true, 'Max image post is required'],
-    },
-    spamMessageCount: {
-      type: Number,
-      default: 0,
-      required: [true, 'Spam message count is required'],
-    },
-    moneyToCoin: {
-      type: Number,
-      default: 0,
-      required: [true, 'Money to coin is required'],
-    },
-    coinToVip: {
-      type: Number,
-      default: 0,
-      required: [true, 'Coin to vip is required'],
-    },
+    limitPost: { type: Number, default: 0, required: true },
+    limitVipPost: { type: Number, default: 0, required: true },
+    timeExpired: { type: Number, default: 0, required: true },
+    minImagePost: { type: Number, default: 0, required: true },
+    maxImagePost: { type: Number, default: 0, required: true },
+    spamMessageCount: { type: Number, default: 0, required: true },
+    moneyToCoin: { type: Number, default: 0, required: true },
+    coinToVip: { type: Number, default: 0, required: true },
     createdBy: { type: Number, ref: 'account', default: null },
     updatedBy: { type: Number, ref: 'account', default: null },
   },

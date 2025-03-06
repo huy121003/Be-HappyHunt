@@ -2,16 +2,33 @@ const parseFilterQuery = (filters) => {
   const query = {};
 
   Object.keys(filters).forEach((key) => {
-    if (filters[key]) {
-      const value = filters[key];
+    let value = filters[key];
 
-      if (!isNaN(value) && typeof value === 'string') {
-        query[key] = Number(value); // Chuyển sang kiểu số
-      } else if (typeof value === 'string') {
-        query[key] = { $regex: value, $options: 'i' }; // Giữ nguyên regex
-      } else {
-        query[key] = value;
+    if (value === 'true') {
+      value = true; // Chuyển "true" thành boolean true
+    } else if (value === 'false') {
+      value = false; // Chuyển "false" thành boolean false
+    } else if (!isNaN(value) && value.trim() !== '') {
+      value = Number(value); // Chuyển số dạng chuỗi thành số
+    } else if (value.startsWith('[') && value.endsWith(']')) {
+      try {
+        value = JSON.parse(value); // Chuyển chuỗi JSON thành mảng (vd: "[1,2,3]")
+      } catch (e) {
+        // Nếu lỗi khi parse, giữ nguyên giá trị
       }
+    } else if (value.startsWith('{') && value.endsWith('}')) {
+      try {
+        value = JSON.parse(value); // Chuyển chuỗi JSON thành object (vd: '{"a":1}')
+      } catch (e) {
+        // Nếu lỗi khi parse, giữ nguyên giá trị
+      }
+    }
+
+    // Áp dụng bộ lọc regex nếu là chuỗi
+    if (typeof value === 'string') {
+      query[key] = { $regex: value, $options: 'i' };
+    } else {
+      query[key] = value;
     }
   });
 

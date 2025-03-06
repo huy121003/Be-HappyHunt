@@ -7,15 +7,13 @@ const create = async (req, res) => {
       createdBy: req.userAccess._id,
       ...(req.files && { avatar: req.files.avatar }),
     });
-    return apiHandler.sendSuccessWithData(
-      res,
-      'Account created successfully',
-      result
-    );
+
+    return apiHandler.sendCreated(res, 'Account created successfully', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }
 };
+
 const getAll = async (req, res) => {
   try {
     const result = await adminService.getAll(req.query);
@@ -39,11 +37,7 @@ const update = async (req, res) => {
       ...(req.files && { avatar: req.files.avatar }),
       updatedBy: req.userAccess._id,
     });
-    return apiHandler.sendSuccessWithData(
-      res,
-      'Account updated successfully',
-      result
-    );
+    return apiHandler.sendCreated(res, 'Account updated successfully', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }
@@ -51,11 +45,7 @@ const update = async (req, res) => {
 const remove = async (req, res) => {
   try {
     const result = await adminService.remove(req.params.id);
-    return apiHandler.sendSuccessWithData(
-      res,
-      'Account removed successfully',
-      result
-    );
+    return apiHandler.sendCreated(res, 'Account removed successfully', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }
@@ -66,11 +56,7 @@ const banned = async (req, res) => {
       isBanned: req.body.isBanned,
       updatedBy: req.userAccess._id,
     });
-    return apiHandler.sendSuccessWithData(
-      res,
-      'Account banned successfully',
-      result
-    );
+    return apiHandler.sendCreated(res, 'Account banned successfully', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }

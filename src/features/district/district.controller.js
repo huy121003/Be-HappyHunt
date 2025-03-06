@@ -23,7 +23,7 @@ const create = async (req, res) => {
       ...req.body,
       createdBy: req.userAccess._id,
     });
-    return apiHandler.sendSuccessWithData(res, 'District created', result);
+    return apiHandler.sendCreated(res, 'District created', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }
@@ -34,7 +34,7 @@ const update = async (req, res) => {
       ...req.body,
       updatedBy: req.userAccess._id,
     });
-    return apiHandler.sendSuccessWithData(res, 'District updated', result);
+    return apiHandler.sendCreated(res, 'District updated', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }
@@ -42,7 +42,7 @@ const update = async (req, res) => {
 const remove = async (req, res) => {
   try {
     const result = await districtService.remove(req.params.id);
-    return apiHandler.sendSuccessWithData(res, 'District removed', result);
+    return apiHandler.sendCreated(res, 'District removed', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }

@@ -6,42 +6,17 @@ const applyAutoIncrement = require('../configs/autoIncrement');
 const postSchema = new Schema(
   {
     _id: Number,
-    category: {
-      type: Number,
-      ref: 'category',
-      required: [true, 'Category is required'],
-    },
-    categoryParent: {
-      type: Number,
-      ref: 'categoryChild',
-      default: null,
-    },
-    seller: {
-      type: Number,
-      ref: 'account',
-      required: [true, 'Seller is required'],
-    },
-    buyer: {
-      type: Number,
-      ref: 'account',
-      default: null,
-    },
-    name: {
-      type: String,
-      trim: [true, 'Name should not have leading or trailing whitespaces'],
-      required: [true, 'Name is required'],
-      unique: [true, 'Name already exists'],
-    },
-    price: {
-      type: Number,
-      required: [true, 'Price is required'],
-      min: 0,
-    },
+    category: { type: Number, ref: 'category', required: true },
+    categoryParent: { type: Number, ref: 'category', default: null },
+    seller: { type: Number, ref: 'account', required: true },
+    buyer: { type: Number, ref: 'account', default: null },
+    name: { type: String, trim: true, required: true, unique: true },
+    price: { type: Number, required: true, min: 1000 },
     description: { type: String, default: '' },
     images: [{ type: String, trim: true }],
     status: {
       type: String,
-      enum: ['SELLING', 'SOLD', 'REJECTED', 'WAITING'],
+      enum: ['SELLING', 'SOLD', 'REJECTED', 'WAITING', 'HIDDEN'],
       default: 'WAITING',
     },
     clickCount: { type: Number, default: 0 },
@@ -51,30 +26,12 @@ const postSchema = new Schema(
         value: { type: String, trim: true },
       },
     ],
-    url: {
-      type: String,
-      trim: [true, 'Url should not have leading or trailing whitespaces'],
-      required: [true, 'Url is required'],
-      unique: [true, 'Url already exists'],
-    },
+    url: { type: String, trim: true, required: true, unique: true },
     address: {
-      province: {
-        type: Number,
-        required: [true, 'Province is required'],
-      },
-      district: {
-        type: Number,
-        required: [true, 'District is required'],
-      },
-      ward: { type: Number, required: [true, 'Ward is required'] },
-      specificAddress: {
-        type: String,
-        required: [true, 'Specific address is required'],
-        trim: [
-          true,
-          'Specific address should not have leading or trailing whitespaces',
-        ],
-      },
+      province: { type: Number, required: true },
+      district: { type: Number, required: true },
+      ward: { type: Number, required: true },
+      specificAddress: { type: String, required: true, trim: true },
     },
     createdBy: { type: Number, ref: 'account', default: null },
     updatedBy: { type: Number, ref: 'account', default: null },
