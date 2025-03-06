@@ -1,9 +1,10 @@
 require('dotenv').config();
 const bcrypt = require('bcrypt');
-const { Account } = require('@models');
+
 const { uploadSingle } = require('../file/file.service');
 
 const exportFilter = require('./admin.filter');
+const { Account } = require('../../models');
 const getAll = async (data) => {
   const { page, size, sort, ...filter } = exportFilter(data);
   console.log('filter', filter);

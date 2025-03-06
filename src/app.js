@@ -4,8 +4,6 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const fileUpload = require('express-fileupload');
 
-require('module-alias/register');
-
 const app = express();
 const appRouter = require('./features/app/app.router');
 require('./features/app/app.task');
