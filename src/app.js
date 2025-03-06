@@ -13,22 +13,11 @@ app.use(fileUpload());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-const allowlist = [
-  'http://localhost:3000',
-  'http://localhost:3030',
-  'https://fe-happy-hunt-admin.vercel.app/',
-  'https://fe-happy-hunt-client.vercel.app/',
-];
+
 // Cấu hình CORS
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin || allowlist.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
+    origin: true,
     credentials: true,
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
   })
