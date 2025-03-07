@@ -6,7 +6,6 @@ const exportFilter = (district) => {
     ...(district.name && { name: new RegExp(district.name, 'i') }),
     ...(district.provinceId && { provinceId: Number(district.provinceId) }),
   };
-  console.log('res', res);
   return res;
 };
 module.exports = exportFilter;

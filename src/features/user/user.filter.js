@@ -11,7 +11,6 @@ const exportFilter = (filter) => {
     ...(filter.isVip && { isVip: filter.isVip }),
     role: null,
   };
-  console.log('res', res);
   return res;
 };
 module.exports = exportFilter;

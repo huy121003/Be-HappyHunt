@@ -70,12 +70,8 @@ const remove = async (id) => {
 
   return result;
 };
-const show = async (id, isShow) => {
-  const result = await Banner.findByIdAndUpdate(
-    id,
-    { isShow },
-    { new: true }
-  ).exec();
+const show = async (id, data) => {
+  const result = await Banner.findByIdAndUpdate(id, data, { new: true }).exec();
   if (!result) throw new Error('Show banner failed');
 
   return result;

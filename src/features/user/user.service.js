@@ -4,7 +4,6 @@ const { Account } = require('../../models');
 const exportFilter = require('./user.filter');
 const getAll = async (data) => {
   const { page, size, sort, ...filter } = exportFilter(data);
-  console.log('filter', filter);
   const [totalDocuments, result] = await Promise.all([
     Account.countDocuments(filter),
     Account.find(filter)

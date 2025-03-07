@@ -4,7 +4,6 @@ const { apiHandler } = require('../../helpers');
 const getAll = async (req, res) => {
   try {
     const result = await userService.getAll(req.query);
-    console.log(req.query);
     return apiHandler.sendSuccessWithData(res, 'List accounts', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);

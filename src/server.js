@@ -2,12 +2,12 @@ const app = require('./app');
 const { mongoConfig } = require('./configs');
 require('dotenv').config();
 
-const port = process.env.POST_SERVER || 3000; // Dùng giá trị mặc định nếu không có
+const port = process.env.POST_SERVER || 8000;
 const appController = require('./features/app/app.controller');
 
 (async () => {
   try {
-    await mongoConfig(); // Kết nối MongoDB
+    await mongoConfig(); 
 
     app.listen(port, '0.0.0.0', () => {
       console.log(`Server is running on port ${port}`);
