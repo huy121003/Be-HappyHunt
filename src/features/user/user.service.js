@@ -39,6 +39,18 @@ const getById = async (id) => {
   if (!result) throw new Error('Account not found');
   return result;
 };
+const getBySlug = async (slug) => {
+  const result = await Account.findOne({ slug })
+    .select('-password -__v  -updatedAt -deleted')
+    .populate(
+      'address.provinceId address.districtId address.wardId ',
+      'name _id'
+    )
+    .lean()
+    .exec();
+  if (!result) throw new Error('Account not found');
+  return result;
+};
 
 const remove = async (id) => {
   const result = await Account.deleteById(id).exec();
@@ -57,4 +69,5 @@ module.exports = {
   remove,
   getById,
   banned,
+  getBySlug,
 };

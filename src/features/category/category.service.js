@@ -1,3 +1,4 @@
+const autoSlug = require('../../helpers/autoSlug');
 const { Category } = require('../../models');
 const { uploadSingle } = require('../file/file.service');
 const exportFilter = require('./category.filter');
@@ -11,6 +12,8 @@ const create = async (category) => {
       ? JSON.parse(category.attributes)
       : undefined,
     parent: category.parent ? category.parent : null,
+    slug: autoSlug(category.name),
+    keywords: category.keywords ? category.keywords : [],
   });
 
   if (!result) throw new Error('Category creation failed');
@@ -23,7 +26,7 @@ const getAllPagination = async (data) => {
   const [totalDocuments, result] = await Promise.all([
     Category.countDocuments(filter),
     Category.find(filter)
-      .select('name _id parent')
+      .select('name _id parent isPayment pricePayment')
       .sort(sort)
       .limit(size)
       .skip(page * size)
@@ -45,7 +48,7 @@ const getAllPagination = async (data) => {
 const getAll = async (data) => {
   const { page, size, sort, ...filter } = exportFilter(data);
   const result = await Category.find(filter)
-    .select('name _id parent')
+    .select('name _id parent isPayment pricePayment')
     .populate('parent', 'name _id')
     .exec();
   if (!result) throw new Error('Fetch categories failed');

@@ -9,6 +9,7 @@ const messageSchema = new Schema(
     buyer: { type: Number, ref: 'account', required: true },
     post: { type: Number, ref: 'post', required: true },
     url: { type: String, required: true },
+    slug: { type: String, required: true },
     sender: { type: Number, ref: 'account', required: true },
     message: { type: String, required: true, trim: true },
     images: { type: String, default: '' },

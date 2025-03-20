@@ -4,10 +4,12 @@ const categoryService = require('./category.service');
 require('dotenv').config();
 
 const create = async (req, res) => {
+  console.log(req.body);
   try {
     const result = await categoryService.create({
       ...req.body,
       createdBy: req.userAccess._id,
+
       ...(req.files && { icon: req.files.icon }),
     });
     return apiHandler.sendCreated(res, 'Category created successfully', result);

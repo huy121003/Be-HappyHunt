@@ -4,6 +4,7 @@ const userController = require('./user.controller');
 const { authJwt } = require('../../middlewares');
 router.get('/', authJwt.accessToken, userController.getAll);
 router.get('/:id', authJwt.accessToken, userController.getById);
+router.get('/:slug', authJwt.accessToken, userController.getBySlug);
 router.delete('/:id', authJwt.accessToken, userController.remove);
 router.patch('/:id/banned', authJwt.accessToken, userController.banned);
 

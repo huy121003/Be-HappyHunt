@@ -6,35 +6,54 @@ const applyAutoIncrement = require('../configs/autoIncrement');
 const postSchema = new Schema(
   {
     _id: Number,
-    category: { type: Number, ref: 'category', required: true },
+    category: { type: Number, ref: 'category' },
     categoryParent: { type: Number, ref: 'category', default: null },
-    seller: { type: Number, ref: 'account', required: true },
-    buyer: { type: Number, ref: 'account', default: null },
     name: { type: String, trim: true, required: true, unique: true },
     price: { type: Number, required: true, min: 1000 },
     description: { type: String, default: '' },
-    images: [{ type: String, trim: true }],
+    images: [
+      {
+        url: { type: String, required: true },
+        index: { type: Number, required: true },
+        reasonReject: { type: [String], default: [] },
+        _id: false,
+      },
+    ],
     status: {
       type: String,
-      enum: ['SELLING', 'SOLD', 'REJECTED', 'WAITING', 'HIDDEN'],
+      enum: [
+        'SELLING',
+        'EXPIRED',
+        'REJECTED',
+        'WAITING',
+        'HIDDEN',
+        'AI_CHECKING_FAILED',
+      ],
       default: 'WAITING',
     },
     clickCount: { type: Number, default: 0 },
-    attribute: [
+    attributes: [
       {
         name: { type: String, trim: true },
-        value: { type: String, trim: true },
+        value: { type: String, Number, Boolean },
+        _id: false,
       },
     ],
-    url: { type: String, trim: true, required: true, unique: true },
+
+    isSold: { type: Boolean, default: false },
+    isIndividual: { type: Boolean, default: false },
     address: {
-      province: { type: Number, required: true },
-      district: { type: Number, required: true },
-      ward: { type: Number, required: true },
+      province: { type: Number, required: true, ref: 'province' },
+      district: { type: Number, required: true, ref: 'district' },
+      ward: { type: Number, required: true, ref: 'ward' },
       specificAddress: { type: String, required: true, trim: true },
     },
+    slug: { type: String, default: '', unique: true, reuqired: true },
     createdBy: { type: Number, ref: 'account', default: null },
     updatedBy: { type: Number, ref: 'account', default: null },
+
+    reasonHidden: { type: String, default: '' },
+    reasonSold: { type: String, default: '' },
   },
   { timestamps: true }
 );

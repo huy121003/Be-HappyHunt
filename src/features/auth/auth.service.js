@@ -69,6 +69,7 @@ const register = async (data) => {
     password: bycryptPassword,
     phoneNumber: data.phoneNumber,
     username: data.username,
+    slug: data.username.toLowerCase().replace(/./g, '_'),
   });
   if (!account) throw new Error('Register failed');
   return account;

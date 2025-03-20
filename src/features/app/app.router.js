@@ -11,7 +11,8 @@ const roleRouter = require('../role/role.router');
 const bannerRouter = require('../banner/banner.router');
 const adminRouter = require('../admin/admin.router');
 const userRouter = require('../user/user.router');
-
+const postRouter = require('../post/post.router');
+const evaluateRouter = require('../evaluate/evaluate.router');
 const express = require('express');
 const app = express();
 
@@ -28,5 +29,7 @@ app.use('/role/', roleRouter);
 app.use('/banner/', bannerRouter);
 app.use('/admin/', adminRouter);
 app.use('/user/', userRouter);
+app.use('/post/', postRouter);
+app.use('/evaluate/', evaluateRouter);
 
 module.exports = app;

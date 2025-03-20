@@ -17,6 +17,14 @@ const getById = async (req, res) => {
     return apiHandler.sendErrorMessage(res, error.message);
   }
 };
+const getBySlug = async (req, res) => {
+  try {
+    const result = await userService.getBySlug(req.params.slug);
+    return apiHandler.sendSuccessWithData(res, 'Account', result);
+  } catch (error) {
+    return apiHandler.sendErrorMessage(res, error.message);
+  }
+}
 
 const remove = async (req, res) => {
   try {
@@ -42,4 +50,5 @@ module.exports = {
   getById,
   remove,
   banned,
+  getBySlug,
 };

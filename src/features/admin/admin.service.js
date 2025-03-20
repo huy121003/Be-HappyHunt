@@ -7,7 +7,6 @@ const exportFilter = require('./admin.filter');
 const { Account } = require('../../models');
 const getAll = async (data) => {
   const { page, size, sort, ...filter } = exportFilter(data);
-  console.log('filter', filter);
   const [totalDocuments, result] = await Promise.all([
     Account.countDocuments(filter),
     Account.find(filter)
@@ -50,9 +49,7 @@ const create = async (data) => {
     ...(avatarUrl && { avatar: avatarUrl }),
   });
 
-  if (!result) {
-    throw new Error('Create admin failed');
-  }
+  if (!result) throw new Error('Create admin failed');
 
   return result;
 };
