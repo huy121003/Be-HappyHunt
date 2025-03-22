@@ -4,8 +4,8 @@ const exportFilter = (ward) => {
     ...(ward.size ? { size: Number(ward.size) } : { size: 10 }),
     ...(ward.sort ? { sort: ward.sort } : { sort: '-createdAt' }),
     ...(ward.name && { name: new RegExp(ward.name, 'i') }),
-    ...(ward.districtId && { districtId: ward.districtId }),
-    ...(ward.provinceId && { provinceId: ward.provinceId }),
+    ...(ward.district && { district: ward.district }),
+    ...(ward.province && { province: ward.province }),
   };
   return res;
 };

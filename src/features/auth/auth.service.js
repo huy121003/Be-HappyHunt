@@ -17,7 +17,7 @@ const login = async (data, res) => {
   const account = await Account.findOne(query)
     .select('-__v -createdAt -updatedAt')
     .populate({
-      path: 'role address.provinceId address.districtId address.wardId',
+      path: 'role address.province address.district address.ward',
       select: 'name _id permissions',
     })
     .lean();
@@ -98,7 +98,7 @@ const getAccountInfo = async (data) => {
   const account = await Account.findOne({ _id: data._id })
     .select('-__v -createdAt -updatedAt -password -deleted')
     .populate({
-      path: 'role address.provinceId address.districtId address.wardId',
+      path: 'role address.province address.district address.ward',
       select: 'name _id permissions',
     })
     .lean();
@@ -109,7 +109,7 @@ const getNewAccessToken = async (data) => {
   const account = await Account.findOne({ _id: data._id })
     .select('-__v -createdAt -updatedAt -password -deleted')
     .populate({
-      path: 'role address.provinceId address.districtId address.wardId',
+      path: 'role address.province address.district address.ward',
       select: 'name _id permissions',
     })
     .lean();
@@ -155,7 +155,7 @@ const updateProfile = async (id, data) => {
   )
     .select('-password -__v -createdAt -updatedAt -deleted')
     .populate(
-      'role address.provinceId address.districtId address.wardId',
+      'role address.province address.district address.ward',
       'name _id permissions'
     )
     .lean()

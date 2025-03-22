@@ -5,7 +5,12 @@ const applyAutoIncrement = require('../configs/autoIncrement');
 const categorySchema = new Schema(
   {
     _id: Number,
-    name: { type: String, required: true, trim: true, unique: true },
+    name: {
+      type: String,
+      required: [true, 'Name is required'],
+      trim: [true, 'Name is required'],
+      unique: [true, 'Duplicate name'],
+    },
     parent: { type: Number, ref: 'category', default: null },
     isPayment: { type: Boolean, default: false },
     pricePayment: { type: Number, default: 0 },

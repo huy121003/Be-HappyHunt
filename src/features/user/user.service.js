@@ -8,10 +8,7 @@ const getAll = async (data) => {
     Account.countDocuments(filter),
     Account.find(filter)
       .select('-password -__v -updatedAt -deleted')
-      .populate(
-        'address.provinceId address.districtId address.wardId',
-        'name _id'
-      )
+      .populate('address.province address.district address.ward', 'name _id')
       .sort(sort)
       .limit(size)
       .skip(page * size)
@@ -30,10 +27,7 @@ const getAll = async (data) => {
 const getById = async (id) => {
   const result = await Account.findById(id)
     .select('-password -__v  -updatedAt -deleted')
-    .populate(
-      'address.provinceId address.districtId address.wardId ',
-      'name _id'
-    )
+    .populate('address.province address.district address.ward ', 'name _id')
     .lean()
     .exec();
   if (!result) throw new Error('Account not found');
@@ -42,10 +36,7 @@ const getById = async (id) => {
 const getBySlug = async (slug) => {
   const result = await Account.findOne({ slug })
     .select('-password -__v  -updatedAt -deleted')
-    .populate(
-      'address.provinceId address.districtId address.wardId ',
-      'name _id'
-    )
+    .populate('address.province address.district address.ward ', 'name _id')
     .lean()
     .exec();
   if (!result) throw new Error('Account not found');

@@ -47,9 +47,26 @@ const updateStatus = async (req, res) => {
     return apiHandler.sendErrorMessage(res, error.message);
   }
 };
+const updateCheckingStatus = async (req, res) => {
+  try {
+    const result = await postService.updateCheckingStatus(req.params.id, {
+      ...req.body,
+      updateBy: req.userAccess._id,
+    });
+    return apiHandler.sendCreated(
+      res,
+      'Post Checking Status updated successfully',
+      result
+    );
+  } catch (error) {
+    return apiHandler.sendErrorMessage(res, error.message);
+  }
+};
 const countStatus = async (req, res) => {
   try {
     const result = await postService.countStatus(Number(req.params._id));
+    console.log(req.params._id);
+    console.log(result);
     return apiHandler.sendSuccessWithData(
       res,
       'Count Status successfully',
@@ -108,7 +125,7 @@ const countSold = async (req, res) => {
 };
 const updateClickCount = async (req, res) => {
   try {
-    const result = await postService.updateClickCount(req.params.id);
+    const result = await postService.updateClickCount(req.params.id.req.userAccess._id);
     return apiHandler.sendSuccessWithData(res, 'Update click count', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
@@ -126,4 +143,5 @@ module.exports = {
   update,
   countSold,
   updateClickCount,
+  updateCheckingStatus,
 };

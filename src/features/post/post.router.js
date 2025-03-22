@@ -11,6 +11,11 @@ router.post(
   postController.create
 );
 router.patch('/:id/status', authJwt.accessToken, postController.updateStatus);
+router.patch(
+  '/:id/checking-status',
+  authJwt.accessToken,
+  postController.updateCheckingStatus
+);
 router.get(
   '/count-status/:_id',
   authJwt.accessToken,

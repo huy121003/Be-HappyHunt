@@ -71,8 +71,26 @@ const exportFilter = async (post) => {
             : post.status,
       },
     }),
+    ...(post.status && {
+      status: {
+        $in:
+          post.status === 'CHECKING'
+            ? ['WAITING', 'WAITING|AI_CHECKING_FAILED', 'REJECTED']
+            : post.status,
+      },
+    }),
+
+    ...(post.category && { category: post.category }),
+    ...(post.categoryParent && { categoryParent: post.categoryParent }),
+    ...(post.province && { 'address.province': post.province }),
+    ...(post.district && { 'address.district': post.district }),
+    ...(post.ward && { 'address.ward': post.ward }),
+    ...(post.isIndividual && { isIndividual: post.isIndividual }),
+    ...(post.statusAdmin && { status: post.statusAdmin }),
     ...(post.updatedBy && { updatedBy: post.updatedBy }),
     ...(post.createdBy && { createdBy: post.createdBy }),
+    ...(post.minPrice && { price: { $gte: post.minPrice } }),
+    ...(post.maxPrice && { price: { $lte: post.maxPrice } }),
   };
 
   // Nếu có post.p, thêm gợi ý

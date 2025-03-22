@@ -88,22 +88,21 @@ function evaluateImageContent(analysis, thresholds = {}) {
   ) {
     reasons.push('Contains weapons');
   }
+   // Kiểm tra recreational_drug
+  // const drug = analysis.recreational_drug || {};
+  // const drugClasses = drug.classes || {};
+  // if (
+  //   drug.prob > t.drug ||
+  //   drugClasses.cannabis > t.drug ||
+  //   drugClasses.recreational_drugs_not_cannabis > t.drug
+  // ) {
+  //   reasons.push('Contains recreational drugs');
+  // }
 
-  // Kiểm tra recreational_drug
-  const drug = analysis.recreational_drug || {};
-  const drugClasses = drug.classes || {};
-  if (
-    drug.prob > t.drug ||
-    drugClasses.cannabis > t.drug ||
-    drugClasses.recreational_drugs_not_cannabis > t.drug
-  ) {
-    reasons.push('Contains recreational drugs');
-  }
-
-  // Kiểm tra alcohol
-  if ((analysis.alcohol?.prob || 0) > t.alcohol) {
-    reasons.push('Contains alcohol');
-  }
+  // // Kiểm tra alcohol
+  // if ((analysis.alcohol?.prob || 0) > t.alcohol) {
+  //   reasons.push('Contains alcohol');
+  // }
 
   // Kiểm tra gore
   const gore = analysis.gore || {};
@@ -113,36 +112,36 @@ function evaluateImageContent(analysis, thresholds = {}) {
     goreClasses.very_bloody > t.gore ||
     goreClasses.serious_injury > t.gore
   ) {
-    reasons.push('Contains gore'); // Gộp tất cả thành một lý do
+    reasons.push('Contains violent or gory content');
   }
 
-  // Kiểm tra violence
-  const violence = analysis.violence || {};
-  const violenceClasses = violence.classes || {};
-  if (
-    violence.prob > t.violence ||
-    violenceClasses.physical_violence > t.violence ||
-    violenceClasses.firearm_threat > t.violence
-  ) {
-    reasons.push('Contains violence');
-  }
+   // Kiểm tra violence
+  // const violence = analysis.violence || {};
+  // const violenceClasses = violence.classes || {};
+  // if (
+  //   violence.prob > t.violence ||
+  //   violenceClasses.physical_violence > t.violence ||
+  //   violenceClasses.firearm_threat > t.violence
+  // ) {
+  //   reasons.push('Contains violence');
+  // }
 
-  // Kiểm tra offensive
-  const offensive = analysis.offensive || {};
-  if (
-    offensive.nazi > t.offensive ||
-    offensive.supremacist > t.offensive ||
-    offensive.terrorist > t.offensive ||
-    offensive.middle_finger > t.offensive
-  ) {
-    reasons.push('Contains offensive content');
-  }
+  // // Kiểm tra offensive
+  // const offensive = analysis.offensive || {};
+  // if (
+  //   offensive.nazi > t.offensive ||
+  //   offensive.supremacist > t.offensive ||
+  //   offensive.terrorist > t.offensive ||
+  //   offensive.middle_finger > t.offensive
+  // ) {
+  //   reasons.push('Contains offensive content');
+  // }
 
-  // Kiểm tra self-harm
-  const selfHarm = analysis['self-harm'] || {};
-  if (selfHarm.prob > t.selfHarm || selfHarm.type?.real > t.selfHarm) {
-    reasons.push('Contains self-harm');
-  }
+  // // Kiểm tra self-harm
+  // const selfHarm = analysis['self-harm'] || {};
+  // if (selfHarm.prob > t.selfHarm || selfHarm.type?.real > t.selfHarm) {
+  //   reasons.push('Contains self-harm');
+  // }
 
   // Kiểm tra text
   const text = analysis.text || {};
@@ -153,7 +152,10 @@ function evaluateImageContent(analysis, thresholds = {}) {
     (text.weapon?.length || 0) > t.text ||
     (text.violence?.length || 0) > t.text ||
     (text['self-harm']?.length || 0) > t.text ||
-    (text.spam?.length || 0) > t.text
+    (text.spam?.length || 0) > t.text ||
+    (text.violence?.length || 0) > t.text ||
+    (text.link?.length || 0) > t.text ||
+    (text.social?.length || 0) > t.text
   ) {
     reasons.push('Contains inappropriate text');
   }
@@ -168,35 +170,35 @@ function evaluateImageContent(analysis, thresholds = {}) {
   ) {
     reasons.push('Contains inappropriate QR codes');
   }
+   // Kiểm tra tobacco, money, gambling
+  // if ((analysis.tobacco?.prob || 0) > t.drug) {
+  //   reasons.push('Contains tobacco');
+  // }
+  // if ((analysis.money?.prob || 0) > t.drug) {
+  //   reasons.push('Contains money-related content');
+  // }
 
-  // Kiểm tra tobacco, money, gambling
-  if ((analysis.tobacco?.prob || 0) > t.drug) {
-    reasons.push('Contains tobacco');
-  }
-  if ((analysis.money?.prob || 0) > t.drug) {
-    reasons.push('Contains money-related content');
-  }
   if ((analysis.gambling?.prob || 0) > t.drug) {
     reasons.push('Contains gambling content');
   }
 
-  // Kiểm tra chất lượng ảnh
-  if (
-    (analysis.sharpness || 1) < t.quality ||
-    analysis.brightness < 0.1 ||
-    analysis.brightness > 0.9 ||
-    (analysis.contrast || 1) < t.quality
-  ) {
-    reasons.push('Poor image quality');
-  }
+   // Kiểm tra chất lượng ảnh
+  // if (
+  //   (analysis.sharpness || 1) < t.quality ||
+  //   analysis.brightness < 0.1 ||
+  //   analysis.brightness > 0.9 ||
+  //   (analysis.contrast || 1) < t.quality
+  // ) {
+  //   reasons.push('Poor image quality');
+  // }
 
   // Kiểm tra loại nội dung
-  if (
-    (analysis.type?.ai_generated || 0) > 0.8 ||
-    (analysis.type?.deepfake || 0) > 0.8
-  ) {
-    reasons.push('Likely AI-generated content');
-  }
+  // if (
+  //   (analysis.type?.ai_generated || 0) > 0.8 ||
+  //   (analysis.type?.deepfake || 0) > 0.8
+  // ) {
+  //   reasons.push('Likely AI-generated content');
+  // }
 
   // Trả về kết quả
   return {

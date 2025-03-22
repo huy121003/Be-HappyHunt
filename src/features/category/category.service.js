@@ -98,7 +98,7 @@ const getAllParent = async (data) => {
       ...filter,
       parent: null,
     })
-      .select('name _id parent')
+      .select('name _id parent icon')
       .limit(size)
       .skip(page * size)
       .populate('parent', 'name _id')

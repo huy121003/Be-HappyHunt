@@ -4,7 +4,7 @@ const exportFilter = (district) => {
     ...(district.size ? { size: Number(district.size) } : { size: 10 }),
     ...(district.sort ? { sort: district.sort } : { sort: '-createdAt' }),
     ...(district.name && { name: new RegExp(district.name, 'i') }),
-    ...(district.provinceId && { provinceId: Number(district.provinceId) }),
+    ...(district.province && { province: Number(district.province) }),
   };
   return res;
 };

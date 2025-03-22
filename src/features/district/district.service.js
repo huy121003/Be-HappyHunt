@@ -10,7 +10,7 @@ const getAll = async (data) => {
       .sort(sort)
       .limit(size)
       .skip(page * size)
-      .populate('provinceId createdBy', 'name _id ')
+      .populate('province createdBy', 'name _id ')
       .exec(),
   ]);
   if (!result || !totalDocuments) throw new Error('Fetch districts failed');
@@ -25,7 +25,7 @@ const getById = async (id) => {
   const result = await District.findById(id)
     .lean()
     .select('name _id codeName shortCodeName')
-    .populate('provinceId', 'name _id ')
+    .populate('province', 'name _id ')
     .exec();
   if (!result) throw new Error('District not found');
   return result;

@@ -31,7 +31,7 @@ const createAutoAddress = async (provincesData) => {
     for (const district of province.districts) {
       const createdDistrict = await DistrictService.create({
         name: removeDiacritics(district.name),
-        provinceId: createdProvince._id,
+        province: createdProvince._id,
         codeName: district.codename,
         divisionType: district.division_type,
         shortCodeName: district.short_codename,
@@ -49,8 +49,8 @@ const createAutoAddress = async (provincesData) => {
       const wardPromises = district.wards.map((ward) =>
         WardService.create({
           name: removeDiacritics(ward.name),
-          provinceId: createdProvince._id,
-          districtId: createdDistrict._id,
+          province: createdProvince._id,
+          district: createdDistrict._id,
           codeName: ward.codename,
           divisionType: ward.division_type,
           shortCodeName: ward.short_codename,
@@ -117,9 +117,9 @@ const autoCreateAdmin = async (roleId) => {
     username: 'super.admin',
     isBanned: true,
     address: {
-      provinceId: null,
-      districtId: null,
-      wardId: null,
+      province: null,
+      district: null,
+      ward: null,
       specificAddress: '',
     },
     avatar: '',

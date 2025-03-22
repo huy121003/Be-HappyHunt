@@ -1,11 +1,10 @@
 require('dotenv').config();
 const { uploadMultiple } = require('../file/file.service');
-const path = require('path');
-const { Post } = require('../../models');
+const { Post, HistoryClickPost } = require('../../models');
 const autoSlug = require('../../helpers/autoSlug');
 const exportFilter = require('./post.filter');
-const fs = require('fs');
-const uploadImages = require('../../helpers/uploadImages');
+const dayjs = require('dayjs');
+
 const create = async (data) => {
   let imageUrls = [];
 
@@ -21,7 +20,7 @@ const create = async (data) => {
         index: index + 1,
       };
     }),
-    status: 'WAITING',
+    status: 'SELLING',
     address: JSON.parse(data.address),
     attributes: JSON.parse(data.attributes),
     slug: autoSlug(data.name),
@@ -99,9 +98,9 @@ const getAllPagination = async (data) => {
   const [totalDocuments, result] = await Promise.all([
     Post.countDocuments(filter),
     Post.find(filter)
-      .select('name _id status price images createdAt slug isIndividual')
+      .select('-__v -deleted ')
       .populate(
-        'category categoryParent address.province address.district address.ward',
+        'category categoryParent address.province address.district address.ward createdBy',
         'name _id avatar phoneNumber'
       )
       .sort(sort)
@@ -119,6 +118,23 @@ const getAllPagination = async (data) => {
     pageNumber: page,
   };
 };
+const updateCheckingStatus = async (id, post) => {
+  const result = await Post.findByIdAndUpdate(
+    id,
+    {
+      ...post,
+      ...(post.status &&
+        post.status === 'SELLING' && {
+          expiredAt: dayjs().add(2, 'months').toDate(),
+        }),
+    },
+    { new: true }
+  );
+  if (!result) throw new Error('Update status post failed');
+
+  return result;
+};
+
 const getById = async (id) => {
   const result = await Post.findById(id)
     .select(' -updatedAt -__v')
@@ -158,13 +174,20 @@ const countSold = async (id) => {
     sold: countHiddenAndSold || 0,
   };
 };
-const updateClickCount = async (id) => {
-  const result = await Post.findByIdAndUpdate(
-    id,
-    { $inc: { clickCount: 1 } },
-    { new: true }
-  );
-  if (!result) throw new Error('Update click count failed');
+const updateClickCount = async (id, userId) => {
+  const res = await HistoryClickPost.findOne({ post: id, createdBy: userId });
+  if (res) {
+    return res;
+  }
+  const [result, createClick] = await Promise.all([
+    Post.findByIdAndUpdate(
+      id,
+      { $inc: { clickCount: 1 } }, // Increment the clickCount field
+      { new: true } // Return the updated document
+    ),
+    HistoryClickPost.create({ post: id, createdBy: userId }),
+  ]);
+  if (!result || !createClick) throw new Error('Update click count failed');
   return result;
 };
 
@@ -179,4 +202,5 @@ module.exports = {
   update,
   countSold,
   updateClickCount,
+  updateCheckingStatus,
 };

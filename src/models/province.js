@@ -5,8 +5,16 @@ const applyAutoIncrement = require('../configs/autoIncrement');
 
 const provinceSchema = new Schema({
   _id: Number,
-  codeName: { type: String, required: true, trim: true },
-  name: { type: String, required: true, trim: true },
+  codeName: {
+    type: String,
+    required: [true, 'Code name is required'],
+    trim: true,
+  },
+  name: {
+    type: String,
+    required: [true, 'Name is required'],
+    trim: [true, 'Name is required'],
+  },
   divisionType: { type: String, default: 'province' },
   phoneCode: { type: Number, required: true, unique: true },
   createdBy: { type: Number, ref: 'account', default: null },

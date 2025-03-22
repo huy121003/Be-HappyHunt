@@ -8,7 +8,12 @@ const postSchema = new Schema(
     _id: Number,
     category: { type: Number, ref: 'category' },
     categoryParent: { type: Number, ref: 'category', default: null },
-    name: { type: String, trim: true, required: true, unique: true },
+    name: {
+      type: String,
+      trim: [true, 'Name must not contain leading or trailing whitespaces'],
+      required: [true, 'Name is required'],
+      unique: [true, 'Duplicate name'],
+    },
     price: { type: Number, required: true, min: 1000 },
     description: { type: String, default: '' },
     images: [
@@ -39,7 +44,7 @@ const postSchema = new Schema(
         _id: false,
       },
     ],
-
+    expiredAt: { type: String, default: null },
     isSold: { type: Boolean, default: false },
     isIndividual: { type: Boolean, default: false },
     address: {

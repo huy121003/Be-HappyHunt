@@ -1,4 +1,3 @@
-
 const Ward = require('../../models/ward');
 const exportFilter = require('./ward.filter');
 require('dotenv').config();
@@ -11,7 +10,7 @@ const getAll = async (data) => {
       .sort(sort)
       .limit(size)
       .skip(page * size)
-      .populate('districtId provinceId createdBy', 'name _id ')
+      .populate('district province createdBy', 'name _id ')
       .exec(),
   ]);
   if (!result || !totalDocuments) throw new Error('Fetch wards failed');
@@ -26,7 +25,7 @@ const getById = async (id) => {
   const result = await Ward.findById(id)
     .lean()
     .select('name _id codeName shortCodeName')
-    .populate('districtId provinceId', 'name _id')
+    .populate('district province', 'name _id')
     .exec();
   if (!result) throw new Error('Ward not found');
   return result;
