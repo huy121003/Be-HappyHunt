@@ -4,7 +4,6 @@ const categoryService = require('./category.service');
 require('dotenv').config();
 
 const create = async (req, res) => {
-  console.log(req.body);
   try {
     const result = await categoryService.create({
       ...req.body,

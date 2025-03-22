@@ -65,6 +65,19 @@ const postSchema = new Schema(
 
 applyAutoIncrement(mongoose, postSchema, 'post');
 postSchema.plugin(mongoose_delete, { overrideMethods: 'all' });
-
+postSchema.index(
+  {
+    name: 'text',
+    description: 'text',
+    'attributes.name': 'text',
+  },
+  {
+    weights: {
+      name: 10,
+      description: 5,
+      'attributes.name': 2,
+    },
+  }
+);
 const Post = model('post', postSchema);
 module.exports = Post;

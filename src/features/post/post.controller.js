@@ -65,8 +65,7 @@ const updateCheckingStatus = async (req, res) => {
 const countStatus = async (req, res) => {
   try {
     const result = await postService.countStatus(Number(req.params._id));
-    console.log(req.params._id);
-    console.log(result);
+
     return apiHandler.sendSuccessWithData(
       res,
       'Count Status successfully',
@@ -78,10 +77,23 @@ const countStatus = async (req, res) => {
 };
 const getAllPagination = async (req, res) => {
   try {
-    const result = await postService.getAllPagination({
-      ...req.query,
-      createdBy: Number(req.params.id),
-    });
+    const result = await postService.getAllPagination(
+      {
+        ...req.query,
+      },
+      req.userAccess._id
+    );
+    return apiHandler.sendSuccessWithData(res, 'List posts', result);
+  } catch (error) {
+    return apiHandler.sendErrorMessage(res, error.message);
+  }
+};
+const getAllSuggestionsPagination = async (req, res) => {
+  try {
+    const result = await postService.getAllSuggestionsPagination(
+      req.query,
+      req.userAccess._id
+    );
     return apiHandler.sendSuccessWithData(res, 'List posts', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
@@ -89,7 +101,7 @@ const getAllPagination = async (req, res) => {
 };
 const getById = async (req, res) => {
   try {
-    const result = await postService.getById(req.params.id);
+    const result = await postService.getById(req.params.id, req.userAccess._id);
     return apiHandler.sendSuccessWithData(res, 'Post', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
@@ -97,7 +109,10 @@ const getById = async (req, res) => {
 };
 const getBySlug = async (req, res) => {
   try {
-    const result = await postService.getBySlug(req.params.slug);
+    const result = await postService.getBySlug(
+      req.params.slug,
+      req.userAccess._id
+    );
     return apiHandler.sendSuccessWithData(res, 'Post', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
@@ -125,7 +140,10 @@ const countSold = async (req, res) => {
 };
 const updateClickCount = async (req, res) => {
   try {
-    const result = await postService.updateClickCount(req.params.id.req.userAccess._id);
+    const result = await postService.updateClickCount(
+      req.params.id,
+      req.userAccess._id
+    );
     return apiHandler.sendSuccessWithData(res, 'Update click count', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
@@ -144,4 +162,5 @@ module.exports = {
   countSold,
   updateClickCount,
   updateCheckingStatus,
+  getAllSuggestionsPagination,
 };

@@ -1,6 +1,11 @@
 require('dotenv').config();
 const { uploadMultiple } = require('../file/file.service');
-const { Post, HistoryClickPost } = require('../../models');
+const {
+  Post,
+  HistoryClickPost,
+  FavoritePost,
+  Account,
+} = require('../../models');
 const autoSlug = require('../../helpers/autoSlug');
 const exportFilter = require('./post.filter');
 const dayjs = require('dayjs');
@@ -93,12 +98,12 @@ const countStatus = async (id) => {
     EXPIRED: counts['EXPIRED'] || 0,
   };
 };
-const getAllPagination = async (data) => {
-  const { page, size, sort, ...filter } = (await exportFilter(data)).filter;
-  const [totalDocuments, result] = await Promise.all([
+const getAllPagination = async (data, userId) => {
+  const { page, size, sort, ...filter } = exportFilter(data);
+  const [totalDocuments, posts] = await Promise.all([
     Post.countDocuments(filter),
     Post.find(filter)
-      .select('-__v -deleted ')
+      .select('-__v -deleted')
       .populate(
         'category categoryParent address.province address.district address.ward createdBy',
         'name _id avatar phoneNumber'
@@ -106,8 +111,19 @@ const getAllPagination = async (data) => {
       .sort(sort)
       .limit(size)
       .skip(page * size)
+      .lean()
       .exec(),
   ]);
+
+  const result = await Promise.all(
+    posts.map(async (post) => ({
+      ...post,
+      isFavorite: !!(await FavoritePost.findOne({
+        post: post._id,
+        createdBy: userId,
+      })),
+    }))
+  );
 
   if (!result || !totalDocuments) throw new Error('Fetch post failed');
 
@@ -118,6 +134,94 @@ const getAllPagination = async (data) => {
     pageNumber: page,
   };
 };
+const getAllSuggestionsPagination = async (data, userId) => {
+  const [categorySuggestions, user, favoritePost] = await Promise.all([
+    Post.find({ createdBy: userId })
+      .select('category categoryParent')
+      .skip(0)
+      .limit(10)
+      .sort({ createdAt: -1 })
+      .lean(),
+    Account.findById(userId).lean(),
+    FavoritePost.find({ createdBy: userId })
+      .select('post')
+      .populate('post', 'category categoryParent')
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .lean(),
+  ]);
+
+  if (!user) throw new Error('User not found');
+  let newCategorySuggestions = [];
+  if (favoritePost.length > 0) {
+    newCategorySuggestions = [
+      ...newCategorySuggestions,
+      ...favoritePost.map((item) => ({ ...item.post })),
+    ];
+  }
+  if (categorySuggestions.length > 0) {
+    newCategorySuggestions = [
+      ...newCategorySuggestions,
+      ...categorySuggestions,
+    ];
+  }
+  const categoryMap = new Map();
+  newCategorySuggestions.forEach(({ category, categoryParent }) => {
+    const key = `${categoryParent}-${category}`;
+    if (!categoryMap.has(key))
+      categoryMap.set(key, { category, categoryParent });
+  });
+
+  const finalCategorySuggestions = [...categoryMap.values()];
+
+  const { page, size, sort, ...filter } = exportFilter({
+    ...data,
+    ...(user.address && {
+      province: user.address.province,
+      district: user.address.district,
+      ward: user.address.ward,
+    }),
+  });
+
+  const query = {
+    ...filter,
+    status: 'SELLING',
+    createdBy: { $ne: userId },
+    ...(finalCategorySuggestions.length > 0 && {
+      $or: finalCategorySuggestions,
+    }),
+  };
+  const [totalDocuments, result] = await Promise.all([
+    Post.countDocuments(query),
+    Post.find(query)
+      .select('-__v -deleted')
+      .populate(
+        'category categoryParent address.province address.district address.ward createdBy',
+        'name _id avatar phoneNumber slug'
+      )
+      .sort(sort)
+      .skip(page * size)
+      .limit(size)
+      .lean(),
+  ]);
+  const res = await Promise.all(
+    result.map(async (post) => ({
+      ...post,
+      isFavorite: !!(await FavoritePost.findOne({
+        post: post._id,
+        createdBy: userId,
+      })),
+    }))
+  );
+
+  return {
+    documentList: res,
+    totalDocuments,
+    pageSize: size,
+    pageNumber: page,
+  };
+};
+
 const updateCheckingStatus = async (id, post) => {
   const result = await Post.findByIdAndUpdate(
     id,
@@ -135,27 +239,44 @@ const updateCheckingStatus = async (id, post) => {
   return result;
 };
 
-const getById = async (id) => {
-  const result = await Post.findById(id)
+const getById = async (id, userId) => {
+  const [result] = await Post.findById(id)
     .select(' -updatedAt -__v')
     .populate(
       'category categoryParent address.province address.district address.ward createdBy',
-      'name _id avatar phoneNumber'
+      'name _id avatar phoneNumber slug'
     )
+    .lean()
     .exec();
+
   if (!result) throw new Error('Post not found');
-  return result;
+  const favorite = await FavoritePost.findOne({ post: id, createdBy: userId });
+
+  return {
+    ...result,
+    isFavorite: !!favorite,
+  };
 };
-const getBySlug = async (slug) => {
+const getBySlug = async (slug, userId) => {
   const result = await Post.findOne({ slug })
     .select(' -updatedAt -__v')
     .populate(
       'category categoryParent address.province address.district address.ward createdBy',
-      'name _id avatar phoneNumber'
+      'name _id avatar phoneNumber slug'
     )
+    .lean()
     .exec();
+
   if (!result) throw new Error('Post not found');
-  return result;
+  const favorite = await FavoritePost.findOne({
+    post: result._id,
+    createdBy: userId,
+  });
+
+  return {
+    ...result,
+    isFavorite: !!favorite,
+  };
 };
 const remove = async (id) => {
   const result = await Post.deleteById(id);
@@ -203,4 +324,5 @@ module.exports = {
   countSold,
   updateClickCount,
   updateCheckingStatus,
+  getAllSuggestionsPagination,
 };

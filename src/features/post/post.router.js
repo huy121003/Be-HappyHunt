@@ -21,10 +21,11 @@ router.get(
   authJwt.accessToken,
   postController.countStatus
 );
+router.get('/pagination', authJwt.accessToken, postController.getAllPagination);
 router.get(
-  '/:id/pagination',
+  '/suggestion',
   authJwt.accessToken,
-  postController.getAllPagination
+  postController.getAllSuggestionsPagination
 );
 router.get('/:id', authJwt.accessToken, postController.getById);
 router.delete('/:id', authJwt.accessToken, postController.remove);

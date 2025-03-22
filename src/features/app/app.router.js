@@ -13,6 +13,8 @@ const adminRouter = require('../admin/admin.router');
 const userRouter = require('../user/user.router');
 const postRouter = require('../post/post.router');
 const evaluateRouter = require('../evaluate/evaluate.router');
+const favoritePostRouter = require('../favorite-post/favoritePost.router');
+const historyClickRouter = require('../history-click/historyClick.router');
 const express = require('express');
 const app = express();
 
@@ -31,5 +33,7 @@ app.use('/admin/', adminRouter);
 app.use('/user/', userRouter);
 app.use('/post/', postRouter);
 app.use('/evaluate/', evaluateRouter);
+app.use('/favorite-post/', favoritePostRouter);
+app.use('/history-click/', historyClickRouter);
 
 module.exports = app;

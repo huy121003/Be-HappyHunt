@@ -14,7 +14,6 @@ const Policy = require('./policy');
 const Post = require('./post');
 const Report = require('./report');
 const Role = require('./role');
-const SampleMessage = require('./sampleMessage');
 const Banner = require('./banner');
 
 module.exports = {
@@ -34,6 +33,5 @@ module.exports = {
   Post,
   Report,
   Role,
-  SampleMessage,
   Banner,
 };
