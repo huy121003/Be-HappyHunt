@@ -38,4 +38,9 @@ router.patch(
   postController.updateClickCount
 );
 
+router.patch(
+  '/pushed-at/:id',
+  authJwt.accessToken,
+  postController.updatePushedAt
+);
 module.exports = router;

@@ -149,6 +149,14 @@ const updateClickCount = async (req, res) => {
     return apiHandler.sendErrorMessage(res, error.message);
   }
 };
+const updatePushedAt = async (req, res) => {
+  try {
+    const result = await postService.updatePushedAt(req.params.id);
+    return apiHandler.sendSuccessWithData(res, 'Update pushedAt', result);
+  } catch (error) {
+    return apiHandler.sendErrorMessage(res, error.message);
+  }
+};
 
 module.exports = {
   create,
@@ -163,4 +171,5 @@ module.exports = {
   updateClickCount,
   updateCheckingStatus,
   getAllSuggestionsPagination,
+  updatePushedAt,
 };

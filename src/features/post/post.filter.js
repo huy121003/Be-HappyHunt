@@ -14,6 +14,15 @@ const exportFilter = (post) => {
         { name: new RegExp(post.name, 'i') },
       ],
     }),
+    ...(post.attribute &&
+      post.attribute.length > 0 && {
+        attributes: post.attribute.map((item) => ({
+          $elemMatch: {
+            name: item.name,
+            value: item.value,
+          },
+        })),
+      }),
 
     ...(post.address && {
       $or: [
@@ -27,7 +36,8 @@ const exportFilter = (post) => {
           'address.province': post.address.province,
         },
         post.address.province && { 'address.province': post.address.province },
-      ].filter(Boolean), // Lọc bỏ giá trị `undefined`
+        {},
+      ].filter(Boolean),
     }),
     ...(post.category && { category: post.category }),
     ...(post.categoryParent && { categoryParent: post.categoryParent }),

@@ -40,6 +40,14 @@ const getById = async (req, res) => {
     return apiHandler.sendErrorMessage(res, error.message);
   }
 };
+const getBySlug = async (req, res) => {
+  try {
+    const result = await categoryService.getBySlug(req.params.slug);
+    return apiHandler.sendSuccessWithData(res, 'Category', result);
+  } catch (error) {
+    return apiHandler.sendErrorMessage(res, error.message);
+  }
+};
 const update = async (req, res) => {
   try {
     const result = await categoryService.update(req.params.id, {
@@ -68,6 +76,14 @@ const getAllParent = async (req, res) => {
     return apiHandler.sendErrorMessage(res, error.message);
   }
 };
+const getAllChild = async (req, res) => {
+  try {
+    const result = await categoryService.getAllChild(req.params.id);
+    return apiHandler.sendSuccessWithData(res, 'List categories', result);
+  } catch (error) {
+    return apiHandler.sendErrorMessage(res, error.message);
+  }
+};
 
 module.exports = {
   create,
@@ -77,4 +93,6 @@ module.exports = {
   remove,
   getAllParent,
   getAllPagination,
+  getBySlug,
+  getAllChild,
 };

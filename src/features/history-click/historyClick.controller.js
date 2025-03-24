@@ -1,3 +1,4 @@
+const { apiHandler } = require('../../helpers');
 const historyClickService = require('./historyClick.service');
 const getAllByPostId = async (req, res) => {
   try {
@@ -6,7 +7,7 @@ const getAllByPostId = async (req, res) => {
       rq.userAccess._id
     );
 
-    return apiHandler.sendSuccess(
+    return apiHandler.sendSuccessWithData(
       res,
       'Fetch history click successfully',
       result
@@ -18,7 +19,7 @@ const getAllByPostId = async (req, res) => {
 const countClicksByDay = async (req, res) => {
   try {
     const result = await historyClickService.countClicksByDay(req.params.id);
-    return apiHandler.sendSuccess(
+    return apiHandler.sendSuccessWithData(
       res,
       'Fetch history click successfully',
       result

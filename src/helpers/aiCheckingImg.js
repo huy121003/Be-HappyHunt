@@ -4,19 +4,17 @@ const axios = require('axios');
  * @param {string} imagePath - Đường dẫn tới file ảnh
  * @returns {Promise<Object>} - Kết quả phân tích từ API
  */
+require('dotenv').config();
 const checkImage = async (imagePath) => {
   try {
-    const response = await axios.get(
-      'https://api.sightengine.com/1.0/check-workflow.json',
-      {
-        params: {
-          url: imagePath,
-          workflow: 'wfl_i82TKxJD9c9oVBe9cQW2k',
-          api_user: '1222006132',
-          api_secret: 'RX7Rro7YXqvzRhPnvwNsVWfUEQyin8Xt',
-        },
-      }
-    );
+    const response = await axios.get(process.env.SIGHTENGINE_API_URL, {
+      params: {
+        url: imagePath,
+        workflow: process.env.SIGHTENGINE_API_WORKFLOW,
+        api_user: process.env.SIGHTENGINE_API_USER,
+        api_secret: process.env.SIGHTENGINE_API_SECRET,
+      },
+    });
 
     return response.data;
   } catch (error) {

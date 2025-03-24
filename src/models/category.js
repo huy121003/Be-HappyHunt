@@ -20,6 +20,7 @@ const categorySchema = new Schema(
         values: [{ type: String, trim: true }],
         isRequired: { type: Boolean, default: false },
         isShow: { type: Boolean, default: false },
+        isFilter: { type: Boolean, default: false },
         type: {
           type: String,
           required: true,

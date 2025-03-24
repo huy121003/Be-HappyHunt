@@ -11,12 +11,14 @@ router.get(
 );
 router.get('/', authJwt.accessToken, categoryController.getAll);
 router.get('/parent', authJwt.accessToken, categoryController.getAllParent);
+router.get('/child/:id', authJwt.accessToken, categoryController.getAllChild);
 router.get(
   '/:id',
   authJwt.accessToken,
   categoryValidator.getById,
   categoryController.getById
 );
+router.get('/slug/:slug', authJwt.accessToken, categoryController.getBySlug);
 router.patch(
   '/:id',
   authJwt.accessToken,

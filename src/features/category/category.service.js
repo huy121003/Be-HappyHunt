@@ -58,7 +58,15 @@ const getAll = async (data) => {
 const getById = async (id) => {
   const result = await Category.findById(id)
     .select('-createdAt -updatedAt -__v')
-    .populate('parent', 'name _id')
+    .populate('parent', 'name _id slug icon')
+    .exec();
+  if (!result) throw new Error('Category not found');
+  return result;
+};
+const getBySlug = async (slug) => {
+  const result = await Category.findOne({ slug })
+    .select('-createdAt -updatedAt -__v')
+    .populate('parent', 'name _id slug icon')
     .exec();
   if (!result) throw new Error('Category not found');
   return result;
@@ -98,14 +106,38 @@ const getAllParent = async (data) => {
       ...filter,
       parent: null,
     })
-      .select('name _id parent icon')
+      .select('name _id parent icon slug')
       .limit(size)
       .skip(page * size)
-      .populate('parent', 'name _id')
+      .populate('parent', 'name _id slug icon')
 
       .exec(),
   ]);
   if (!result) throw new Error('Fetch parent category failed');
+  if (!totalDocuments) throw new Error('Fetch total documents failed');
+  return {
+    documentList: result,
+    totalDocuments,
+    pageSize: size,
+    pageNumber: page,
+  };
+};
+const getAllChild = async (id) => {
+  const [totalDocuments, result] = await Promise.all([
+    Category.countDocuments({
+      categoryParent: id,
+    }),
+    Category.find({
+      categoryParent: id,
+    })
+      .select('name _id parent icon slug')
+      .limit(size)
+      .skip(page * size)
+      .populate('parent', 'name _id slug icon')
+
+      .exec(),
+  ]);
+  if (!result) throw new Error('Fetch child category failed');
   if (!totalDocuments) throw new Error('Fetch total documents failed');
   return {
     documentList: result,
@@ -123,4 +155,6 @@ module.exports = {
   update,
   remove,
   getAllParent,
+  getBySlug,
+  getAllChild,
 };

@@ -1,5 +1,6 @@
 require('dotenv').config();
 const { uploadMultiple } = require('../file/file.service');
+const postHelper = require('./post.helper');
 const {
   Post,
   HistoryClickPost,
@@ -25,7 +26,7 @@ const create = async (data) => {
         index: index + 1,
       };
     }),
-    status: 'SELLING',
+    status: 'WAITING',
     address: JSON.parse(data.address),
     attributes: JSON.parse(data.attributes),
     slug: autoSlug(data.name),
@@ -108,7 +109,10 @@ const getAllPagination = async (data, userId) => {
         'category categoryParent address.province address.district address.ward createdBy',
         'name _id avatar phoneNumber'
       )
-      .sort(sort)
+      .sort({
+        ...sort,
+        pushedAt: -1,
+      })
       .limit(size)
       .skip(page * size)
       .lean()
@@ -152,27 +156,13 @@ const getAllSuggestionsPagination = async (data, userId) => {
   ]);
 
   if (!user) throw new Error('User not found');
-  let newCategorySuggestions = [];
-  if (favoritePost.length > 0) {
-    newCategorySuggestions = [
-      ...newCategorySuggestions,
-      ...favoritePost.map((item) => ({ ...item.post })),
-    ];
-  }
-  if (categorySuggestions.length > 0) {
-    newCategorySuggestions = [
-      ...newCategorySuggestions,
-      ...categorySuggestions,
-    ];
-  }
-  const categoryMap = new Map();
-  newCategorySuggestions.forEach(({ category, categoryParent }) => {
-    const key = `${categoryParent}-${category}`;
-    if (!categoryMap.has(key))
-      categoryMap.set(key, { category, categoryParent });
-  });
 
-  const finalCategorySuggestions = [...categoryMap.values()];
+  const finalCategorySuggestions = [
+    ...postHelper.sortCategory(
+      favoritePost.map((item) => item.post),
+      categorySuggestions
+    ),
+  ];
 
   const { page, size, sort, ...filter } = exportFilter({
     ...data,
@@ -199,7 +189,10 @@ const getAllSuggestionsPagination = async (data, userId) => {
         'category categoryParent address.province address.district address.ward createdBy',
         'name _id avatar phoneNumber slug'
       )
-      .sort(sort)
+      .sort({
+        ...sort,
+        pushedAt: -1,
+      })
       .skip(page * size)
       .limit(size)
       .lean(),
@@ -240,7 +233,7 @@ const updateCheckingStatus = async (id, post) => {
 };
 
 const getById = async (id, userId) => {
-  const [result] = await Post.findById(id)
+  const result = await Post.findById(id)
     .select(' -updatedAt -__v')
     .populate(
       'category categoryParent address.province address.district address.ward createdBy',
@@ -311,6 +304,15 @@ const updateClickCount = async (id, userId) => {
   if (!result || !createClick) throw new Error('Update click count failed');
   return result;
 };
+const updatePushedAt = async (id) => {
+  const result = await Post.findByIdAndUpdate(
+    id,
+    { pushedAt: new Date() },
+    { new: true }
+  );
+  if (!result) throw new Error('Update pushedAt failed');
+  return result;
+};
 
 module.exports = {
   create,
@@ -325,4 +327,5 @@ module.exports = {
   updateClickCount,
   updateCheckingStatus,
   getAllSuggestionsPagination,
+  updatePushedAt,
 };

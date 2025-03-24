@@ -4,6 +4,10 @@ const historyClickController = require('./historyClick.controller');
 const { authJwt } = require('../../middlewares');
 
 router.get('/:id', authJwt.accessToken, historyClickController.getAllByPostId);
-router.post('/:id/count-every-day', historyClickController.countClicksByDay);
+router.get(
+  '/:id/count-every-day',
+  authJwt.accessToken,
+  historyClickController.countClicksByDay
+);
 
 module.exports = router;
