@@ -7,20 +7,20 @@ const roleSchema = new Schema(
     _id: Number,
     name: {
       type: String,
-      required: [true, 'Name is required'],
-      trim: [true, 'Name is required'],
-      unique: [true, 'Name is required'],
+      required: true,
+      trim: true,
+      unique: true,
     },
     permissions: [
       {
         name: {
           type: String,
-          required: [true, 'Name is required'],
-          trim: [true, 'Name is required'],
+          required: true,
+          trim: true,
         },
         codeName: {
           type: String,
-          required: [true, 'Code name is required'],
+          required: true,
           trim: true,
         },
         isView: { type: Boolean, default: true },

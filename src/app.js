@@ -7,6 +7,7 @@ const path = require('path');
 const fs = require('fs');
 const app = express();
 const appRouter = require('./features/app/app.router');
+const { authLimiter } = require('./middlewares/authLimiter.middleware');
 require('./features/app/app.task');
 
 // Middleware
@@ -25,7 +26,7 @@ app.use(
 );
 
 // Định tuyến API
-app.use('/api/v1/', appRouter);
+app.use('/api/v1/', authLimiter, appRouter);
 app.use((err, req, res, next) => {
   return res.status(500).json({ error: 'Internal Server Error' });
 });

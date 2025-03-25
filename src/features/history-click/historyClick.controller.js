@@ -13,7 +13,13 @@ const getAllByPostId = async (req, res) => {
       result
     );
   } catch (error) {
-    return apiHandler.sendErrorMessage(res, error.message);
+    if (error.message.includes('notfound')) {
+      return apiHandler.sendNotFound(res, 'No history click found');
+    }
+    return apiHandler.sendErrorMessage(
+      res,
+      'An unexpected error occurred, please try again later'
+    );
   }
 };
 const countClicksByDay = async (req, res) => {
@@ -25,7 +31,13 @@ const countClicksByDay = async (req, res) => {
       result
     );
   } catch (error) {
-    return apiHandler.sendErrorMessage(res, error.message);
+    if (error.message.includes('notfound')) {
+      return apiHandler.sendNotFound(res, 'No history click found');
+    }
+    return apiHandler.sendErrorMessage(
+      res,
+      'An unexpected error occurred, please try again later'
+    );
   }
 };
 module.exports = {

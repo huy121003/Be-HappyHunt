@@ -7,7 +7,7 @@ const appController = require('./features/app/app.controller');
 
 (async () => {
   try {
-    await mongoConfig(); 
+    await mongoConfig();
 
     app.listen(port, '0.0.0.0', () => {
       console.log(`Server is running on port ${port}`);
@@ -18,7 +18,6 @@ const appController = require('./features/app/app.controller');
       appController.autoCreateRole(),
       appController.autoCreateAdmin(),
       appController.createAutoAddress(),
-      appController.autoCreatePolicy(),
     ]);
   } catch (error) {
     console.error('Error during startup:', error);

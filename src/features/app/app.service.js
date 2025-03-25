@@ -2,12 +2,11 @@ const ProvinceService = require('../province/province.service');
 const DistrictService = require('../district/district.service');
 const WardService = require('../ward/ward.service');
 const perimissionData = require('../permission/permission.data');
-const { Permission, Account, Role, Policy } = require('../../models');
+const { Permission, Account, Role } = require('../../models');
 
 require('dotenv').config();
 const bcrypt = require('bcrypt');
 
-const policyData = require('../policy/policy.data');
 const removeDiacritics = require('../../helpers/removeDiacritics');
 
 const createAutoAddress = async (provincesData) => {
@@ -131,20 +130,10 @@ const autoCreateAdmin = async (roleId) => {
   });
   return true;
 };
-const autoCreatePolicy = async () => {
-  const result = await Policy.create({
-    ...policyData,
-    createdBy: 1,
-    updatedBy: 1,
-  });
-  if (!result) throw new Error('Create policy failed');
-  return true;
-};
 
 module.exports = {
   createAutoAddress,
   autoCreatePermission,
   autoCreateRole,
   autoCreateAdmin,
-  autoCreatePolicy,
 };

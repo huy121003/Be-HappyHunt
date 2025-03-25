@@ -2,12 +2,16 @@ const Evaluate = require('../../models/evaluate');
 const exportFilter = require('./evaluate.filter');
 
 const create = async (data) => {
-  const result = await Evaluate.create({
-    ...data,
-  });
-  if (!result) throw new Error('Create evaluate failed');
+  try {
+    const result = await Evaluate.create({
+      ...data,
+    });
+    if (!result) throw new Error('create');
 
-  return result;
+    return result;
+  } catch (error) {
+    throw new Error(error.message);
+  }
 };
 
 const getByIdUser = async (userId, data) => {
@@ -22,7 +26,7 @@ const getByIdUser = async (userId, data) => {
       .lean()
       .exec(),
   ]);
-  if (!result || !totalDocuments) throw new Error('Fetch evaluate failed');
+  if (!result ) throw new Error('notfound');
   return {
     documentList: result,
     totalDocuments,
@@ -34,7 +38,7 @@ const countByUserId = async (userId) => {
   const result = await Evaluate.find({ target: userId });
 
   if (!result) {
-    throw new Error('Evaluate not found');
+    throw new Error('notfound');
   }
 
   const count = result.length;

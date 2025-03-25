@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
-const { apiHandler } = require('../helpers');
+const { HTTTT, apiHandler } = require('../helpers');
 const { Account } = require('../models');
 const comparePermissions = (accountPermissions, decodedPermissions) => {
   if (accountPermissions.length !== decodedPermissions.length) return false;
@@ -21,7 +21,11 @@ const comparePermissions = (accountPermissions, decodedPermissions) => {
 };
 
 const verifyToken = async (token) => {
-  if (!token) throw new Error('Token is required');
+  if (!token) {
+    const error = new Error('token: Token is required');
+    error.statusCode = 401;
+    throw error;
+  }
 
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
   const account = await Account.findOne({
@@ -32,14 +36,24 @@ const verifyToken = async (token) => {
   })
     .populate('role', 'name _id permissions')
     .lean();
-  if (!account) throw new Error('Account not found');
+  if (!account) {
+    const error = new Error('token: Account not found');
+    error.statusCode = 401;
+    throw error;
+  }
 
-  if (!account.isBanned) throw new Error('Account is banned');
+  if (!account.isBanned) {
+    const error = new Error('banned: Your account has been banned');
+    error.statusCode = 401;
+  }
   const accountPermissions = account?.role?.permissions || [];
   const decodedPermissions = decoded?.role?.permissions || [];
 
-  if (!comparePermissions(accountPermissions, decodedPermissions))
-    throw new Error('Permission denied');
+  if (!comparePermissions(accountPermissions, decodedPermissions)) {
+    const error = new Error('permission: Permission denied');
+    error.statusCode = 403;
+    throw error;
+  }
 
   return account;
 };
@@ -62,10 +76,23 @@ const accessToken = async (req, res, next) => {
 
     next();
   } catch (error) {
-    return apiHandler.sendUnauthorizedError(
-      res,
-      error.message || 'Token is invalid'
-    );
+    if (error.message.includes('token:')) {
+      return apiHandler.sendUnauthorizedError(
+        res,
+        error.message.split(':')[1].trim()
+      );
+    } else if (error.message.includes('banned:')) {
+      return apiHandler.sendUnauthorizedError(
+        res,
+        error.message.split(':')[1].trim()
+      );
+    } else if (error.message.includes('permission:')) {
+      return apiHandler.sendUnauthorizedError(
+        res,
+        error.message.split(':')[1].trim()
+      );
+    }
+    return apiHandler.sendUnauthorizedError(res, error.message);
   }
 };
 
@@ -87,10 +114,17 @@ const refreshToken = async (req, res, next) => {
     next();
   } catch (error) {
     res.clearCookie('refresh_token');
-    return apiHandler.sendValidationError(
-      res,
-      error.message || 'Refresh token is invalid'
-    );
+    if (error.message.includes('token:')) {
+      return apiHandler.sendUnauthorizedError(
+        res,
+        error.message.split(':')[1].trim()
+      );
+    } else if (error.message.includes('banned:')) {
+      return apiHandler.sendForbidden(res, error.message.split(':')[1].trim());
+    } else if (error.message.includes('permission:')) {
+      return apiHandler.sendForbidden(res, error.message.split(':')[1].trim());
+    }
+    return apiHandler.sendUnauthorizedError(res, error.message);
   }
 };
 

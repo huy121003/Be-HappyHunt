@@ -7,22 +7,22 @@ const districtSchema = new mongoose.Schema({
   _id: Number,
   codeName: {
     type: String,
-    required: [true, 'Code name is required'],
-    trim: [true, 'Code name is required'],
+    required: true,
+    trim: true,
   },
   name: {
     type: String,
-    required: [true, 'Name is required'],
-    trim: [true, 'Name is required'],
+    required: true,
+    trim: true,
   },
   province: { type: Number, required: true, ref: 'province' },
   divisionType: { type: String, default: 'district', trim: true },
   shortCodeName: {
     type: String,
-    required: [true, 'Short code name is required'],
+    required: true,
     trim: true,
   },
-  createdBy: { type: Number, ref: 'account', default: [null] },
+  createdBy: { type: Number, ref: 'account', default: null },
   updatedBy: { type: Number, ref: 'account', default: null },
 });
 

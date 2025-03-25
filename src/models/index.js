@@ -10,7 +10,6 @@ const Message = require('./message');
 const Notification = require('./notification');
 const Otp = require('./otp');
 const Permission = require('./permission');
-const Policy = require('./policy');
 const Post = require('./post');
 const Report = require('./report');
 const Role = require('./role');
@@ -29,7 +28,6 @@ module.exports = {
   Notification,
   Otp,
   Permission,
-  Policy,
   Post,
   Report,
   Role,

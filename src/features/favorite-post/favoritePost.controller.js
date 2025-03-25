@@ -8,7 +8,14 @@ const create = async (req, res) => {
     });
     return apiHandler.sendCreated(res, 'Favorite post  successfully', result);
   } catch (error) {
-    return apiHandler.sendErrorMessage(res, error.message);
+    if (error.message.includes('create')) {
+      return apiHandler.sendErrorMessage(res, 'Failed to create favorite post');
+    }
+
+    return apiHandler.sendErrorMessage(
+      res,
+      'An unexpected error occurred, please try again later'
+    );
   }
 };
 const remove = async (req, res) => {
@@ -19,7 +26,13 @@ const remove = async (req, res) => {
     );
     return apiHandler.sendCreated(res, 'Unfavorite post successfully', result);
   } catch (error) {
-    return apiHandler.sendErrorMessage(res, error.message);
+    if (error.message.includes('delete')) {
+      return apiHandler.sendErrorMessage(res, 'Failed to unfavorite post');
+    }
+    return apiHandler.sendErrorMessage(
+      res,
+      'An unexpected error occurred, please try again later'
+    );
   }
 };
 const getAllPagination = async (req, res) => {
@@ -34,7 +47,13 @@ const getAllPagination = async (req, res) => {
       result
     );
   } catch (error) {
-    return apiHandler.sendErrorMessage(res, error.message);
+    if (error.message.includes('notfound')) {
+      return apiHandler.sendNotFound(res, 'No favorite post found');
+    }
+    return apiHandler.sendErrorMessage(
+      res,
+      'An unexpected error occurred, please try again later'
+    );
   }
 };
 const getById = async (req, res) => {
@@ -49,7 +68,13 @@ const getById = async (req, res) => {
       result
     );
   } catch (error) {
-    return apiHandler.sendErrorMessage(res, error.message);
+    if (error.message.includes('notfound')) {
+      return apiHandler.sendNotFound(res, 'Favorite post not found');
+    }
+    return apiHandler.sendErrorMessage(
+      res,
+      'An unexpected error occurred, please try again later'
+    );
   }
 };
 

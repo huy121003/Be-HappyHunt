@@ -40,6 +40,7 @@
     "express": "^4.21.2",
     "express-fileupload": "^1.5.1",
     "express-list-endpoints": "^7.1.1",
+    "express-rate-limit": "^7.5.0",
     "express-validation": "^4.1.1",
     "fs": "^0.0.1-security",
     "joi": "^17.13.3",
@@ -49,6 +50,7 @@
     "mongoose-sequence": "^6.0.1",
     "node-cron": "^3.0.3",
     "path": "^0.12.7",
+    "socket.io": "^4.8.1",
     "twilio": "^5.4.2",
     "uuid": "^11.0.5",
     "uuidv4": "^6.2.13"

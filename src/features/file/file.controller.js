@@ -10,6 +10,9 @@ const uploadSingle = async (req, res) => {
 
     return sendCreated(res, 'File uploaded successfully', result);
   } catch (error) {
+    if (error.message.includes('upload')) {
+      return sendErrorMessage(res, 'Failed to upload file');
+    }
     return sendErrorMessage(res, error.message);
   }
 };
@@ -25,6 +28,9 @@ const uploadMultiple = async (req, res) => {
     const result = await fileService.uploadSingle(req.files.image);
     return apiHandler.sendCreated(res, 'File uploaded successfully', result);
   } catch (error) {
+    if (error.message.includes('upload')) {
+      return apiHandler.sendErrorMessage(res, 'Failed to upload file');
+    }
     return apiHandler.sendErrorMessage(res, error.message);
   }
 };

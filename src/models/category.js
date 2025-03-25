@@ -7,9 +7,9 @@ const categorySchema = new Schema(
     _id: Number,
     name: {
       type: String,
-      required: [true, 'Name is required'],
-      trim: [true, 'Name is required'],
-      unique: [true, 'Duplicate name'],
+      required: true,
+      trim: true,
+      unique: true,
     },
     parent: { type: Number, ref: 'category', default: null },
     isPayment: { type: Boolean, default: false },

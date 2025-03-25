@@ -7,13 +7,13 @@ const provinceSchema = new Schema({
   _id: Number,
   codeName: {
     type: String,
-    required: [true, 'Code name is required'],
+    required: true,
     trim: true,
   },
   name: {
     type: String,
-    required: [true, 'Name is required'],
-    trim: [true, 'Name is required'],
+    required: true,
+    trim: true,
   },
   divisionType: { type: String, default: 'province' },
   phoneCode: { type: Number, required: true, unique: true },

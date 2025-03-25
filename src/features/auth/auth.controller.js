@@ -8,7 +8,16 @@ const login = async (req, res) => {
     const result = await authService.login(req.body, res);
     return apiHandler.sendCreated(res, 'Login success', result);
   } catch (error) {
-    return apiHandler.sendErrorMessage(res, error.message);
+    if (error.message.includes('banned')) {
+      return apiHandler.sendForbidden(res, 'Your account has been banned');
+    }
+    if (error.message.includes('notfound')) {
+      return apiHandler.sendNotFound(res, 'The login information is incorrect');
+    }
+    return apiHandler.sendErrorMessage(
+      res,
+      'An unexpected error occurred. Please try again later.'
+    );
   }
 };
 
@@ -23,18 +32,30 @@ const register = async (req, res) => {
 
 const sendOtpRegister = async (req, res) => {
   try {
-    const account = await Account.findOne({
-      phoneNumber: req.body.phoneNumber,
-    });
-    if (account) return apiHandler.sendErrorMessage(res, 'Phone number exists');
-    const user = await Account.findOne({
-      username: req.body.username,
-    });
-    if (user) return apiHandler.sendErrorMessage(res, 'Username exists');
+    const [account, user] = await Promise.all([
+      Account.findOne({
+        phoneNumber: req.body.phoneNumber,
+      }),
+      Account.findOne({
+        username: req.body.username,
+      }),
+    ]);
+    if (account || user)
+      return apiHandler.sendConflict(
+        res,
+        'Phone number or username is already exist'
+      );
+
     await otpService.sendOtp(req.body.phoneNumber);
     return apiHandler.sendCreated(res, 'OTP has been sent');
   } catch (error) {
-    return apiHandler.sendErrorMessage(res, error.message);
+    if (error.message.includes('creat:')) {
+      return apiHandler.sendErrorMessage(res, 'Failed to send OTP');
+    }
+    return apiHandler.sendErrorMessage(
+      res,
+      'An unexpected error occurred. Please try again later.'
+    );
   }
 };
 
@@ -50,11 +71,20 @@ const sendOtpForgotPassword = async (req, res) => {
       phoneNumber: req.body.phoneNumber,
     });
     if (!account)
-      return apiHandler.sendValidationError(res, 'Phone number does not exist');
+      return apiHandler.sendNotFound(res, 'Phone number is not verified');
     await otpService.sendOtp(req.body.phoneNumber);
     return apiHandler.sendCreated(res, 'OTP has been sent');
   } catch (error) {
-    return apiHandler.sendErrorMessage(res, error.message);
+    if (error.message.includes('create:')) {
+      return apiHandler.sendErrorMessage(res, 'Failed to send OTP');
+    }
+    if (error.message.includes('unverified')) {
+      return apiHandler.sendNotFound(res, 'Phone number is not verified');
+    }
+    return apiHandler.sendErrorMessage(
+      res,
+      'An unexpected error occurred. Please try again later.'
+    );
   }
 };
 
@@ -66,7 +96,10 @@ const forgotPassword = async (req, res) => {
       `Reset password success, please check your phone number ${req.body.phoneNumber} to get new password`
     );
   } catch (error) {
-    return apiHandler.sendErrorMessage(res, error.message);
+    if (error.message.includes('update:')) {
+      return apiHandler.sendErrorMessage(res, 'Failed to reset password');
+    }
+    return apiHandler.sendErrorMessage(res, 'Failed to reset password');
   }
 };
 
@@ -75,7 +108,13 @@ const getAccountInfo = async (req, res) => {
     const result = await authService.getAccountInfo(req.userAccess);
     return apiHandler.sendSuccessWithData(res, 'Account information', result);
   } catch (error) {
-    return apiHandler.sendValidationError(res, error.message);
+    if (error.message.includes('notfound')) {
+      return apiHandler.sendNotFound(res, 'Account not found');
+    }
+    return apiHandler.sendValidationError(
+      res,
+      'An unexpected error occurred. Please try again later.'
+    );
   }
 };
 
@@ -84,7 +123,10 @@ const getNewAccessToken = async (req, res) => {
     result = await authService.getNewAccessToken(req.userRefresh);
     return apiHandler.sendSuccessWithData(res, 'New access token', result);
   } catch (error) {
-    return apiHandler.sendErrorMessage(res, error.message);
+    if (error.message.includes('notfound')) {
+      return apiHandler.sendNotFound(res, 'Cannot find account');
+    }
+    return apiHandler.sendErrorMessage(res, 'Failed to retrieve account');
   }
 };
 const changePassword = async (req, res) => {
@@ -93,7 +135,19 @@ const changePassword = async (req, res) => {
     res.clearCookie('refresh_token');
     return apiHandler.sendCreated(res, 'Change password success');
   } catch (error) {
-    return apiHandler.sendErrorMessage(res, error.message);
+    if (error.message.includes('notfound')) {
+      return apiHandler.sendNotFound(res, 'Account not found');
+    }
+    if (error.message.includes('validator')) {
+      return apiHandler.sendValidationError(
+        res,
+        'Current password is incorrect'
+      );
+    }
+    if (error.message.includes('update:')) {
+      return apiHandler.sendErrorMessage(res, 'Failed to change password');
+    }
+    return apiHandler.sendErrorMessage(res, 'An unexpected error occurred');
   }
 };
 const updateProfile = async (req, res) => {
@@ -104,7 +158,10 @@ const updateProfile = async (req, res) => {
     });
     return apiHandler.sendCreated(res, 'Update profile success', result);
   } catch (error) {
-    return apiHandler.sendErrorMessage(res, error.message);
+    if (error.message.includes('update:')) {
+      return apiHandler.sendErrorMessage(res, 'Failed to update profile');
+    }
+    return apiHandler.sendErrorMessage(res, 'An unexpected error occurred');
   }
 };
 

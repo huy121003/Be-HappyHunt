@@ -9,7 +9,7 @@ const uploadSingle = async (file) => {
       },
       (error, result) => {
         if (error) {
-          reject(`Có lỗi xảy ra khi upload file: ${error.message}`);
+          reject(`Upload failed: ${error}`);
         } else {
           resolve(result.url);
         }
