@@ -1,18 +1,16 @@
 const app = require('./app');
 const { mongoConfig } = require('./configs');
 require('dotenv').config();
-
-const port = process.env.POST_SERVER || 8000;
 const appController = require('./features/app/app.controller');
+const ngrokConnect = require('./configs/ngrok.config');
 
 (async () => {
   try {
     await mongoConfig();
-
-    app.listen(port, '0.0.0.0', () => {
-      console.log(`Server is running on port ${port}`);
+    await ngrokConnect();
+    app.listen(process.env.POST_SERVER, '0.0.0.0', () => {
+      console.log(`🚀 Server is running on port ${process.env.POST_SERVER}`);
     });
-
     await Promise.all([
       appController.autoCreatePermission(),
       appController.autoCreateRole(),
@@ -20,7 +18,7 @@ const appController = require('./features/app/app.controller');
       appController.createAutoAddress(),
     ]);
   } catch (error) {
-    console.error('Error during startup:', error);
+    console.error('❌ Error during startup:', error);
     process.exit(1);
   }
 })();

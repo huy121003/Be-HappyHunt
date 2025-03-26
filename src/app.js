@@ -9,7 +9,7 @@ const app = express();
 const appRouter = require('./features/app/app.router');
 const { authLimiter } = require('./middlewares/authLimiter.middleware');
 require('./features/app/app.task');
-
+const paymentController = require('./features/payment/payment.controller');
 // Middleware
 app.use(fileUpload());
 app.use(cookieParser());
@@ -24,7 +24,11 @@ app.use(
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
   })
 );
-
+app.post('/payos/webhook', async (req, res) => {
+  console.log('Webhook received:', req.body);
+  await paymentController.updatePaymentHistory(req, res);
+  res.status(200).send('Webhook received');
+});
 // Định tuyến API
 app.use('/api/v1/', authLimiter, appRouter);
 app.use((err, req, res, next) => {

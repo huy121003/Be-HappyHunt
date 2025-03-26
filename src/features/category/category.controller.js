@@ -145,10 +145,7 @@ const getAllChild = async (req, res) => {
     if (error.message.includes('notfound')) {
       return apiHandler.sendNotFound(res, 'No categories found');
     }
-    return apiHandler.sendErrorMessage(
-      res,
-      'An unexpected error occurred. Please try again later.'
-    );
+    return apiHandler.sendErrorMessage(res, error.message);
   }
 };
 

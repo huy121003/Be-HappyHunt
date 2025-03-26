@@ -3,7 +3,7 @@ const { Post } = require('../../models');
 const evaluateImageContent = require('../../helpers/checkingImgaePoint');
 require('dotenv').config();
 const dayjs = require('dayjs');
-const checkImage = require('../../helpers/aiCheckingImg');
+const sightEngineConnect = require('../../configs/sightengine.config');
 
 cron.schedule('*/1 * * * *', async () => {
   try {
@@ -25,7 +25,7 @@ cron.schedule('*/1 * * * *', async () => {
         post.images.map(async (image) => {
           const reasonReject = [];
           try {
-            const result = await checkImage(image.url);
+            const result = await sightEngineConnect(image.url);
             if (!result || result.status !== 'success') {
               throw new Error(`Invalid API response for ${image.url}`);
             }
@@ -43,10 +43,7 @@ cron.schedule('*/1 * * * *', async () => {
               );
             }
           } catch (error) {
-            console.error(
-              ` Error checking image ${image.url}:`,
-              error.message
-            );
+            console.error(` Error checking image ${image.url}:`, error.message);
             reasonReject.push(error.message);
             aiCheckFailed = true;
             allApproved = false;
@@ -99,8 +96,6 @@ cron.schedule('*/1 * * * *', async () => {
   }
 });
 
-
-
 cron.schedule('*/5 * * * *', async () => {
   console.log(' Checking posts with status WAITING|AI_CHECKING_FAILED...');
   try {
@@ -109,7 +104,9 @@ cron.schedule('*/5 * * * *', async () => {
     });
     for (const post of posts) {
       if (dayjs().diff(dayjs(post.createdAt), 'days') > 1) {
-        const deletePost = await Post.deletyById(post._id);
+        const deletePost = await Post.findByIdAndUpdate(post._id, {
+          status: 'DELETED',
+        });
         if (!deletePost) {
           console.log(` Delete post ${post._id} failed`);
         } else {

@@ -31,7 +31,7 @@ const dbState = [
 
 const mongo = async () => {
   try {
-    await mongoose.connect(process.env.DB_MONGO); // Không cần thêm các options cũ
+    await mongoose.connect(process.env.DB_MONGO); 
 
     const state = mongoose.connection.readyState;
     console.log(`✅ Connected to database: ${dbState[state].name}`);

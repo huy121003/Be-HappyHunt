@@ -14,6 +14,8 @@ const postRouter = require('../post/post.router');
 const evaluateRouter = require('../evaluate/evaluate.router');
 const favoritePostRouter = require('../favorite-post/favoritePost.router');
 const historyClickRouter = require('../history-click/historyClick.router');
+const payOSRouter = require('../payos/payos.router');
+const paymentRouter = require('../payment/payment.router');
 const express = require('express');
 const app = express();
 
@@ -33,5 +35,7 @@ app.use('/post/', postRouter);
 app.use('/evaluate/', evaluateRouter);
 app.use('/favorite-post/', favoritePostRouter);
 app.use('/history-click/', historyClickRouter);
+app.use('/payos/', payOSRouter);
+app.use('/payment/', paymentRouter);
 
 module.exports = app;

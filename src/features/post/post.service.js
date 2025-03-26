@@ -156,7 +156,7 @@ const getAllPagination = async (data, userId) => {
       }))
     );
 
-    if ( !posts) throw new Error('notfound');
+    if (!posts) throw new Error('notfound');
 
     return {
       documentList: result,
@@ -228,7 +228,7 @@ const getAllSuggestionsPagination = async (data, userId) => {
         .limit(size)
         .lean(),
     ]);
-    if (!result ) throw new Error('notfound');
+    if (!result) throw new Error('notfound');
     const res = await Promise.all(
       result.map(async (post) => ({
         ...post,
@@ -238,7 +238,7 @@ const getAllSuggestionsPagination = async (data, userId) => {
         })),
       }))
     );
-    if (!res ) throw new Error('notfound');
+    if (!res) throw new Error('notfound');
     return {
       documentList: res,
       totalDocuments,

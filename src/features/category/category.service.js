@@ -40,7 +40,7 @@ const getAllPagination = async (data) => {
         .exec(),
     ]);
 
-    if (!result ) throw new Error('notfound');
+    if (!result) throw new Error('notfound');
 
     return {
       documentList: result,
@@ -143,7 +143,7 @@ const getAllParent = async (data) => {
 
         .exec(),
     ]);
-    if (!result ) throw new Error('notfound');
+    if (!result) throw new Error('notfound');
     return {
       documentList: result,
       totalDocuments,
@@ -164,19 +164,12 @@ const getAllChild = async (id) => {
         categoryParent: id,
       })
         .select('name _id parent icon slug')
-        .limit(size)
-        .skip(page * size)
         .populate('parent', 'name _id slug icon')
 
         .exec(),
     ]);
-    if (!result ) throw new Error('notfound');
-    return {
-      documentList: result,
-      totalDocuments,
-      pageSize: size,
-      pageNumber: page,
-    };
+    if (!result) throw new Error('notfound');
+    return result;
   } catch (error) {
     throw new Error(error.message);
   }

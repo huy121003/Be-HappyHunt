@@ -33,6 +33,7 @@ const postSchema = new Schema(
         'WAITING',
         'HIDDEN',
         'AI_CHECKING_FAILED',
+        'DELETED',
       ],
       default: 'WAITING',
     },

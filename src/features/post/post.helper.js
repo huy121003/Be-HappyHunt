@@ -3,7 +3,9 @@ const sortCategory = (favoritePost, categorySuggestions) => {
 
   const newCategorySuggestions = favoritePost.concat(categorySuggestions);
 
-  newCategorySuggestions.forEach(({ category, categoryParent }) => {
+  newCategorySuggestions.forEach((item) => {
+    if (!item) return; // Skip null or undefined items
+    const { category, categoryParent } = item;
     const parent = categoryParent ? String(categoryParent) : 'unknown';
     const key = category ? `${parent}-${String(category)}` : parent;
     categoryCount.set(key, (categoryCount.get(key) || 0) + 1);

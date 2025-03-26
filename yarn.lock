@@ -1044,10 +1044,102 @@
   dependencies:
     sparse-bitfield "^3.0.3"
 
+"@ngrok/ngrok-android-arm-eabi@1.4.1":
+  version "1.4.1"
+  resolved "https://registry.npmjs.org/@ngrok/ngrok-android-arm-eabi/-/ngrok-android-arm-eabi-1.4.1.tgz"
+  integrity sha512-KQe59T8PhFg5XvWypcOCIgUakk/A9ipD1UvSgGuLI7pYIiVcx6oyW12RxCJr6cfdO0K5GrbUG6dlEXSmDD4jBg==
+
+"@ngrok/ngrok-android-arm64@1.4.1":
+  version "1.4.1"
+  resolved "https://registry.npmjs.org/@ngrok/ngrok-android-arm64/-/ngrok-android-arm64-1.4.1.tgz"
+  integrity sha512-WPYJenabIArkGmeVhBcIVtgXmLK297pfJCYHP1Tnw220ANEXFdo7EW4dZoP0AA0gxciFHGYnQUMOn1Meo0IQFQ==
+
+"@ngrok/ngrok-darwin-arm64@1.4.1":
+  version "1.4.1"
+  resolved "https://registry.npmjs.org/@ngrok/ngrok-darwin-arm64/-/ngrok-darwin-arm64-1.4.1.tgz"
+  integrity sha512-hJW+ZDJ0uV7PieZAdZHdzR/WBRctjOkLzFqHTxSuNbmBr9uIg6PGf1dB2lySszK1wyKZL7wvh4GedQ4vSU5lkw==
+
+"@ngrok/ngrok-darwin-universal@1.4.1":
+  version "1.4.1"
+  resolved "https://registry.npmjs.org/@ngrok/ngrok-darwin-universal/-/ngrok-darwin-universal-1.4.1.tgz"
+  integrity sha512-rUZKl/vr2cALpT1Ng91h8Jf5OfDtF+zNEC65AFWthPkHJpPQCLvuEC9hyF8XI52Bv45ORRb1YKR3hdhjZ4WGHQ==
+
+"@ngrok/ngrok-darwin-x64@1.4.1":
+  version "1.4.1"
+  resolved "https://registry.npmjs.org/@ngrok/ngrok-darwin-x64/-/ngrok-darwin-x64-1.4.1.tgz"
+  integrity sha512-UKIkRpsGBywAqvwz8L6R8ITz+xxPoZ58LSFhZoMAWm2alGOdA2js1eHZwwVTSz96/tmmSRE/H+r69TvtuL0lXA==
+
+"@ngrok/ngrok-freebsd-x64@1.4.1":
+  version "1.4.1"
+  resolved "https://registry.npmjs.org/@ngrok/ngrok-freebsd-x64/-/ngrok-freebsd-x64-1.4.1.tgz"
+  integrity sha512-v1xXqmu3f4W1PQt+NKlqXgLcpULYCSwStKGRSdgXljg1bRdOnW3ZdjbGzrIdKwQ7OcwZP34KbP13G+hqcTxo5Q==
+
+"@ngrok/ngrok-linux-arm-gnueabihf@1.4.1":
+  version "1.4.1"
+  resolved "https://registry.npmjs.org/@ngrok/ngrok-linux-arm-gnueabihf/-/ngrok-linux-arm-gnueabihf-1.4.1.tgz"
+  integrity sha512-yEeiVAGQNUErkSpOI1EZI+X3AkHCGd8yzqfjHamnhEONkwxLcWuTiUfcwFeMVtE9jyLfvQxctldPXXAjvaI/QA==
+
+"@ngrok/ngrok-linux-arm64-gnu@1.4.1":
+  version "1.4.1"
+  resolved "https://registry.npmjs.org/@ngrok/ngrok-linux-arm64-gnu/-/ngrok-linux-arm64-gnu-1.4.1.tgz"
+  integrity sha512-Fb2uju769eO/yOrWdbMvCXNczbXHnqNmN5TCYvqQbPdscFgrsNaJcVr2SmWOfBq+OcLWYbx6mXE1ki5yOZKU9w==
+
+"@ngrok/ngrok-linux-arm64-musl@1.4.1":
+  version "1.4.1"
+  resolved "https://registry.npmjs.org/@ngrok/ngrok-linux-arm64-musl/-/ngrok-linux-arm64-musl-1.4.1.tgz"
+  integrity sha512-nMTTZkUnwCzeIVDkoUdNqBKe6ArYXRWGjC4iXinfPOdENkb/tZ/eAjVdg+8bQ5PJgl/n/TbdZKNj//Jz2x8fdw==
+
+"@ngrok/ngrok-linux-x64-gnu@1.4.1":
+  version "1.4.1"
+  resolved "https://registry.npmjs.org/@ngrok/ngrok-linux-x64-gnu/-/ngrok-linux-x64-gnu-1.4.1.tgz"
+  integrity sha512-IfDaYd9ZGk7F0szHql5Tr3rlLBlhuKbbNXDVkujGy/njA4/YnckfsZilGEtgnR7aYgHo3NqppfEw+AOmlDytCw==
+
+"@ngrok/ngrok-linux-x64-musl@1.4.1":
+  version "1.4.1"
+  resolved "https://registry.npmjs.org/@ngrok/ngrok-linux-x64-musl/-/ngrok-linux-x64-musl-1.4.1.tgz"
+  integrity sha512-Ze6wb2umg6hfJhxOrFQhiyIZOf9YjSRkefnaQdAaONrIKxiFsu5SIKQbp7MQRnm8wabB9i0OI0Q/TVBsxo/HLw==
+
+"@ngrok/ngrok-win32-ia32-msvc@1.4.1":
+  version "1.4.1"
+  resolved "https://registry.npmjs.org/@ngrok/ngrok-win32-ia32-msvc/-/ngrok-win32-ia32-msvc-1.4.1.tgz"
+  integrity sha512-FV3dwGpbh1h2fJ7h+Od8vFRrR9RxqBUAI+ELxQxropDxwYp6rWGKFnfE+JUcT79fEH3OpA0ElULrIDrLgK7bgg==
+
+"@ngrok/ngrok-win32-x64-msvc@1.4.1":
+  version "1.4.1"
+  resolved "https://registry.npmjs.org/@ngrok/ngrok-win32-x64-msvc/-/ngrok-win32-x64-msvc-1.4.1.tgz"
+  integrity sha512-Zr1Dyel4M3cA1kjT/N5ftTiCdoPnVv/VbyE6AKKemP9DDFkTlpdvMwSXikm/ypNtCNFEs/+q8CBZPhhaKktl8A==
+
+"@ngrok/ngrok@^1.4.1":
+  version "1.4.1"
+  resolved "https://registry.npmjs.org/@ngrok/ngrok/-/ngrok-1.4.1.tgz"
+  integrity sha512-KZ7/T4UOY3BqJBdweJPeebKW34YzIH+a2y4o7yqTIowoi6dw3sMj140o1Q8FvpPbH5J6lr2TWVCWdgSTYvHNgw==
+  optionalDependencies:
+    "@ngrok/ngrok-android-arm-eabi" "1.4.1"
+    "@ngrok/ngrok-android-arm64" "1.4.1"
+    "@ngrok/ngrok-darwin-arm64" "1.4.1"
+    "@ngrok/ngrok-darwin-universal" "1.4.1"
+    "@ngrok/ngrok-darwin-x64" "1.4.1"
+    "@ngrok/ngrok-freebsd-x64" "1.4.1"
+    "@ngrok/ngrok-linux-arm-gnueabihf" "1.4.1"
+    "@ngrok/ngrok-linux-arm64-gnu" "1.4.1"
+    "@ngrok/ngrok-linux-arm64-musl" "1.4.1"
+    "@ngrok/ngrok-linux-x64-gnu" "1.4.1"
+    "@ngrok/ngrok-linux-x64-musl" "1.4.1"
+    "@ngrok/ngrok-win32-ia32-msvc" "1.4.1"
+    "@ngrok/ngrok-win32-x64-msvc" "1.4.1"
+
 "@nicolo-ribaudo/chokidar-2@2.1.8-no-fsevents.3":
   version "2.1.8-no-fsevents.3"
   resolved "https://registry.npmjs.org/@nicolo-ribaudo/chokidar-2/-/chokidar-2-2.1.8-no-fsevents.3.tgz"
   integrity sha512-s88O1aVtXftvp5bCPB7WnmXc5IwOZZ7YPuwNPt+GtOOXpPvad1LfbmjYv+qII7zP6RU2QGnqve27dnLycEnyEQ==
+
+"@payos/node@^1.0.10":
+  version "1.0.10"
+  resolved "https://registry.npmjs.org/@payos/node/-/node-1.0.10.tgz"
+  integrity sha512-dY+WHd6pLa558a1G8yv6oKfVe5QLTNyYnQBaSQtwvMAm/p0faKAnfXt04LNIwO9/4buas4ES+sDxc1bfX/mVbQ==
+  dependencies:
+    axios "^1.5.0"
+    crypto "^1.0.1"
 
 "@pkgr/core@^0.1.0":
   version "0.1.1"
@@ -1439,7 +1531,7 @@ axios@^0.21.1:
   dependencies:
     follow-redirects "^1.14.0"
 
-axios@^1.7.4, axios@^1.8.4:
+axios@^1.5.0, axios@^1.7.4, axios@^1.8.4:
   version "1.8.4"
   resolved "https://registry.npmjs.org/axios/-/axios-1.8.4.tgz"
   integrity sha512-eBSYY4Y68NNlHbHBMdeDmKNtDgXWhQsJcGqzO3iLUM0GraQFSS9cVgPX5I9b3lbdFKyYoAEGAZF1DwhTaljNAw==
@@ -1494,6 +1586,8 @@ bcrypt@^5.1.1:
   version "1.0.0"
   resolved "file:"
   dependencies:
+    "@ngrok/ngrok" "^1.4.1"
+    "@payos/node" "^1.0.10"
     api-query-params "^5.4.0"
     axios "^1.8.4"
     bcrypt "^5.1.1"
@@ -1502,6 +1596,7 @@ bcrypt@^5.1.1:
     cloudinary "^2.5.1"
     cookie-parser "^1.4.7"
     cors "^2.8.5"
+    crypto "^1.0.1"
     dayjs "^1.11.13"
     dotenv "^16.4.7"
     express "^4.21.2"
@@ -1517,6 +1612,7 @@ bcrypt@^5.1.1:
     mongoose-sequence "^6.0.1"
     node-cron "^3.0.3"
     path "^0.12.7"
+    socket.io "^4.8.1"
     twilio "^5.4.2"
     uuid "^11.0.5"
     uuidv4 "^6.2.13"
@@ -1790,6 +1886,11 @@ cross-spawn@^7.0.6:
     path-key "^3.1.0"
     shebang-command "^2.0.0"
     which "^2.0.1"
+
+crypto@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.npmjs.org/crypto/-/crypto-1.0.1.tgz"
+  integrity sha512-VxBKmeNcqQdiUQUW2Tzq0t377b54N2bMtXO/qiLa+6eRRmmC4qT3D4OnTGoT/U6O9aklQ/jTwbOtRMTTY8G0Ig==
 
 data-view-buffer@^1.0.2:
   version "1.0.2"
@@ -2466,6 +2567,11 @@ fs@^0.0.1-security:
   version "0.0.1-security"
   resolved "https://registry.npmjs.org/fs/-/fs-0.0.1-security.tgz"
   integrity sha512-3XY9e1pP0CVEUCdj5BmfIZxRBTSDycnbqhIOGec9QYtmVH2fbLpj86CFWkrNOkt/Fvty4KZG5lTglL9j/gJ87w==
+
+fsevents@~2.3.2:
+  version "2.3.3"
+  resolved "https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz"
+  integrity sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==
 
 function-bind@^1.1.2:
   version "1.1.2"
