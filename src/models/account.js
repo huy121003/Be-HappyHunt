@@ -36,6 +36,7 @@ const accountSchema = new Schema(
       ward: { type: Number, ref: 'ward', default: null },
       specificAddress: { type: String, default: '' },
     },
+    balance: { type: Number, default: 0 },
     slug: { type: String, unique: true, default: '', trim: true },
     role: { type: Number, ref: 'role', default: null },
     description: { type: String, default: '' },

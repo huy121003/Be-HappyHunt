@@ -1,3 +1,4 @@
+const { apiHandler } = require('../../helpers');
 const paymentService = require('./payment.service');
 
 const updatePaymentHistory = async (req, res) => {
@@ -7,11 +8,11 @@ const updatePaymentHistory = async (req, res) => {
     req.body.data.code === '00'
   ) {
     try {
-      const result = await paymentService.updateStatus({
+      const result = await paymentService.updatePaymentHistory({
         status: 'PAID',
         orderCode: req.body.data.orderCode,
         paymentLinkId: req.body.data.paymentLinkId,
-        qrcode: req.body.data.qrcode,
+        amount: req.body.data.amount,
       });
       if (result) {
         console.log('Payment history updated successfully:', result);
@@ -23,7 +24,7 @@ const updatePaymentHistory = async (req, res) => {
 };
 const updateStatus = async (req, res) => {
   try {
-    const result = await paymentService.updateStatus(req.body);
+    const result = await paymentService.updateStatus(req.params.id, req.body);
     return apiHandler.sendSuccessWithData(
       res,
       'Payment history updated successfully',
@@ -41,7 +42,7 @@ const updateStatus = async (req, res) => {
 };
 const checkStatus = async (req, res) => {
   try {
-    const result = await paymentService.checkStatus(req.body);
+    const result = await paymentService.checkStatus(req.params.id);
     return apiHandler.sendSuccessWithData(res, 'Payment status', result);
   } catch (error) {
     if (error.message === 'notfound') {
@@ -63,7 +64,7 @@ const getById = async (req, res) => {
 };
 const getAllPagiantion = async (req, res) => {
   try {
-    const result = await paymentService.getAllPaginate(req.query);
+    const result = await paymentService.getAllPagiantion(req.query);
     return apiHandler.sendSuccessWithData(res, 'Payment history', result);
   } catch (error) {
     if (error.message === 'notfound') {
@@ -74,9 +75,9 @@ const getAllPagiantion = async (req, res) => {
 };
 const getAllByUser = async (req, res) => {
   try {
-    const result = await paymentService.getAllPaginate({
+    const result = await paymentService.getAllPagiantion({
       ...req.query,
-      createdBy: req.userAccess._id,
+      createdBy: Number(req.userAccess._id),
     });
     return apiHandler.sendSuccessWithData(res, 'Payment history', result);
   } catch (error) {

@@ -18,7 +18,7 @@ const paymentHistorySchema = new Schema(
 
     checkoutUrl: { type: String, required: true },
     qrCode: { type: String, required: true },
-    paymentLinkId: { type: String, required: true, ref: 'paymentLink' },
+    paymentLinkId: { type: String, required: true },
     orderCode: { type: Number, required: true },
     amount: { type: Number, required: true },
     description: { type: String, default: '' },

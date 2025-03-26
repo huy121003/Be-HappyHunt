@@ -82,7 +82,7 @@ const updateStatus = async (id, data) => {
       },
       { new: true }
     );
-    console.log(result);
+
     if (!result) throw new Error('update');
 
     return result;

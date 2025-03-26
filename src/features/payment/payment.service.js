@@ -1,3 +1,4 @@
+const { Account } = require('../../models');
 const PaymentHistory = require('../../models/payment-history');
 const exportFilter = require('./payment.filter');
 const { checkType } = require('./payment.helper');
@@ -8,39 +9,60 @@ const createPaymentHistory = async (data) => {
     if (!result) {
       throw new Error('Payment history created successfully');
     }
-    return result;
+    return { _id: result._id };
   } catch (error) {
     console.error('Error during create payment history:', error.message);
   }
 };
-const checkStatus = async (data) => {
+const checkStatus = async (id) => {
   try {
-    const result = await PaymentHistory.findOne({
-      orderCode: data.orderCode,
-      paymentLinkId: data.paymentLinkId,
-      createdBy: createdBy,
-    });
+    const result = await PaymentHistory.findById(id)
+      .select('status')
+      .lean()
+      .exec();
     if (!result) {
       throw new Error('notfound');
     }
-    return result.status;
+    return result;
   } catch (error) {
     throw new Error(error.message);
   }
 };
-const updateStatus = async (data) => {
+const updateStatus = async (id, status) => {
+  try {
+    const result = await PaymentHistory.findByIdAndUpdate(id, status, {
+      new: true,
+    });
+    if (!result) {
+      throw new Error('update');
+    }
+    return result;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+const updatePaymentHistory = async (data) => {
   try {
     const result = await PaymentHistory.findOneAndUpdate(
       {
         orderCode: data.orderCode,
         paymentLinkId: data.paymentLinkId,
-        qrCode: data.qrCode,
       },
       {
         status: data.status,
       }
     );
     if (!result) {
+      throw new Error('update');
+    }
+    const account = await Account.findByIdAndUpdate(
+      result.createdBy,
+      { $inc: { balance: data.amount } },
+      {
+        new: true,
+      }
+    );
+    if (!account) {
       throw new Error('update');
     }
     return result;
@@ -65,6 +87,7 @@ const getById = async (id) => {
 
 const getAllPagiantion = async (query) => {
   const { page, size, sort, ...filter } = exportFilter(query);
+
   try {
     const [totalDocuments, result] = await Promise.all([
       PaymentHistory.countDocuments(filter),
@@ -73,7 +96,7 @@ const getAllPagiantion = async (query) => {
         .sort(sort)
         .limit(size)
         .skip(page * size)
-        .populate('createdBy', '_id name avatar')
+        .populate('createdBy', 'name avatar')
         .lean()
         .exec(),
     ]);
@@ -88,6 +111,7 @@ const getAllPagiantion = async (query) => {
       totalDocuments,
     };
   } catch (error) {
+    console.error('Error during get all payment history:', error.message);
     throw new Error(error.message);
   }
 };
@@ -149,4 +173,5 @@ module.exports = {
   getAllPagiantion,
   getDepositStatistics,
   getTopDepositors,
+  updatePaymentHistory,
 };

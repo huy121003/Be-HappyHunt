@@ -2,9 +2,9 @@ const express = require('express');
 const paymentController = require('./payment.controller');
 const router = express.Router();
 const { authJwt } = require('../../middlewares');
-
+router.get('/by-user', authJwt.accessToken, paymentController.getAllByUser);
 router.patch(
-  '/update-status',
+  '/:id/update-status',
   authJwt.accessToken,
   paymentController.updateStatus
 );
@@ -14,16 +14,8 @@ router.get(
   authJwt.accessToken,
   paymentController.getAllPagiantion
 );
-router.get(
-  '/get-by-user',
-  authJwt.accessToken,
-  paymentController.getAllPagiantion
-);
-router.post(
-  '/check-status',
-  authJwt.accessToken,
-  paymentController.checkStatus
-);
+
+router.post('/:id/status', authJwt.accessToken, paymentController.checkStatus);
 router.get(
   '/statistic',
   authJwt.accessToken,

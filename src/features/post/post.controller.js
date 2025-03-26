@@ -32,7 +32,7 @@ const update = async (req, res) => {
     });
     return apiHandler.sendCreated(res, 'Post updated successfully', result);
   } catch (error) {
-    console.log(error);
+
     if (error.message.includes('duplicate')) {
       return apiHandler.sendConflict(res, 'Title is already exist');
     }

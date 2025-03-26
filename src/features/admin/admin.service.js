@@ -42,7 +42,7 @@ const getById = async (id) => {
       .populate('role', 'name _id')
       .lean()
       .exec();
-    console.log(result);
+
     if (!result) {
       throw new Error('notfound');
     }

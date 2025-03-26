@@ -25,9 +25,8 @@ app.use(
   })
 );
 app.post('/payos/webhook', async (req, res) => {
-  console.log('Webhook received:', req.body);
   await paymentController.updatePaymentHistory(req, res);
-  res.status(200).send('Webhook received');
+  return res.status(200).json({ message: 'Webhook received' });
 });
 // Định tuyến API
 app.use('/api/v1/', authLimiter, appRouter);
