@@ -7,7 +7,7 @@ const createPaymentHistory = async (data) => {
   try {
     const result = await PaymentHistory.create(data);
     if (!result) {
-      throw new Error('Payment history created successfully');
+      throw new Error('create');
     }
     return { _id: result._id };
   } catch (error) {
@@ -145,26 +145,37 @@ const getDepositStatistics = async (type) => {
 };
 const getTopDepositors = async () => {
   try {
-    const topUsers = await PaymentHistory.aggregate([
-      { $match: { status: 'PAID' } }, // Chỉ lấy những giao dịch đã thanh toán
-      {
-        $group: {
-          _id: '$accountNumber',
-          totalAmount: { $sum: '$amount' },
-          accountName: { $first: '$accountName' },
-        },
-      },
-      { $sort: { totalAmount: -1 } }, // Sắp xếp theo số tiền giảm dần
-      { $limit: 5 }, // Chỉ lấy top 5
-    ]);
-    if (!topUsers) {
-      throw new Error('notfound');
-    }
-    return topUsers;
+    const topUsers = await PaymentHistory.find({ status: 'PAID' })
+      .select('createdBy amount') 
+      .populate('createdBy', '_id name avatar') 
+      .lean();
+
+
+    const result = Object.values(
+      topUsers.reduce((acc, item) => {
+        const key = item?.createdBy?._id.toString();
+        if (!acc[key]) {
+          acc[key] = {
+            createdBy: item?.createdBy?._id,
+            userName: item.createdBy?.name,
+            userAvatar: item.createdBy?.avatar,
+            totalAmount: 0,
+            totalFaid: 0,
+          };
+        }
+        acc[key].totalAmount += item.amount;
+        acc[key].totalFaid += 1;
+        return acc;
+      }, {})
+    );
+    result.sort((a, b) => b.totalAmount - a.totalAmount);
+    
+    return result.slice(0, 5);
   } catch (error) {
     throw new Error(error.message);
   }
 };
+
 module.exports = {
   createPaymentHistory,
   checkStatus,

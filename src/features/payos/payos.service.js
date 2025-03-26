@@ -1,12 +1,15 @@
 const payOSConfig = require('../../configs/payOS.config');
+const PaymentHistory = require('../../models/payment-history');
 require('dotenv').config();
 const paymentService = require('../payment/payment.service');
 require('dotenv').config();
 const createPaymentLink = async (data) => {
   try {
+    const orderCode = Number(String(Date.now()).slice(-6));
+    const description = `Payment ${data.price}  ${orderCode}`;
     const body = {
-      orderCode: Number(String(Date.now()).slice(-6)),
-      description: `Top-up userId ${data.createdBy}`,
+      orderCode: orderCode,
+      description: description,
       amount: Number(data.price),
       items: [
         {
@@ -18,6 +21,7 @@ const createPaymentLink = async (data) => {
       returnUrl: `${process.env.CLIENT_URL}/payment/success`,
       cancelUrl: `${process.env.CLIENT_URL}/payment/cancel`,
     };
+
     const res = await payOSConfig.createPaymentLink(body);
     let result = null;
     if (res) {

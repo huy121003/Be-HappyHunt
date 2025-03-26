@@ -18,6 +18,9 @@ const updatePaymentHistory = async (req, res) => {
         console.log('Payment history updated successfully:', result);
       }
     } catch (error) {
+      if (error.message === 'update') {
+        console.error('Error during update payment history');
+      }
       console.error('Error during create payment history:', error.message);
     }
   }
