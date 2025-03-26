@@ -7,7 +7,7 @@ const ngrokConnect = require('./configs/ngrok.config');
 (async () => {
   try {
     await mongoConfig();
-    await ngrokConnect();
+    // await ngrokConnect();
     app.listen(process.env.POST_SERVER, '0.0.0.0', () => {
       console.log(`🚀 Server is running on port ${process.env.POST_SERVER}`);
     });
