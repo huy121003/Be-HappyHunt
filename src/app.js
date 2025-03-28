@@ -14,6 +14,7 @@ app.use(fileUpload());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.set('trust proxy', 1); // trust first proxy
 
 // Cấu hình CORS
 app.use(
