@@ -24,6 +24,8 @@ const postSchema = new Schema(
         _id: false,
       },
     ],
+  
+     
     status: {
       type: String,
       enum: [

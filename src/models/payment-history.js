@@ -11,11 +11,12 @@ const paymentHistorySchema = new Schema(
     currency: { type: String, required: true },
     status: {
       type: String,
-      enum: ['PAID', 'PENDING', 'CANCEL'],
+      enum: ['SUCCESS', 'PENDING', 'CANCELLED', 'EXPIRED', 'FAILED'],
       required: true,
-      default: 'PEDING',
+      default: 'PENDING',
     },
 
+    transactionDateTime: { type: Date, default: null },
     checkoutUrl: { type: String, required: true },
     qrCode: { type: String, required: true },
     paymentLinkId: { type: String, required: true },

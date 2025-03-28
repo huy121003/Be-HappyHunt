@@ -10,5 +10,16 @@ router.post(
   authJwt.accessToken,
   payosController.createPaymentLink
 );
+router.get(
+  '/:id',
+
+  payosController.getPaymentLinkInformation
+);
+
+router.delete(
+  '/cancel/:id',
+  authJwt.accessToken,
+  payosController.cancelPaymentLink
+);
 
 module.exports = router;

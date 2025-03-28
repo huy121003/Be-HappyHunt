@@ -1,28 +1,30 @@
 const { apiHandler } = require('../../helpers');
 const paymentService = require('./payment.service');
-
+const payosService = require('../payos/payos.service');
 const updatePaymentHistory = async (req, res) => {
-  if (
-    req.body.code === '00' &&
-    req.body.desc === 'success' &&
-    req.body.data.code === '00'
-  ) {
-    try {
-      const result = await paymentService.updatePaymentHistory({
-        status: 'PAID',
-        orderCode: req.body.data.orderCode,
-        paymentLinkId: req.body.data.paymentLinkId,
-        amount: req.body.data.amount,
-      });
-      if (result) {
-        console.log('Payment history updated successfully:', result);
-      }
-    } catch (error) {
-      if (error.message === 'update') {
-        console.error('Error during update payment history');
-      }
-      console.error('Error during create payment history:', error.message);
+  try {
+    const verify = await payosService.verifyPaymentWebhook(req.body);
+    if (!verify) {
+      return apiHandler.sendValidationError(
+        res,
+        'Error during verify payment webhook'
+      );
     }
+    const result = await paymentService.updatePaymentHistory({
+      status: req.body.data.desc.toUpperCase(),
+
+      orderCode: req.body.data.orderCode,
+      paymentLinkId: req.body.data.paymentLinkId,
+      amount: req.body.data.amount,
+    });
+    if (result) {
+      console.log('Payment history updated successfully:', result);
+    }
+  } catch (error) {
+    if (error.message === 'update') {
+      console.error('Error during update payment history');
+    }
+    console.error('Error during create payment history:', error.message);
   }
 };
 const updateStatus = async (req, res) => {
@@ -92,7 +94,7 @@ const getAllByUser = async (req, res) => {
 };
 const getDepositStatistics = async (req, res) => {
   try {
-    const result = await paymentService.getDepositStatistics(req.params);
+    const result = await paymentService.getDepositStatistics(req.query);
     return apiHandler.sendSuccessWithData(res, 'Deposit statistics', result);
   } catch (error) {
     if (error.message === 'notfound') {
@@ -107,7 +109,25 @@ const getTopDepositors = async (req, res) => {
     return apiHandler.sendSuccessWithData(res, 'Top depositors', result);
   } catch (error) {
     if (error.message === 'notfound') {
-      return apiHandler.sendNotFound(res, 'Top depositors not found');
+      return apiHandler.sendNotFound(res, 'No data in this time range');
+    }
+    throw new Error(error.message);
+  }
+};
+const remove = async (req, res) => {
+  try {
+    const result = await paymentService.remove(req.params.id);
+    return apiHandler.sendCreated(
+      res,
+      'Payment history deleted successfully',
+      result
+    );
+  } catch (error) {
+    if (error.message === 'delete') {
+      return apiHandler.sendErrorMessage(
+        res,
+        'Error during delete payment history'
+      );
     }
     throw new Error(error.message);
   }
@@ -121,4 +141,5 @@ module.exports = {
   getDepositStatistics,
   getTopDepositors,
   getAllByUser,
+  remove,
 };
