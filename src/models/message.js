@@ -5,19 +5,21 @@ const applyAutoIncrement = require('../configs/autoIncrement');
 const messageSchema = new Schema(
   {
     _id: Number,
-    seller: { type: Number, ref: 'account', required: true },
-    buyer: { type: Number, ref: 'account', required: true },
-    post: { type: Number, ref: 'post', required: true },
-    url: { type: String, required: true },
-    sender: { type: Number, ref: 'account', required: true },
-    message: { type: String, required: true, trim: true },
-    images: { type: String, default: '' },
-    isRead: { type: Boolean, default: false },
+    chat: { type: Number, ref: 'chat', required: true },
+    message: { type: String, trim: true },
+    image: { type: String, default: '' },
     timeSend: { type: Date, default: Date.now },
-    timeRead: { type: Date, default: null },
     createdBy: { type: Number, ref: 'account', default: null },
     updatedBy: { type: Number, ref: 'account', default: null },
+    status: {
+      type: String,
+      enum: ['SENT', 'DELIVERED', 'READ'],
+      default: 'SENT',
+    },
+    createBy: { type: Number, ref: 'account', default: null },
+    updatedBy: { type: Number, ref: 'account', default: null },
   },
+
   { timestamps: true }
 );
 applyAutoIncrement(mongoose, messageSchema, 'message');

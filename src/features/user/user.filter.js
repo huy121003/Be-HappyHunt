@@ -9,9 +9,11 @@ const exportFilter = (filter) => {
       phoneNumber: new RegExp(filter.phoneNumber, 'i'),
     }),
     ...(filter.isVip && { isVip: filter.isVip }),
+    ...(filter.province && { 'address.province': filter.province }),
+    ...(filter.district && { 'address.district': filter.district }),
+    ...(filter.ward && { 'address.ward': filter.ward }),
     role: null,
   };
-  console.log('res', res);
   return res;
 };
 module.exports = exportFilter;

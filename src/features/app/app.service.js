@@ -2,17 +2,19 @@ const ProvinceService = require('../province/province.service');
 const DistrictService = require('../district/district.service');
 const WardService = require('../ward/ward.service');
 const perimissionData = require('../permission/permission.data');
-const { Permission, Account, Role, Policy } = require('../../models');
+const { Permission, Account, Role } = require('../../models');
 
 require('dotenv').config();
 const bcrypt = require('bcrypt');
 
-const policyData = require('../policy/policy.data');
+const removeDiacritics = require('../../helpers/removeDiacritics');
 
 const createAutoAddress = async (provincesData) => {
-  const provincePromises = provincesData.map(async (province) => {
+  // Xử lý từng tỉnh một cách tuần tự để đảm bảo ID chính xác
+  for (const province of provincesData) {
+    // Tạo tỉnh
     const createdProvince = await ProvinceService.create({
-      name: province.name,
+      name: removeDiacritics(province.name),
       codeName: province.codename,
       divisionType: province.division_type,
       phoneCode: province.phone_code,
@@ -20,10 +22,15 @@ const createAutoAddress = async (provincesData) => {
       updatedBy: 1,
     });
 
-    const districtPromises = province.districts.map(async (district) => {
+    if (!createdProvince?._id) {
+      throw new Error(`Failed to create province: ${province.name}`);
+    }
+
+    // Xử lý từng huyện trong tỉnh
+    for (const district of province.districts) {
       const createdDistrict = await DistrictService.create({
-        name: district.name,
-        provinceId: createdProvince._id,
+        name: removeDiacritics(district.name),
+        province: createdProvince._id,
         codeName: district.codename,
         divisionType: district.division_type,
         shortCodeName: district.short_codename,
@@ -31,29 +38,36 @@ const createAutoAddress = async (provincesData) => {
         updatedBy: 1,
       });
 
+      if (!createdDistrict?._id) {
+        throw new Error(
+          `Failed to create district: ${district.name} in province: ${province.name}`
+        );
+      }
+
+      // Tạo tất cả phường/xã trong huyện
       const wardPromises = district.wards.map((ward) =>
         WardService.create({
-          name: ward.name,
-          provinceId: createdProvince._id,
-          districtId: createdDistrict._id,
+          name: removeDiacritics(ward.name),
+          province: createdProvince._id,
+          district: createdDistrict._id,
           codeName: ward.codename,
           divisionType: ward.division_type,
           shortCodeName: ward.short_codename,
           createdBy: 1,
           updatedBy: 1,
+        }).catch((error) => {
+          console.error(`Error creating ward ${ward.name}:`, error);
+          throw error;
         })
       );
 
-      return Promise.all(wardPromises);
-    });
+      await Promise.all(wardPromises);
+    }
+  }
 
-    return Promise.all(districtPromises);
-  });
-
-  await Promise.all(provincePromises);
+  console.log('All addresses created successfully');
   return true;
 };
-
 const autoCreatePermission = async () => {
   for (const permission of perimissionData) {
     await Permission.create({
@@ -102,9 +116,9 @@ const autoCreateAdmin = async (roleId) => {
     username: 'super.admin',
     isBanned: true,
     address: {
-      provinceId: null,
-      districtId: null,
-      wardId: null,
+      province: null,
+      district: null,
+      ward: null,
       specificAddress: '',
     },
     avatar: '',
@@ -116,20 +130,10 @@ const autoCreateAdmin = async (roleId) => {
   });
   return true;
 };
-const autoCreatePolicy = async () => {
-  const result = await Policy.create({
-    ...policyData,
-    createdBy: 1,
-    updatedBy: 1,
-  });
-  if (!result) throw new Error('Create policy failed');
-  return true;
-};
 
 module.exports = {
   createAutoAddress,
   autoCreatePermission,
   autoCreateRole,
   autoCreateAdmin,
-  autoCreatePolicy,
 };

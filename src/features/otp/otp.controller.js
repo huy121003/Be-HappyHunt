@@ -6,6 +6,10 @@ const sendOtp = async (req, res) => {
     await otpService.sendOtp(req.body.phoneNumber);
     return apiHandler.sendCreated(res, 'OTP sent successfully');
   } catch (error) {
+    if (error.message.includes('create')) {
+      return apiHandler.sendErrorMessage(res, 'Failed to send OTP');
+    }
+
     return apiHandler.sendErrorMessage(res, 'OTP sent failed');
   }
 };
@@ -14,7 +18,13 @@ const verifyOtp = async (req, res) => {
     await otpService.verifyOtp(req.body);
     return apiHandler.sendCreated(res, 'OTP verified successfully');
   } catch (error) {
-    return apiHandler.sendErrorMessage(res, 'OTP is incorrect');
+    if (error.message.includes('notfound')) {
+      return apiHandler.sendNotFound(res, 'OTP not found');
+    }
+    if (error.message.includes('incorrect')) {
+      return apiHandler.sendErrorMessage(res, 'OTP is incorrect');
+    }
+    return apiHandler.sendErrorMessage(res, 'OTP verification failed');
   }
 };
 

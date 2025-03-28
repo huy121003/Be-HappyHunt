@@ -5,12 +5,32 @@ const applyAutoIncrement = require('../configs/autoIncrement');
 
 const wardSchema = new Schema({
   _id: Number,
-  codeName: { type: String, required: true, trim: true },
-  name: { type: String, required: true, trim: true },
-  provinceId: { type: Number, required: true, ref: 'province' },
-  districtId: { type: Number, required: true, ref: 'district' },
+  codeName: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  name: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  province: {
+    type: Number,
+    required: true,
+    ref: 'province',
+  },
+  district: {
+    type: Number,
+    required: true,
+    ref: 'district',
+  },
   divisionType: { type: String, default: 'ward' },
-  shortCodeName: { type: String, required: true, trim: true },
+  shortCodeName: {
+    type: String,
+    required: true,
+    trim: true,
+  },
   createdBy: { type: Number, ref: 'account', default: null },
   updatedBy: { type: Number, ref: 'account', default: null },
 });

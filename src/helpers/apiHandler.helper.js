@@ -135,28 +135,40 @@ const apiHandler = {
 };
 const sendResponse = (res, statusCode, message, data) => {
   switch (statusCode) {
+    // Trường hợp thành công không có dữ liệu code 200
+    case HTTP_STATUS.OK:
+      return apiHandler.sendSuccessMessage(res, message);
+    // Trường hợp thành công có dữ liệu trả về code 200
     case HTTP_STATUS.OK:
       return apiHandler.sendSuccessWithData(res, message, data);
+    // Trường hợp tạo mới dữ liệu thành công code 201
     case HTTP_STATUS.CREATED:
       return apiHandler.sendCreated(res, message, data);
-    case HTTP_STATUS.NO_CONTENT:
-      return apiHandler.sendNoContent(res);
+    // Trường hợp lỗi request không hợp lệ code 400
     case HTTP_STATUS.BAD_REQUEST:
       return apiHandler.sendValidationError(res, message, data);
+    // Trường hợp không có quyền truy cập code 401
     case HTTP_STATUS.UNAUTHORIZED:
       return apiHandler.sendUnauthorizedError(res, message);
+    // Trường hợp không đủ quyền code 403
     case HTTP_STATUS.FORBIDDEN:
       return apiHandler.sendForbidden(res, message);
+    // Trường hợp không tìm thấy tài nguyên code 404
     case HTTP_STATUS.NOT_FOUND:
       return apiHandler.sendNotFound(res, message);
+    // Trường hợp xung đột dữ liệu code 409
     case HTTP_STATUS.CONFLICT:
       return apiHandler.sendConflict(res, message);
+    // Trường hợp dữ liệu không hợp lệ code 422
     case HTTP_STATUS.UNPROCESSABLE_ENTITY:
       return apiHandler.sendUnprocessableEntity(res, message, data);
+    // Trường hợp lỗi server code 500
     case HTTP_STATUS.INTERNAL_SERVER_ERROR:
       return apiHandler.sendErrorMessage(res, message);
+    // Trường hợp server quá tải hoặc bảo trì code 503
     case HTTP_STATUS.SERVICE_UNAVAILABLE:
       return apiHandler.sendServiceUnavailable(res, message);
+    // Trường hợp không xác định được lỗi code 500
     default:
       return apiHandler.sendErrorMessage(res, 'Unknown error');
   }

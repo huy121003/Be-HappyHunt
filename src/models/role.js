@@ -5,11 +5,24 @@ const applyAutoIncrement = require('../configs/autoIncrement');
 const roleSchema = new Schema(
   {
     _id: Number,
-    name: { type: String, required: true, trim: true, unique: true },
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+      unique: true,
+    },
     permissions: [
       {
-        name: { type: String, required: true, trim: true },
-        codeName: { type: String, required: true, trim: true },
+        name: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        codeName: {
+          type: String,
+          required: true,
+          trim: true,
+        },
         isView: { type: Boolean, default: true },
         isCreate: { type: Boolean, default: true },
         isUpdate: { type: Boolean, default: true },

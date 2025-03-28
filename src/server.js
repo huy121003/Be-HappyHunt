@@ -1,25 +1,25 @@
 const app = require('./app');
 const { mongoConfig } = require('./configs');
 require('dotenv').config();
-const port = process.env.POST_SERVER;
-const hostname = process.env.HOST_NAME;
 const appController = require('./features/app/app.controller');
+const ngrokConnect = require('./configs/ngrok.config');
+
 (async () => {
   try {
-    await mongoConfig(); // Kết nối MongoDB
+    await mongoConfig();
 
-    app.listen(port, hostname, () => {
-      console.log(`Server is running at http://${hostname}:${port}`);
+    app.listen(process.env.POST_SERVER, '0.0.0.0', () => {
+      console.log(`🚀 Server is running on port ${process.env.POST_SERVER}`);
     });
+    // await ngrokConnect();
     await Promise.all([
       appController.autoCreatePermission(),
       appController.autoCreateRole(),
       appController.autoCreateAdmin(),
       appController.createAutoAddress(),
-      appController.autoCreatePolicy(),
     ]);
   } catch (error) {
-    console.error(' Error during startup:', error);
-    process.exit(1); // Thoát chương trình nếu có lỗi
+    console.error('❌ Error during startup:', error);
+    process.exit(1);
   }
 })();
