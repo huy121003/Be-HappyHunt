@@ -1,11 +1,22 @@
 const { apiHandler } = require('../../helpers');
+const { Account } = require('../../models');
 
 const postService = require('./post.service');
 const create = async (req, res) => {
   try {
+    const user = await Account.findById(req.userAccess._id).select('balance');
+    if (Number(user.balance) < Number(req.body.pricePayment)) {
+      return apiHandler.sendValidationError(
+        res,
+        'You do not have enough money to post'
+      );
+    }
     const result = await postService.create({
       ...req.body,
       createdBy: req.userAccess._id,
+      ...(req.body.pricePayment && {
+        payment: req.body.pricePayment,
+      }),
       ...(req.files && {
         images: req.files.images,
       }),

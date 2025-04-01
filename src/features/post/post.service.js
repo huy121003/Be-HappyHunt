@@ -12,29 +12,42 @@ const exportFilter = require('./post.filter');
 const dayjs = require('dayjs');
 
 const create = async (data) => {
+  const { payment, ...restData } = data;
+  console.log('restData', restData);
+  console.log('payment', payment);
   try {
     let imageUrls = [];
 
-    if (data.images) {
-      imageUrls = (await uploadMultiple(data.images)) || [];
+    if (restData.images) {
+      imageUrls = (await uploadMultiple(restData.images)) || [];
     }
 
-    const result = await Post.create({
-      ...data,
-      images: imageUrls.map((url, index) => {
-        return {
-          url,
-          index: index + 1,
-        };
+    const [result, updateBalance] = await Promise.all([
+      Post.create({
+        ...restData,
+        images: imageUrls.map((url, index) => {
+          return {
+            url,
+            index: index + 1,
+          };
+        }),
+        status: 'WAITING',
+        address: JSON.parse(restData.address),
+        attributes: JSON.parse(restData.attributes),
+        slug: autoSlug(restData.name),
       }),
-      status: 'WAITING',
-      //   expiredAt: dayjs().add(4, 'months').toDate(),
-      address: JSON.parse(data.address),
-      attributes: JSON.parse(data.attributes),
-      slug: autoSlug(data.name),
-    });
+      Account.findByIdAndUpdate(
+        restData.createdBy,
+        {
+          $inc: {
+            balance: -Number(payment),
+          },
+        },
+        { new: true }
+      ),
+    ]);
 
-    if (!result) throw new Error('create');
+    if (!result || !updateBalance) throw new Error('create');
 
     return result;
   } catch (error) {
