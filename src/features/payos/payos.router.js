@@ -12,6 +12,7 @@ router.post(
 );
 router.get(
   '/:id',
+  authJwt.accessToken,
 
   payosController.getPaymentLinkInformation
 );

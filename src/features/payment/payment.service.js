@@ -145,9 +145,7 @@ const getAllPagiantion = async (query) => {
 const getDepositStatistics = async (data) => {
   try {
     const { startDate, groupByFormat, endDate } = checkType(data);
-    console.log('startDate', startDate);
-    console.log('groupByFormat', groupByFormat);
-    console.log('endDate', endDate);
+   
     const result = await PaymentHistory.aggregate([
       {
         $match: {

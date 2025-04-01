@@ -24,8 +24,7 @@ const postSchema = new Schema(
         _id: false,
       },
     ],
-  
-     
+
     status: {
       type: String,
       enum: [
@@ -47,7 +46,7 @@ const postSchema = new Schema(
         _id: false,
       },
     ],
-    expiredAt: { type: String, default: null },
+    expiredAt: { type: Date, default: null },
     isSold: { type: Boolean, default: false },
     isIndividual: { type: Boolean, default: false },
     address: {
@@ -72,13 +71,11 @@ postSchema.index(
   {
     name: 'text',
     description: 'text',
-    'attributes.name': 'text',
   },
   {
     weights: {
       name: 10,
       description: 5,
-      'attributes.name': 2,
     },
   }
 );

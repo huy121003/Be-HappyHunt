@@ -43,4 +43,9 @@ router.patch(
   authJwt.accessToken,
   postController.updatePushedAt
 );
+router.get(
+  '/count-status-profile/:_id',
+  authJwt.accessToken,
+  postController.countStatusProfile
+);
 module.exports = router;

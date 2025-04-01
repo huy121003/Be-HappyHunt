@@ -49,14 +49,14 @@ const createPaymentLink = async (data) => {
 const getPaymentLinkInformation = async (id) => {
   try {
     const response = await payOSConfig.getPaymentLinkInformation(id);
-    console.log(response);
+
     return response;
   } catch (error) {
     throw new Error(error.message);
   }
 };
 const confirmWebhook = async (url) => {
-  console.log('🔗 Webhook URL gửi lên PayOS:', url);
+
   try {
     const result = await payOSConfig.confirmWebhook(String(url));
     if (!result) {

@@ -17,9 +17,7 @@ const updatePaymentHistory = async (req, res) => {
       paymentLinkId: req.body.data.paymentLinkId,
       amount: req.body.data.amount,
     });
-    if (result) {
-      console.log('Payment history updated successfully:', result);
-    }
+   
   } catch (error) {
     if (error.message === 'update') {
       console.error('Error during update payment history');

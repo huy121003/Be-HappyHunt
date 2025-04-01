@@ -32,7 +32,6 @@ const update = async (req, res) => {
     });
     return apiHandler.sendCreated(res, 'Post updated successfully', result);
   } catch (error) {
-
     if (error.message.includes('duplicate')) {
       return apiHandler.sendConflict(res, 'Title is already exist');
     }
@@ -57,7 +56,7 @@ const updateStatus = async (req, res) => {
       result
     );
   } catch (error) {
-    if (error.message.includes('update')) {
+    if ((error.message = 'update')) {
       return apiHandler.sendErrorMessage(res, 'Failed to update post status');
     }
     return apiHandler.sendErrorMessage(res, error.message);
@@ -206,7 +205,21 @@ const updatePushedAt = async (req, res) => {
     return apiHandler.sendErrorMessage(res, error.message);
   }
 };
-
+const countStatusProfile = async (req, res) => {
+  try {
+    const result = await postService.countStatusProfile(req.params._id);
+    return apiHandler.sendSuccessWithData(
+      res,
+      'Count Status successfully',
+      result
+    );
+  } catch (error) {
+    if (error.message.includes('notfound')) {
+      return apiHandler.sendErrorMessage(res, 'Failed to count status');
+    }
+    return apiHandler.sendErrorMessage(res, error.message);
+  }
+};
 module.exports = {
   create,
   updateStatus,
@@ -221,4 +234,5 @@ module.exports = {
   updateCheckingStatus,
   getAllSuggestionsPagination,
   updatePushedAt,
+  countStatusProfile,
 };

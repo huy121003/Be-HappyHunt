@@ -20,6 +20,7 @@ const create = async (category) => {
     if (!result) throw new Error('create');
     return result;
   } catch (error) {
+    console.error('Error during category creation:', error.message);
     throw new Error(error.message);
   }
 };
@@ -57,8 +58,8 @@ const getAll = async (data) => {
   try {
     const { page, size, sort, ...filter } = exportFilter(data);
     const result = await Category.find(filter)
-      .select('name _id parent isPayment pricePayment')
-      .populate('parent', 'name _id')
+      .select('name _id parent isPayment pricePayment slug')
+      .populate('parent', 'name _id slug')
       .exec();
     if (!result) throw new Error('notfound');
 
@@ -156,18 +157,13 @@ const getAllParent = async (data) => {
 };
 const getAllChild = async (id) => {
   try {
-    const [totalDocuments, result] = await Promise.all([
-      Category.countDocuments({
-        categoryParent: id,
-      }),
-      Category.find({
-        categoryParent: id,
-      })
-        .select('name _id parent icon slug')
-        .populate('parent', 'name _id slug icon')
+    const result = await Category.find({
+      parent: id,
+    })
+      .select('name _id parent icon slug')
+      .populate('parent', 'name _id slug icon')
+      .exec();
 
-        .exec(),
-    ]);
     if (!result) throw new Error('notfound');
     return result;
   } catch (error) {

@@ -16,6 +16,8 @@ const favoritePostRouter = require('../favorite-post/favoritePost.router');
 const historyClickRouter = require('../history-click/historyClick.router');
 const payOSRouter = require('../payos/payos.router');
 const paymentRouter = require('../payment/payment.router');
+const historySearchRouter = require('../history-search/search.router');
+const followRouter = require('../follow/follow.router');
 const express = require('express');
 const app = express();
 
@@ -37,5 +39,7 @@ app.use('/favorite-post/', favoritePostRouter);
 app.use('/history-click/', historyClickRouter);
 app.use('/payos/', payOSRouter);
 app.use('/payment/', paymentRouter);
+app.use('/history-search/', historySearchRouter);
+app.use('/follow/', followRouter);
 
 module.exports = app;

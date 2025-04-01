@@ -9,7 +9,10 @@ const getAll = async (data) => {
       Account.countDocuments(filter),
       Account.find(filter)
         .select('-password -__v -updatedAt -deleted')
-        .populate('address.province address.district address.ward', 'name _id')
+        .populate({
+          path: 'address.province address.district address.ward',
+          select: 'name _id',
+        })
         .sort(sort)
         .limit(size)
         .skip(page * size)
@@ -17,7 +20,7 @@ const getAll = async (data) => {
         .exec(),
     ]);
 
-    if (!result ) throw new Error('notfound');
+    if (!result) throw new Error('notfound');
     return {
       documentList: result,
       totalDocuments,
@@ -45,7 +48,9 @@ const getBySlug = async (slug) => {
   try {
     const result = await Account.findOne({ slug })
       .select('-password -__v  -updatedAt -deleted')
-      .populate('address.province address.district address.ward ', 'name _id')
+      .populate({ path: 'address.province', select: 'name _id' })
+      .populate({ path: 'address.district', select: 'name _id' })
+      .populate({ path: 'address.ward', select: 'name _id' })
       .lean()
       .exec();
     if (!result) throw new Error('notfound');
