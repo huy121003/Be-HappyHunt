@@ -135,10 +135,11 @@ const changePassword = async (req, res) => {
     res.clearCookie('refresh_token');
     return apiHandler.sendCreated(res, 'Change password success');
   } catch (error) {
+    console.log(error);
     if (error.message.includes('notfound')) {
       return apiHandler.sendNotFound(res, 'Account not found');
     }
-    if (error.message.includes('validator')) {
+    if (error.message === 'validation') {
       return apiHandler.sendValidationError(
         res,
         'Current password is incorrect'
@@ -152,13 +153,16 @@ const changePassword = async (req, res) => {
 };
 const updateProfile = async (req, res) => {
   try {
+    console.log(req?.files);
     const result = await authService.updateProfile(req.userAccess._id, {
       ...req.body,
-      ...(req.files && { avatar: req.files.avatar }),
+      ...(req?.files?.avatar && { avatar: req?.files?.avatar }),
+      ...(req?.files?.background && { background: req?.files?.background }),
     });
     return apiHandler.sendCreated(res, 'Update profile success', result);
   } catch (error) {
-    if (error.message.includes('update:')) {
+    console.log(error);
+    if (error.message === 'update') {
       return apiHandler.sendErrorMessage(res, 'Failed to update profile');
     }
     return apiHandler.sendErrorMessage(res, 'An unexpected error occurred');

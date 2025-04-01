@@ -30,7 +30,7 @@ const accountSchema = new Schema(
     avatar: { type: String, default: '' },
     background: { type: String, default: '' },
     sex: { type: String, enum: ['MALE', 'FEMALE', 'OTHER'], default: '' },
-    dateOfBirth: { type: Date, default: '' },
+    dateOfBirth: { type: String, default: '' },
     isVip: { type: Boolean, default: false },
     dateVipExpired: { type: String, default: null },
     address: {
