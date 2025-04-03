@@ -24,7 +24,15 @@ const categorySchema = new Schema(
         type: {
           type: String,
           required: true,
-          enum: ['STRING', 'SELECT', 'NUMBER', 'BOOLEAN', 'RADIO', 'CHECKBOX'],
+          enum: [
+            'STRING',
+            'YEAR',
+            'SELECT',
+            'NUMBER',
+            'BOOLEAN',
+            'RADIO',
+            'CHECKBOX',
+          ],
         },
         _id: false,
       },
@@ -41,7 +49,18 @@ const categorySchema = new Schema(
 
 applyAutoIncrement(mongoose, categorySchema, 'category');
 categorySchema.plugin(mongoose_delete, { overrideMethods: 'all' });
-
+categorySchema.index(
+  {
+    name: 'text',
+    description: 'text',
+  },
+  {
+    weights: {
+      name: 10,
+      description: 5,
+    },
+  }
+);
 const Category = model('category', categorySchema);
 
 module.exports = Category;

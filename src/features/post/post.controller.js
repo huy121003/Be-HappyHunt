@@ -1,11 +1,22 @@
 const { apiHandler } = require('../../helpers');
+const { Account } = require('../../models');
 
 const postService = require('./post.service');
 const create = async (req, res) => {
   try {
+    const user = await Account.findById(req.userAccess._id).select('balance');
+    if (Number(user.balance) < Number(req.body.pricePayment)) {
+      return apiHandler.sendValidationError(
+        res,
+        'You do not have enough money to post'
+      );
+    }
     const result = await postService.create({
       ...req.body,
       createdBy: req.userAccess._id,
+      ...(req.body.pricePayment && {
+        payment: req.body.pricePayment,
+      }),
       ...(req.files && {
         images: req.files.images,
       }),
@@ -32,7 +43,6 @@ const update = async (req, res) => {
     });
     return apiHandler.sendCreated(res, 'Post updated successfully', result);
   } catch (error) {
-
     if (error.message.includes('duplicate')) {
       return apiHandler.sendConflict(res, 'Title is already exist');
     }
@@ -57,7 +67,7 @@ const updateStatus = async (req, res) => {
       result
     );
   } catch (error) {
-    if (error.message.includes('update')) {
+    if ((error.message = 'update')) {
       return apiHandler.sendErrorMessage(res, 'Failed to update post status');
     }
     return apiHandler.sendErrorMessage(res, error.message);
@@ -136,9 +146,9 @@ const getById = async (req, res) => {
     return apiHandler.sendSuccessWithData(res, 'Post', result);
   } catch (error) {
     if (error.message.includes('notfound')) {
-      return apiHandler.sendErrorMessage(res, 'Post not found');
+      return apiHandler.sendNotFound(res, 'Post not found');
     }
-    return apiHandler.sendErrorMessage(res, error.message);
+    return apiHandler.sendErrorsendNotFoundMessage(res, error.message);
   }
 };
 const getBySlug = async (req, res) => {
@@ -150,7 +160,7 @@ const getBySlug = async (req, res) => {
     return apiHandler.sendSuccessWithData(res, 'Post', result);
   } catch (error) {
     if (error.message.includes('notfound')) {
-      return apiHandler.sendErrorMessage(res, 'Post not found');
+      return apiHandler.sendNotFound(res, 'Post not found');
     }
     return apiHandler.sendErrorMessage(res, error.message);
   }
@@ -206,6 +216,32 @@ const updatePushedAt = async (req, res) => {
     return apiHandler.sendErrorMessage(res, error.message);
   }
 };
+const countStatusProfile = async (req, res) => {
+  try {
+    const result = await postService.countStatusProfile(req.params._id);
+    return apiHandler.sendSuccessWithData(
+      res,
+      'Count Status successfully',
+      result
+    );
+  } catch (error) {
+    if (error.message.includes('notfound')) {
+      return apiHandler.sendErrorMessage(res, 'Failed to count status');
+    }
+    return apiHandler.sendErrorMessage(res, error.message);
+  }
+};
+const getNewPostStatistics = async (req, res) => {
+  try {
+    const result = await postService.getNewPostStatistics(req.query);
+    return apiHandler.sendSuccessWithData(res, 'List posts', result);
+  } catch (error) {
+    if (error.message.includes('notfound')) {
+      return apiHandler.sendNotFound(res, 'No data in this time range');
+    }
+    return apiHandler.sendErrorMessage(res, error.message);
+  }
+};
 
 module.exports = {
   create,
@@ -221,4 +257,6 @@ module.exports = {
   updateCheckingStatus,
   getAllSuggestionsPagination,
   updatePushedAt,
+  countStatusProfile,
+  getNewPostStatistics,
 };

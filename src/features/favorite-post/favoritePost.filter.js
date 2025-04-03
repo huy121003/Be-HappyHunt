@@ -4,7 +4,8 @@ const exportFilter = (favorite) => {
     ...(favorite.size ? { size: Number(favorite.size) } : { size: 10 }),
     ...(favorite.sort ? { sort: favorite.sort } : { sort: '-createdAt' }),
     ...(favorite.post && { post: favorite.post }),
-    ...(favorite.user && { createBy: favorite.user }),
+
+    ...(favorite.createdBy && { createdBy: favorite.createdBy }),
   };
   return res;
 };

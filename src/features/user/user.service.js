@@ -1,5 +1,6 @@
 require('dotenv').config();
 
+const { checkType } = require('../../helpers/checkType.helper');
 const { Account } = require('../../models');
 const exportFilter = require('./user.filter');
 const getAll = async (data) => {
@@ -9,7 +10,10 @@ const getAll = async (data) => {
       Account.countDocuments(filter),
       Account.find(filter)
         .select('-password -__v -updatedAt -deleted')
-        .populate('address.province address.district address.ward', 'name _id')
+        .populate({
+          path: 'address.province address.district address.ward',
+          select: 'name _id',
+        })
         .sort(sort)
         .limit(size)
         .skip(page * size)
@@ -17,7 +21,7 @@ const getAll = async (data) => {
         .exec(),
     ]);
 
-    if (!result ) throw new Error('notfound');
+    if (!result) throw new Error('notfound');
     return {
       documentList: result,
       totalDocuments,
@@ -45,7 +49,9 @@ const getBySlug = async (slug) => {
   try {
     const result = await Account.findOne({ slug })
       .select('-password -__v  -updatedAt -deleted')
-      .populate('address.province address.district address.ward ', 'name _id')
+      .populate({ path: 'address.province', select: 'name _id' })
+      .populate({ path: 'address.district', select: 'name _id' })
+      .populate({ path: 'address.ward', select: 'name _id' })
       .lean()
       .exec();
     if (!result) throw new Error('notfound');
@@ -74,6 +80,43 @@ const banned = async (id, data) => {
     throw new Error(error.message);
   }
 };
+const getNewAccountStatistics = async (data) => {
+  try {
+    const { startDate, endDate, groupByFormat } = checkType(data);
+    const result = await Account.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gte: startDate,
+            $lte: endDate,
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            $dateToString: {
+              format: groupByFormat,
+              date: {
+                $dateAdd: {
+                  startDate: '$createdAt',
+                  unit: 'hour',
+                  amount: 7,
+                },
+              },
+            },
+          },
+          totalAccounts: { $sum: 1 },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]);
+    if (!result) throw new Error('notfound');
+    return result;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
 
 module.exports = {
   getAll,
@@ -81,4 +124,5 @@ module.exports = {
   getById,
   banned,
   getBySlug,
+  getNewAccountStatistics,
 };

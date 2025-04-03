@@ -10,30 +10,45 @@ const {
 const autoSlug = require('../../helpers/autoSlug');
 const exportFilter = require('./post.filter');
 const dayjs = require('dayjs');
+const { checkType } = require('../../helpers/checkType.helper');
 
 const create = async (data) => {
+  const { payment, ...restData } = data;
+  console.log('restData', restData);
+  console.log('payment', payment);
   try {
     let imageUrls = [];
 
-    if (data.images) {
-      imageUrls = (await uploadMultiple(data.images)) || [];
+    if (restData.images) {
+      imageUrls = (await uploadMultiple(restData.images)) || [];
     }
 
-    const result = await Post.create({
-      ...data,
-      images: imageUrls.map((url, index) => {
-        return {
-          url,
-          index: index + 1,
-        };
+    const [result, updateBalance] = await Promise.all([
+      Post.create({
+        ...restData,
+        images: imageUrls.map((url, index) => {
+          return {
+            url,
+            index: index + 1,
+          };
+        }),
+        status: 'WAITING',
+        address: JSON.parse(restData.address),
+        attributes: JSON.parse(restData.attributes),
+        slug: autoSlug(restData.name),
       }),
-      status: 'SELLING',
-      address: JSON.parse(data.address),
-      attributes: JSON.parse(data.attributes),
-      slug: autoSlug(data.name),
-    });
+      Account.findByIdAndUpdate(
+        restData.createdBy,
+        {
+          $inc: {
+            balance: -Number(payment),
+          },
+        },
+        { new: true }
+      ),
+    ]);
 
-    if (!result) throw new Error('create');
+    if (!result || !updateBalance) throw new Error('create');
 
     return result;
   } catch (error) {
@@ -73,20 +88,13 @@ const update = async (id, data) => {
 
 const updateStatus = async (id, data) => {
   try {
-    const slug = autoSlug(data.name);
-    const result = await Post.findByIdAndUpdate(
-      id,
-      {
-        ...data,
-        slug,
-      },
-      { new: true }
-    );
+    const result = await Post.findByIdAndUpdate(id, data, { new: true });
 
     if (!result) throw new Error('update');
 
     return result;
   } catch (error) {
+    console.error(error);
     throw new Error(error.message);
   }
 };
@@ -127,7 +135,8 @@ const countStatus = async (id) => {
 };
 const getAllPagination = async (data, userId) => {
   try {
-    const { page, size, sort, ...filter } = exportFilter(data);
+    const { page, size, sort, search, ...filter } = exportFilter(data);
+
     const [totalDocuments, posts] = await Promise.all([
       Post.countDocuments(filter),
       Post.find(filter)
@@ -336,7 +345,7 @@ const countSold = async (id) => {
       Post.countDocuments({ createdBy: id, status: 'SELLING' }),
       Post.countDocuments({ createdBy: id, status: 'HIDDEN', isSold: true }),
     ]);
-    if (!countSelling && !countHiddenAndSold) throw new Error('notfound');
+
     return {
       selling: countSelling || 0,
       sold: countHiddenAndSold || 0,
@@ -374,6 +383,58 @@ const updatePushedAt = async (id) => {
   if (!result) throw new Error('update');
   return result;
 };
+const countStatusProfile = async (id) => {
+  try {
+    const [selling, sold] = await Promise.all([
+      Post.countDocuments({ createdBy: id, status: 'SELLING' }),
+      Post.countDocuments({ createdBy: id, isSold: true }),
+    ]);
+    return {
+      selling: selling || 0,
+      sold: sold || 0,
+    };
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+const getNewPostStatistics = async (data) => {
+  try {
+    const { startDate, endDate, groupByFormat } = checkType(data);
+    const result = await Post.aggregate([
+      {
+        $match: {
+          role: null,
+          createdAt: {
+            $gte: startDate,
+            $lte: endDate,
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            $dateToString: {
+              format: groupByFormat,
+              date: {
+                $dateAdd: {
+                  startDate: '$createdAt',
+                  unit: 'hour',
+                  amount: 7,
+                },
+              },
+            },
+          },
+          totalPosts: { $sum: 1 },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]);
+    if (!result) throw new Error('notfound');
+    return result;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
 
 module.exports = {
   create,
@@ -389,4 +450,6 @@ module.exports = {
   updateCheckingStatus,
   getAllSuggestionsPagination,
   updatePushedAt,
+  countStatusProfile,
+  getNewPostStatistics,
 };

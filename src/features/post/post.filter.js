@@ -1,51 +1,105 @@
+const parseAttributes = (attributes) => {
+  return (
+    attributes?.map((attr) => {
+      const [name, value] = attr.split(':');
+      return { name, value };
+    }) || []
+  );
+};
+
+const createPriceFilter = (minPrice, maxPrice) => {
+  const filter = {};
+  if (minPrice !== undefined && minPrice !== null) {
+    filter.$gte = Number(minPrice);
+  }
+  if (maxPrice !== undefined && maxPrice !== null) {
+    filter.$lte = Number(maxPrice);
+  }
+  return Object.keys(filter).length > 0 ? { price: filter } : {};
+};
+
+const createAddressFilter = (ward, district, province, filterType) => {
+  const conditions = [];
+  if (ward) {
+    conditions.push({
+      'address.ward': Number(ward),
+      'address.district': Number(district),
+      'address.province': Number(province),
+    });
+  }
+  if (district) {
+    conditions.push({
+      'address.district': Number(district),
+      'address.province': Number(province),
+    });
+  }
+  if (province) {
+    conditions.push({ 'address.province': Number(province) });
+  }
+  if (filterType === 'suggest') {
+    conditions.push({});
+  }
+  return conditions;
+};
+
+const createSort = (sortType, isTextSearch) => {
+  if (!sortType)
+    return isTextSearch ? { score: { $meta: 'textScore' } } : { createdAt: -1 };
+
+  const sortOptions = {
+    relevance: isTextSearch
+      ? { score: { $meta: 'textScore' } }
+      : { createdAt: -1 },
+    newest: { createdAt: -1 },
+    lowest: { price: 1 },
+    highest: { price: -1 },
+  };
+
+  return sortOptions[sortType] || { createdAt: -1 };
+};
+
 const exportFilter = (post) => {
-  const priceFilter = {};
-  if (post.minPrice !== undefined && post.minPrice !== null) {
-    priceFilter.$gte = Number(post.minPrice);
-  }
-  if (post.maxPrice !== undefined && post.maxPrice !== null) {
-    priceFilter.$lte = Number(post.maxPrice);
-  }
+  const isTextSearch = post.q?.trim();
+  const parsedAttributes = parseAttributes(post.attribute);
+  const priceFilter = createPriceFilter(post.minPrice, post.maxPrice);
+  const addressFilter = createAddressFilter(
+    post.ward,
+    post.district,
+    post.province,
+    post.filterType
+  );
+  const sort = createSort(post.sort, isTextSearch);
+
   const filter = {
     ...(post.currentSlug && { slug: { $ne: post.currentSlug } }),
-    ...(post.name?.trim() && {
-      $or: [
-        { $text: { $search: post.name.trim().replace(/\s+/g, ' ') } },
-        { name: new RegExp(post.name, 'i') },
-      ],
+
+    ...(post.q?.trim() && {
+      $text: {
+        $search: post.q?.trim(),
+        $caseSensitive: false,
+        $diacriticSensitive: false,
+      },
     }),
-    ...(post.attribute &&
-      post.attribute.length > 0 && {
-        attributes: post.attribute.map((item) => ({
+
+    ...(parsedAttributes.length > 0 && {
+      attributes: {
+        $all: parsedAttributes.map(({ name, value }) => ({
           $elemMatch: {
-            name: item.name,
-            value: item.value,
+            name,
+            value: { $in: [value, String(value), Number(value)] },
           },
         })),
-      }),
-
-    ...(post.address && {
-      $or: [
-        post.address.ward && {
-          'address.ward': post.address.ward,
-          'address.district': post.address.district,
-          'address.province': post.address.province,
-        },
-        post.address.district && {
-          'address.district': post.address.district,
-          'address.province': post.address.province,
-        },
-        post.address.province && { 'address.province': post.address.province },
-        {},
-      ].filter(Boolean),
+      },
     }),
+    ...(addressFilter.length > 0 && { $or: addressFilter }),
     ...(post.category && { category: post.category }),
     ...(post.categoryParent && { categoryParent: post.categoryParent }),
     ...(post.isIndividual && { isIndividual: post.isIndividual }),
     ...(post.statusAdmin && { status: post.statusAdmin }),
     ...(post.updatedBy && { updatedBy: post.updatedBy }),
     ...(post.createdBy && { createdBy: post.createdBy }),
-    ...(Object.keys(priceFilter).length > 0 && { price: priceFilter }),
+    ...(post.isSold && { isSold: post.isSold }),
+    ...priceFilter,
     ...(post.status && {
       status: {
         $in:
@@ -57,22 +111,6 @@ const exportFilter = (post) => {
       },
     }),
   };
-
-  const sort = post.sort
-    ? post.sort === 'relevance'
-      ? post.name?.trim()
-        ? { score: { $meta: 'textScore' } }
-        : { createdAt: -1 }
-      : post.sort === 'newest'
-        ? { createdAt: -1 }
-        : post.sort === 'lowest'
-          ? { price: 1 }
-          : post.sort === 'highest'
-            ? { price: -1 }
-            : { createdAt: -1 }
-    : post.name?.trim()
-      ? { score: { $meta: 'textScore' } }
-      : { createdAt: -1 }; // Mặc định nếu không có text search
 
   return {
     ...filter,

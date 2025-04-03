@@ -1,7 +1,7 @@
 const dayjs = require('dayjs');
 
 const exportFilter = (payment) => {
-  console.log('payment', payment);
+ 
   const res = {
     ...(payment.page ? { page: Number(payment.page) } : { page: 0 }),
     ...(payment.size ? { size: Number(payment.size) } : { size: 10 }),

@@ -154,8 +154,7 @@ const changePassword = async (id, data) => {
       data.currentPassword,
       account.password
     );
-    if (!passwordMatch)
-      throw new Error('validation: Current password is incorrect');
+    if (!passwordMatch) throw new Error('validation');
     const result = await Account.findByIdAndUpdate(id, {
       password: hashNewPassword,
     }).exec();
@@ -166,13 +165,18 @@ const changePassword = async (id, data) => {
   }
 };
 const updateProfile = async (id, data) => {
+  console.log(data);
   try {
     const avatarUrl = data.avatar ? await uploadSingle(data.avatar) : null;
+    const backgroundUrl = data.background
+      ? await uploadSingle(data.background)
+      : null;
     const result = await Account.findByIdAndUpdate(
       id,
       {
         ...data,
         ...(avatarUrl && { avatar: avatarUrl }),
+        ...(backgroundUrl && { background: backgroundUrl }),
         address: data.address ? JSON.parse(data.address) : null,
       },
       {
@@ -189,6 +193,7 @@ const updateProfile = async (id, data) => {
     if (!result) throw new Error('update');
     return result;
   } catch (err) {
+    console.log(err);
     throw new Error(err.message);
   }
 };

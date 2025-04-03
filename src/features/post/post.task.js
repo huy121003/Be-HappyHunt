@@ -7,10 +7,8 @@ const sightEngineConnect = require('../../configs/sightengine.config');
 
 cron.schedule('*/1 * * * *', async () => {
   try {
-    console.log(' Checking posts with status WAITING...');
     const posts = await Post.find({ status: 'WAITING' });
     if (!posts.length) {
-      console.log(' No posts to check.');
       return;
     }
 
@@ -18,8 +16,6 @@ cron.schedule('*/1 * * * *', async () => {
       let aiCheckFailed = false;
       let allApproved = true;
       const updatedImages = [];
-
-      console.log(` Checking post ID: ${post._id}`);
 
       const checkResults = await Promise.allSettled(
         post.images.map(async (image) => {
@@ -38,9 +34,6 @@ cron.schedule('*/1 * * * *', async () => {
             if (!evaluation.approved) {
               reasonReject.push(...evaluation.reasons);
               allApproved = false;
-              console.log(
-                ` Image ${image.url} rejected: ${evaluation.reasons.join(', ')}`
-              );
             }
           } catch (error) {
             console.error(` Error checking image ${image.url}:`, error.message);
@@ -88,8 +81,6 @@ cron.schedule('*/1 * * * *', async () => {
         },
         { new: true }
       );
-
-      console.log(` Post ID: ${post._id} updated to ${newStatus}`);
     }
   } catch (error) {
     console.error(' Error checking posts:', error);
@@ -97,7 +88,6 @@ cron.schedule('*/1 * * * *', async () => {
 });
 
 cron.schedule('*/5 * * * *', async () => {
-  console.log(' Checking posts with status WAITING|AI_CHECKING_FAILED...');
   try {
     const posts = await Post.find({
       status: { $in: ['WAITING', 'WAITING|AI_CHECKING_FAILED', 'REJECTED'] },
@@ -107,11 +97,6 @@ cron.schedule('*/5 * * * *', async () => {
         const deletePost = await Post.findByIdAndUpdate(post._id, {
           status: 'DELETED',
         });
-        if (!deletePost) {
-          console.log(` Delete post ${post._id} failed`);
-        } else {
-          console.log(`✅ Delete post ${post._id} successfully`);
-        }
       }
     }
   } catch (error) {
@@ -119,7 +104,6 @@ cron.schedule('*/5 * * * *', async () => {
   }
 });
 cron.schedule('*/5 * * * *', async () => {
-  console.log(' Checking posts with status SELLING');
   try {
     const posts = await Post.find({
       status: 'SELLING',
@@ -129,11 +113,6 @@ cron.schedule('*/5 * * * *', async () => {
         const updatePost = await Post.findByIdAndUpdate(post._id, {
           status: 'EXPIRED',
         });
-        if (!updatePost) {
-          console.log(` Update post ${post._id} failed`);
-        } else {
-          console.log(` Update post ${post._id} successfully`);
-        }
       }
     }
   } catch (error) {

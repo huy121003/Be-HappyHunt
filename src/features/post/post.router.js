@@ -27,6 +27,11 @@ router.get(
   authJwt.accessToken,
   postController.getAllSuggestionsPagination
 );
+router.get(
+  '/statistics',
+  authJwt.accessToken,
+  postController.getNewPostStatistics
+);
 router.get('/:id', authJwt.accessToken, postController.getById);
 router.delete('/:id', authJwt.accessToken, postController.remove);
 router.get('/slug/:slug', authJwt.accessToken, postController.getBySlug);
@@ -42,5 +47,10 @@ router.patch(
   '/pushed-at/:id',
   authJwt.accessToken,
   postController.updatePushedAt
+);
+router.get(
+  '/count-status-profile/:_id',
+  authJwt.accessToken,
+  postController.countStatusProfile
 );
 module.exports = router;

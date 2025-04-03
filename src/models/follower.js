@@ -5,7 +5,6 @@ const applyAutoIncrement = require('../configs/autoIncrement');
 const followerSchema = new Schema(
   {
     _id: Number,
-    follower: { type: Number, ref: 'account', required: true },
     following: { type: Number, ref: 'account', required: true },
     createdBy: { type: Number, ref: 'account', default: null },
     updatedBy: { type: Number, ref: 'account', default: null },
