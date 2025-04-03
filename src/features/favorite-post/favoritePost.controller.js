@@ -41,13 +41,14 @@ const getAllPagination = async (req, res) => {
       ...req.query,
       createdBy: req.userAccess._id,
     });
-    return apiHandler.sendSuccess(
+    return apiHandler.sendSuccessWithData(
       res,
       'Fetch favorite post successfully',
       result
     );
   } catch (error) {
-    if (error.message.includes('notfound')) {
+    console.log(error.message);
+    if (error.message === 'notfound') {
       return apiHandler.sendNotFound(res, 'No favorite post found');
     }
     return apiHandler.sendErrorMessage(
@@ -62,14 +63,32 @@ const getById = async (req, res) => {
       req.params.id,
       req.userAccess._id
     );
-    return apiHandler.sendSuccess(
+    return apiHandler.sendSuccessWithData(
       res,
       'Fetch favorite post successfully',
       result
     );
   } catch (error) {
-    if (error.message.includes('notfound')) {
+    if (error.message === 'notfound') {
       return apiHandler.sendNotFound(res, 'Favorite post not found');
+    }
+    return apiHandler.sendErrorMessage(
+      res,
+      'An unexpected error occurred, please try again later'
+    );
+  }
+};
+const removeById = async (req, res) => {
+  try {
+    const result = await favoritePostService.removeById(req.params.id);
+    return apiHandler.sendCreated(
+      res,
+      'Favorite post removed successfully',
+      result
+    );
+  } catch (error) {
+    if (error.message === 'delete') {
+      return apiHandler.sendErrorMessage(res, 'Failed to remove favorite post');
     }
     return apiHandler.sendErrorMessage(
       res,
@@ -83,4 +102,5 @@ module.exports = {
   remove,
   getAllPagination,
   getById,
+  removeById,
 };

@@ -146,9 +146,9 @@ const getById = async (req, res) => {
     return apiHandler.sendSuccessWithData(res, 'Post', result);
   } catch (error) {
     if (error.message.includes('notfound')) {
-      return apiHandler.sendErrorMessage(res, 'Post not found');
+      return apiHandler.sendNotFound(res, 'Post not found');
     }
-    return apiHandler.sendErrorMessage(res, error.message);
+    return apiHandler.sendErrorsendNotFoundMessage(res, error.message);
   }
 };
 const getBySlug = async (req, res) => {
@@ -160,7 +160,7 @@ const getBySlug = async (req, res) => {
     return apiHandler.sendSuccessWithData(res, 'Post', result);
   } catch (error) {
     if (error.message.includes('notfound')) {
-      return apiHandler.sendErrorMessage(res, 'Post not found');
+      return apiHandler.sendNotFound(res, 'Post not found');
     }
     return apiHandler.sendErrorMessage(res, error.message);
   }

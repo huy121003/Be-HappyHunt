@@ -22,6 +22,15 @@ const remove = async (postId, userId) => {
     throw new Error(error.message);
   }
 };
+const removeById = async (id) => {
+  try {
+    const result = await FavoritePost.deleteById(id).lean();
+    if (!result) throw new Error('delete');
+    return result;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
 
 const getAllPagination = async (data) => {
   try {
@@ -32,7 +41,7 @@ const getAllPagination = async (data) => {
         .limit(size)
         .skip(page * size)
         .sort(sort)
-        .populate('post', 'name _id images slug status')
+        .populate('post', 'name _id images slug status price')
         .lean()
         .exec(),
     ]);
@@ -45,6 +54,7 @@ const getAllPagination = async (data) => {
       pageNumber: page,
     };
   } catch (error) {
+    console.log(error.message);
     throw new Error(error.message);
   }
 };
@@ -65,4 +75,5 @@ module.exports = {
   remove,
   getAllPagination,
   getById,
+  removeById,
 };
