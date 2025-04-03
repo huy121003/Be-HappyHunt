@@ -5,6 +5,7 @@ const exportFilter = (favorite) => {
     ...(favorite.sort ? { sort: favorite.sort } : { sort: '-createdAt' }),
     ...(favorite.post && { post: favorite.post }),
     ...(favorite.user && { createBy: favorite.user }),
+    ...(favorite.createBy && { createBy: favorite.createBy }),
   };
   return res;
 };

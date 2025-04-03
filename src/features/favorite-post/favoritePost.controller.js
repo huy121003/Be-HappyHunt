@@ -39,7 +39,7 @@ const getAllPagination = async (req, res) => {
   try {
     const result = await favoritePostService.getAllPagination({
       ...req.query,
-      createBy: req.userAccess._id,
+      createdBy: req.userAccess._id,
     });
     return apiHandler.sendSuccess(
       res,

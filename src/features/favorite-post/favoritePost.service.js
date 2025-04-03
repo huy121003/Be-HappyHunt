@@ -32,11 +32,11 @@ const getAllPagination = async (data) => {
         .limit(size)
         .skip(page * size)
         .sort(sort)
-        .populate('post', 'name _id images slug')
+        .populate('post', 'name _id images slug status')
         .lean()
         .exec(),
     ]);
-    if (!result || !document) throw new Error('notfound');
+    if (!result) throw new Error('notfound');
 
     return {
       documentList: result,

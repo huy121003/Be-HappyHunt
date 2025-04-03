@@ -345,7 +345,7 @@ const countSold = async (id) => {
       Post.countDocuments({ createdBy: id, status: 'SELLING' }),
       Post.countDocuments({ createdBy: id, status: 'HIDDEN', isSold: true }),
     ]);
-    if (!countSelling && !countHiddenAndSold) throw new Error('notfound');
+
     return {
       selling: countSelling || 0,
       sold: countHiddenAndSold || 0,
