@@ -1,5 +1,6 @@
 require('dotenv').config();
 
+const { checkType } = require('../../helpers/checkType.helper');
 const { Account } = require('../../models');
 const exportFilter = require('./user.filter');
 const getAll = async (data) => {
@@ -79,6 +80,43 @@ const banned = async (id, data) => {
     throw new Error(error.message);
   }
 };
+const getNewAccountStatistics = async (data) => {
+  try {
+    const { startDate, endDate, groupByFormat } = checkType(data);
+    const result = await Account.aggregate([
+      {
+        $match: {
+          createdAt: {
+            $gte: startDate,
+            $lte: endDate,
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            $dateToString: {
+              format: groupByFormat,
+              date: {
+                $dateAdd: {
+                  startDate: '$createdAt',
+                  unit: 'hour',
+                  amount: 7,
+                },
+              },
+            },
+          },
+          totalAccounts: { $sum: 1 },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]);
+    if (!result) throw new Error('notfound');
+    return result;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
 
 module.exports = {
   getAll,
@@ -86,4 +124,5 @@ module.exports = {
   getById,
   banned,
   getBySlug,
+  getNewAccountStatistics,
 };

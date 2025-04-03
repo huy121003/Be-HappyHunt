@@ -10,6 +10,7 @@ const {
 const autoSlug = require('../../helpers/autoSlug');
 const exportFilter = require('./post.filter');
 const dayjs = require('dayjs');
+const { checkType } = require('../../helpers/checkType.helper');
 
 const create = async (data) => {
   const { payment, ...restData } = data;
@@ -396,6 +397,44 @@ const countStatusProfile = async (id) => {
     throw new Error(error.message);
   }
 };
+const getNewPostStatistics = async (data) => {
+  try {
+    const { startDate, endDate, groupByFormat } = checkType(data);
+    const result = await Post.aggregate([
+      {
+        $match: {
+          role: null,
+          createdAt: {
+            $gte: startDate,
+            $lte: endDate,
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            $dateToString: {
+              format: groupByFormat,
+              date: {
+                $dateAdd: {
+                  startDate: '$createdAt',
+                  unit: 'hour',
+                  amount: 7,
+                },
+              },
+            },
+          },
+          totalPosts: { $sum: 1 },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]);
+    if (!result) throw new Error('notfound');
+    return result;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
 
 module.exports = {
   create,
@@ -412,4 +451,5 @@ module.exports = {
   getAllSuggestionsPagination,
   updatePushedAt,
   countStatusProfile,
+  getNewPostStatistics,
 };

@@ -1,11 +1,4 @@
 const dayjs = require('dayjs');
-const isoWeek = require('dayjs/plugin/isoWeek');
-const utc = require('dayjs/plugin/utc');
-const timezone = require('dayjs/plugin/timezone');
-
-dayjs.extend(isoWeek); // Đảm bảo tuần ISO bắt đầu từ Thứ Hai
-dayjs.extend(utc);
-dayjs.extend(timezone);
 
 const checkType = (data) => {
   const { type, start, end } = data;
@@ -13,29 +6,29 @@ const checkType = (data) => {
 
   switch (type) {
     case 'ALL':
-      startDate = dayjs('2020-01-01').startOf('day').toDate(); // 00:00:00
-      endDate = dayjs().endOf('day').toDate(); // 23:59:59 hôm nay
+      startDate = dayjs('2020-01-01').startOf('day').toDate();
+      endDate = dayjs().endOf('day').toDate();
       groupByFormat = '%Y-%m';
       break;
     case 'TODAY':
-      startDate = dayjs().startOf('day').toDate(); // 00:00:00 hôm nay
-      endDate = dayjs().endOf('day').toDate(); // 23:59:59 hôm nay
+      startDate = dayjs().startOf('day').toDate();
+      endDate = dayjs().endOf('day').toDate();
       groupByFormat = '%Y-%m-%d';
       break;
     case 'YESTERDAY':
-      startDate = dayjs().subtract(1, 'day').startOf('day').toDate(); // 00:00:00 hôm qua
-      endDate = dayjs().subtract(1, 'day').endOf('day').toDate(); // 23:59:59 hôm qua
+      startDate = dayjs().subtract(1, 'day').startOf('day').toDate();
+      endDate = dayjs().subtract(1, 'day').endOf('day').toDate();
       groupByFormat = '%Y-%m-%d';
       break;
     case 'THIS_WEEK':
-      startDate = dayjs().day(1).startOf('day').toDate(); // Thứ Hai (00:00:00)
-      endDate = dayjs().day(7).endOf('day').toDate(); // Chủ Nhật (23:59:59)
+      startDate = dayjs().day(1).startOf('day').toDate();
+      endDate = dayjs().day(7).endOf('day').toDate();
       groupByFormat = '%Y-%m-%d';
       break;
 
     case 'LAST_WEEK':
-      startDate = dayjs().subtract(1, 'week').day(1).startOf('day').toDate(); // Thứ Hai tuần trước (00:00:00)
-      endDate = dayjs().subtract(1, 'week').day(7).endOf('day').toDate(); // Chủ Nhật tuần trước (23:59:59)
+      startDate = dayjs().subtract(1, 'week').day(1).startOf('day').toDate();
+      endDate = dayjs().subtract(1, 'week').day(7).endOf('day').toDate();
       groupByFormat = '%Y-%m-%d';
       break;
 

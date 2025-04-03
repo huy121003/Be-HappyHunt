@@ -1,7 +1,7 @@
+const { checkType } = require('../../helpers/checkType.helper');
 const { Account } = require('../../models');
 const PaymentHistory = require('../../models/payment-history');
 const exportFilter = require('./payment.filter');
-const { checkType } = require('./payment.helper');
 
 const createPaymentHistory = async (data) => {
   try {
@@ -174,10 +174,10 @@ const getDepositStatistics = async (data) => {
       { $sort: { _id: 1 } },
       {
         $group: {
-          _id: null, // Gom tất cả thành 1 nhóm duy nhất
-          data: { $push: '$$ROOT' }, // Giữ nguyên dữ liệu đã nhóm trước đó
-          grandTotalAmount: { $sum: '$totalAmount' }, // Tổng toàn bộ tiền
-          grandTotalInvoices: { $sum: '$totalInvoices' }, // Tổng toàn bộ hóa đơn
+          _id: null,
+          data: { $push: '$$ROOT' },
+          grandTotalAmount: { $sum: '$totalAmount' },
+          grandTotalInvoices: { $sum: '$totalInvoices' },
         },
       },
       {

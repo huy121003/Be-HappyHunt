@@ -59,8 +59,6 @@ const postSchema = new Schema(
     createdBy: { type: Number, ref: 'account', default: null },
     updatedBy: { type: Number, ref: 'account', default: null },
     pushedAt: { type: String, default: new Date().toISOString() },
-    reasonHidden: { type: String, default: '' },
-    reasonSold: { type: String, default: '' },
   },
   { timestamps: true }
 );

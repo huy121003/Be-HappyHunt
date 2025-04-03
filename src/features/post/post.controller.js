@@ -231,6 +231,18 @@ const countStatusProfile = async (req, res) => {
     return apiHandler.sendErrorMessage(res, error.message);
   }
 };
+const getNewPostStatistics = async (req, res) => {
+  try {
+    const result = await postService.getNewPostStatistics(req.query);
+    return apiHandler.sendSuccessWithData(res, 'List posts', result);
+  } catch (error) {
+    if (error.message.includes('notfound')) {
+      return apiHandler.sendNotFound(res, 'No data in this time range');
+    }
+    return apiHandler.sendErrorMessage(res, error.message);
+  }
+};
+
 module.exports = {
   create,
   updateStatus,
@@ -246,4 +258,5 @@ module.exports = {
   getAllSuggestionsPagination,
   updatePushedAt,
   countStatusProfile,
+  getNewPostStatistics,
 };
