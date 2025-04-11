@@ -45,6 +45,7 @@
     "express-list-endpoints": "^7.1.1",
     "express-rate-limit": "^7.5.0",
     "express-validation": "^4.1.1",
+    "firebase-admin": "^13.2.0",
     "fs": "^0.0.1-security",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",

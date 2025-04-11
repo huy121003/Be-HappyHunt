@@ -45,6 +45,10 @@ const accountSchema = new Schema(
     description: { type: String, default: '' },
     createdBy: { type: Number, ref: 'account', default: null },
     updatedBy: { type: Number, ref: 'account', default: null },
+    messageHidden: [{ type: Number, ref: 'message', default: null }],
+    favoritePost: [{ type: Number, ref: 'post', default: null }],
+    blockAccount: [{ type: Number, ref: 'account', default: null }],
+    blockPost: [{ type: Number, ref: 'post', default: null }],
   },
   { timestamps: true }
 );

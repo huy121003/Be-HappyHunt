@@ -12,6 +12,7 @@ const create = async (category) => {
       attributes: category.attributes
         ? JSON.parse(category.attributes)
         : undefined,
+      messages: category.messages ? JSON.parse(category.messages) : undefined,
       parent: category.parent ? category.parent : null,
       slug: autoSlug(category.name),
       keywords: category.keywords ? category.keywords : [],
@@ -104,6 +105,7 @@ const update = async (id, category) => {
         attributes: category.attributes
           ? JSON.parse(category.attributes)
           : undefined,
+        messages: category.messages ? JSON.parse(category.messages) : undefined,
         parent: category.parent ? category.parent : null,
       },
       {

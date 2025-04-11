@@ -43,6 +43,13 @@ const categorySchema = new Schema(
     icon: { type: String, required: true, trim: true },
     createdBy: { type: Number, ref: 'account', default: null },
     updatedBy: { type: Number, ref: 'account', default: null },
+    messages: [
+      {
+        _id: false,
+        messageSeller: { type: String, trim: true, required: true },
+        messageBuyer: { type: String, trim: true, required: true },
+      },
+    ],
   },
   { timestamps: true }
 );

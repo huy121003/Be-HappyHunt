@@ -311,7 +311,7 @@ const getBySlug = async (slug, userId) => {
       .select(' -updatedAt -__v')
       .populate(
         'category categoryParent address.province address.district address.ward createdBy',
-        'name _id avatar phoneNumber slug'
+        'name _id avatar phoneNumber slug messages'
       )
       .lean()
       .exec();
