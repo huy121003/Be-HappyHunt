@@ -1,7 +1,6 @@
 const { cloudinary } = require('../../configs');
 
 const uploadSingle = async (file) => {
-  console.log('dưdw', file);
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
       {
@@ -10,7 +9,7 @@ const uploadSingle = async (file) => {
       },
       (error, result) => {
         if (error) {
-          console.log(JSON.stringify(error));
+          console.log('a', JSON.stringify(error));
           reject(`Upload failed: ${error}`);
         } else {
           resolve(result.url);

@@ -23,21 +23,23 @@ const create = async (data) => {
       imageUrls = (await uploadMultiple(restData.images)) || [];
     }
 
-    const [result, updateBalance] = await Promise.all([
-      Post.create({
-        ...restData,
-        images: imageUrls.map((url, index) => {
-          return {
-            url,
-            index: index + 1,
-          };
-        }),
-        status: 'WAITING',
-        address: JSON.parse(restData.address),
-        attributes: JSON.parse(restData.attributes),
-        slug: autoSlug(restData.name),
+    const result = await Post.create({
+      ...restData,
+      images: imageUrls.map((url, index) => {
+        return {
+          url,
+          index: index + 1,
+        };
       }),
-      Account.findByIdAndUpdate(
+      status: 'WAITING',
+      address: JSON.parse(restData.address),
+      attributes: JSON.parse(restData.attributes),
+      slug: autoSlug(restData.name),
+    });
+
+    if (!result) throw new Error('create');
+    if (payment) {
+      let updateBalance = await Account.findByIdAndUpdate(
         restData.createdBy,
         {
           $inc: {
@@ -45,11 +47,9 @@ const create = async (data) => {
           },
         },
         { new: true }
-      ),
-    ]);
-
-    if (!result || !updateBalance) throw new Error('create');
-
+      );
+      if (!updateBalance) throw new Error('update');
+    }
     return result;
   } catch (error) {
     throw new Error(error.message);
