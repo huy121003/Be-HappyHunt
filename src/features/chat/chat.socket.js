@@ -1,6 +1,6 @@
 const chatService = require('./chat.service');
 const messageService = require('../message/message.service');
-
+const socketHandler = require('../../helpers/socketHandler.helper');
 // Map to store online users
 const onlineUsers = new Map();
 
@@ -34,7 +34,7 @@ const handleStatusAccount = (
   }
 
   // Notify all users about status change
-  chatNamespace.emit('status_account', getUserStatus(accountId));
+  chatNamespace.emit('status_account', socketHandler.success(getUserStatus(accountId)));
 
   console.log(`User ${accountId} is ${status}`);
 };
@@ -53,7 +53,7 @@ const setupChatSocket = (io) => {
     // Get status of a specific account
     socket.on('get_status_account', (data) => {
       const { accountId, targetAccountId } = data;
-      socket.emit('status_account', getUserStatus(targetAccountId));
+      socket.emit('status_account', socketHandler.success(getUserStatus(targetAccountId)  ));
     });
     // Join a chat room
     socket.on('join_chat', (chat) => {
@@ -70,18 +70,18 @@ const setupChatSocket = (io) => {
       try {
         const chatHistory = await chatService.getAllPagination(data);
 
-        socket.emit('chat_history', chatHistory);
+        socket.emit('chat_history', socketHandler.success(chatHistory));
       } catch (error) {
-        socket.emit('error', { message: error.message });
+        socket.emit('error', socketHandler.error(error.message));
       }
     });
     // Fetch chat by slug
     socket.on('fetch_chat_by_slug', async (slug) => {
       try {
         const chat = await chatService.getDetailBySlug(slug);
-        socket.emit('chat_by_slug', chat);
+        socket.emit('chat_by_slug', socketHandler.success(chat));
       } catch (error) {
-        socket.emit('error', { message: error.message });
+        socket.emit('error', socketHandler.error(error.message));
       }
     });
     // Create chat
@@ -89,9 +89,9 @@ const setupChatSocket = (io) => {
       try {
         const chat = await chatService.create(data);
 
-        socket.emit('chat_created', chat);
+        socket.emit('chat_created', socketHandler.success(chat));
       } catch (error) {
-        socket.emit('error', { message: error.message });
+        socket.emit('error', socketHandler.error(error.message));
       }
     });
     // Send a message
@@ -105,13 +105,13 @@ const setupChatSocket = (io) => {
         });
         const countSeller = await chatService.countNotRead(chat.seller._id);
         const countBuyer = await chatService.countNotRead(chat.buyer._id);
-        chatNamespace.to(data.chat).emit('new_message', message);
-        chatNamespace.to(chat.seller._id).emit('chat_updated', chat);
-        chatNamespace.to(chat.buyer._id).emit('chat_updated', chat);
-        chatNamespace.to(chat.seller._id).emit('count_not_read', countSeller);
-        chatNamespace.to(chat.buyer._id).emit('count_not_read', countBuyer);
+        chatNamespace.to(data.chat).emit('new_message', socketHandler.success(message));
+        chatNamespace.to(chat.seller._id).emit('chat_updated', socketHandler.success(chat));
+        chatNamespace.to(chat.buyer._id).emit('chat_updated', socketHandler.success(chat));
+        chatNamespace.to(chat.seller._id).emit('count_not_read', socketHandler.success(countSeller));
+        chatNamespace.to(chat.buyer._id).emit('count_not_read', socketHandler.success(countBuyer));
       } catch (error) {
-        socket.emit('error', { message: error.message });
+        socket.emit('error', socketHandler.error(error.message));
       }
     });
     socket.on('read_message', async (data) => {
@@ -127,26 +127,26 @@ const setupChatSocket = (io) => {
         const countSeller = await chatService.countNotRead(chat.seller._id);
         const countBuyer = await chatService.countNotRead(chat.buyer._id);
 
-        chatNamespace.to(data.chat).emit('message_read', message);
+        chatNamespace.to(data.chat).emit('message_read', socketHandler.success(message));
 
-        chatNamespace.to(chat.seller._id).emit('chat_read', chat);
-        chatNamespace.to(chat.seller._id).emit('count_not_read', countSeller);
+        chatNamespace.to(chat.seller._id).emit('chat_read', socketHandler.success(chat));
+        chatNamespace.to(chat.seller._id).emit('count_not_read', socketHandler.success(countSeller));
 
-        chatNamespace.to(chat.buyer._id).emit('chat_read', chat);
-        chatNamespace.to(chat.buyer._id).emit('count_not_read', countBuyer);
+        chatNamespace.to(chat.buyer._id).emit('chat_read', socketHandler.success(chat));
+        chatNamespace.to(chat.buyer._id).emit('count_not_read', socketHandler.success(countBuyer));
         console.log('message', message);
         console.log('chat', chat);
       } catch (error) {
-        socket.emit('error', { message: error.message });
+        socket.emit('error', socketHandler.error(error.message));
       }
     });
     // Fetch message history
     socket.on('fetch_messages', async (data) => {
       try {
         const messages = await messageService.getAllPagination(data);
-        socket.emit('message_history', messages);
+        socket.emit('message_history', socketHandler.success(messages));
       } catch (error) {
-        socket.emit('error', { message: error.message });
+        socket.emit('error', socketHandler.error(error.message));
       }
     });
 
@@ -163,15 +163,15 @@ const setupChatSocket = (io) => {
     socket.on('count_not_read', async (data) => {
       try {
         const count = await chatService.countNotRead(data);
-        socket.emit('count_not_read', count);
+        socket.emit('count_not_read', socketHandler.success(count));
       } catch (error) {
-        socket.emit('error', { message: error.message });
+        socket.emit('error', socketHandler.error(error.message));
       }
     });
 
     socket.on('last_message', async (data) => {
       const message = await messageService.getLastMessageByChat(data);
-      socket.emit('last_message', message);
+      socket.emit('last_message', socketHandler.success(message));
     });
     // Handle disconnect
     socket.on('disconnect', () => {

@@ -6,7 +6,7 @@ const { authJwt } = require('../../middlewares');
 router.post('/', authJwt.accessToken, sampleMessageController.create);
 
 router.get('/', authJwt.accessToken, sampleMessageController.getAll);
-router.put('/:id', authJwt.accessToken, sampleMessageController.update);
+router.patch('/:id', authJwt.accessToken, sampleMessageController.update);
 router.delete('/:id', authJwt.accessToken, sampleMessageController.remove);
 router.get('/:id', authJwt.accessToken, sampleMessageController.getById);
 

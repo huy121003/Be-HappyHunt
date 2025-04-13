@@ -40,10 +40,10 @@ const update = async (req, res) => {
       sampleMessage
     );
   } catch (error) {
-    if (error.message.includes('notfound')) {
+    if (error.message === 'notfound') {
       return apiHandler.sendNotFound(res, 'Sample message not found');
     }
-    if (error.message.includes('delete')) {
+    if (error.message === 'delete') {
       return apiHandler.sendErrorMessage(
         res,
         'Failed to delete sample message'
@@ -84,7 +84,7 @@ const getAll = async (req, res) => {
       sampleMessages
     );
   } catch (error) {
-    if (error.message.includes('notfound')) {
+    if (error.message === 'notfound') {
       return apiHandler.sendNotFound(res, 'Sample message not found');
     }
     return apiHandler.sendErrorMessage(res, error.message);
@@ -93,6 +93,11 @@ const getAll = async (req, res) => {
 const getById = async (req, res) => {
   try {
     const sampleMessage = await sampleMessageService.getById(req.params.id);
+    return apiHandler.sendSuccessWithData(
+      res,
+      'Sample message retrieved successfully',
+      sampleMessage
+    );
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }

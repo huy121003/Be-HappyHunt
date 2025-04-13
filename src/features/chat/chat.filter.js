@@ -26,7 +26,7 @@ const exportFilter = (chat) => {
       case 'all':
       default:
         res.$or = [
-          { seller: chat.currentUser, lastMessage: { $ne: null } },
+          { seller: chat.currentUser, 'lastMessage.message': { $ne: null } },
           { buyer: chat.currentUser },
         ];
         break;
