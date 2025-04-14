@@ -65,7 +65,7 @@ const createAutoAddress = async (provincesData) => {
     }
   }
 
-  console.log('All addresses created successfully');
+
   return true;
 };
 const autoCreatePermission = async () => {

@@ -88,7 +88,7 @@ const getAnswer = async (dataReq) => {
     );
     return answer;
   } catch (error) {
-    console.log(error);
+
     throw new Error(error.message);
   }
 };

@@ -165,7 +165,7 @@ const changePassword = async (id, data) => {
   }
 };
 const updateProfile = async (id, data) => {
-  console.log(data);
+
   try {
     const avatarUrl = data.avatar ? await uploadSingle(data.avatar) : null;
     const backgroundUrl = data.background
@@ -193,7 +193,7 @@ const updateProfile = async (id, data) => {
     if (!result) throw new Error('update');
     return result;
   } catch (err) {
-    console.log(err);
+  
     throw new Error(err.message);
   }
 };

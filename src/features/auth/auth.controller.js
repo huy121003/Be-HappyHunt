@@ -135,7 +135,7 @@ const changePassword = async (req, res) => {
     res.clearCookie('refresh_token');
     return apiHandler.sendCreated(res, 'Change password success');
   } catch (error) {
-    console.log(error);
+
     if (error.message.includes('notfound')) {
       return apiHandler.sendNotFound(res, 'Account not found');
     }
@@ -153,7 +153,7 @@ const changePassword = async (req, res) => {
 };
 const updateProfile = async (req, res) => {
   try {
-    console.log(req?.files);
+ ;
     const result = await authService.updateProfile(req.userAccess._id, {
       ...req.body,
       ...(req?.files?.avatar && { avatar: req?.files?.avatar }),
@@ -161,7 +161,7 @@ const updateProfile = async (req, res) => {
     });
     return apiHandler.sendCreated(res, 'Update profile success', result);
   } catch (error) {
-    console.log(error);
+   
     if (error.message === 'update') {
       return apiHandler.sendErrorMessage(res, 'Failed to update profile');
     }

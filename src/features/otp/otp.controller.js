@@ -34,7 +34,7 @@ const sendOTPV2 = async (req, res) => {
     const session = await auth.createUser({
       phoneNumber: phoneNumber,
     });
-    console.log('OTP sent to:', phoneNumber);
+
     return apiHandler.sendCreated(res, 'OTP sent successfully', session);
   } catch (error) {
     console.error('Error sending OTP:', error.message);

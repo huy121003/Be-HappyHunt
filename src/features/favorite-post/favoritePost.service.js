@@ -54,7 +54,7 @@ const getAllPagination = async (data) => {
       pageNumber: page,
     };
   } catch (error) {
-    console.log(error.message);
+
     throw new Error(error.message);
   }
 };

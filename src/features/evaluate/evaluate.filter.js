@@ -1,5 +1,5 @@
 const exportFilter = (evaluate) => {
-  console.log(evaluate);
+
   const res = {
     ...(evaluate.page ? { page: Number(evaluate.page) } : { page: 0 }),
     ...(evaluate.size ? { size: Number(evaluate.size) } : { size: 10 }),

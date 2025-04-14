@@ -14,8 +14,7 @@ const { checkType } = require('../../helpers/checkType.helper');
 
 const create = async (data) => {
   const { payment, ...restData } = data;
-  console.log('restData', restData);
-  console.log('payment', payment);
+
   try {
     let imageUrls = [];
 

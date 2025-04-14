@@ -9,7 +9,7 @@ const uploadSingle = async (file) => {
       },
       (error, result) => {
         if (error) {
-          console.log('a', JSON.stringify(error));
+
           reject(`Upload failed: ${error}`);
         } else {
           resolve(result.url);

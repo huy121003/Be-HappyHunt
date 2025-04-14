@@ -36,14 +36,14 @@ const handleStatusAccount = (
   // Notify all users about status change
   chatNamespace.emit('status_account', socketHandler.success(getUserStatus(accountId)));
 
-  console.log(`User ${accountId} is ${status}`);
+
 };
 
 const setupChatSocket = (io) => {
   const chatNamespace = io.of('/chat');
 
   chatNamespace.on('connection', (socket) => {
-    console.log('User connected to chat:', socket.id);
+
     // Handle online status when user connects
     socket.on('online', (accountId) => {
       handleStatusAccount(chatNamespace, accountId, 'online', socket.id);
@@ -58,12 +58,12 @@ const setupChatSocket = (io) => {
     // Join a chat room
     socket.on('join_chat', (chat) => {
       socket.join(chat);
-      console.log(`User ${socket.id} joined chat: ${chat}`);
+    
     });
     // Leave a chat room
     socket.on('leave_chat', (chat) => {
       socket.leave(chat);
-      console.log(`User ${socket.id} left chat: ${chat}`);
+    
     });
     // Fetch chat history
     socket.on('fetch_chat_history', async (data) => {
@@ -116,10 +116,10 @@ const setupChatSocket = (io) => {
     });
     socket.on('read_message', async (data) => {
       try {
-        console.log('data', data);
+   
         const message = await messageService.updateStatus(data);
         if (message.length === 0) return;
-        console.log('message read', message);
+
         const chat = await chatService.update({
           chat: data.chat,
           ...message[0],
@@ -134,8 +134,7 @@ const setupChatSocket = (io) => {
 
         chatNamespace.to(chat.buyer._id).emit('chat_read', socketHandler.success(chat));
         chatNamespace.to(chat.buyer._id).emit('count_not_read', socketHandler.success(countBuyer));
-        console.log('message', message);
-        console.log('chat', chat);
+
       } catch (error) {
         socket.emit('error', socketHandler.error(error.message));
       }
@@ -175,7 +174,7 @@ const setupChatSocket = (io) => {
     });
     // Handle disconnect
     socket.on('disconnect', () => {
-      console.log('User disconnected from chat:', socket.id);
+   
       // Find and remove the disconnected user from onlineUsers
       for (const [accountId, userData] of onlineUsers.entries()) {
         if (userData.socketId === socket.id) {

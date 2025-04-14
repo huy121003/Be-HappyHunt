@@ -2,7 +2,7 @@ const Evaluate = require('../../models/evaluate');
 const exportFilter = require('./evaluate.filter');
 
 const create = async (data) => {
-  console.log(data);
+ 
   try {
     const result = await Evaluate.create({
       ...data,
@@ -37,7 +37,7 @@ const getByIdUser = async (userId, data) => {
       .exec(),
   ]);
   if (!result) throw new Error('notfound');
-  console.log(result);
+
   return {
     documentList: result,
     totalDocuments,

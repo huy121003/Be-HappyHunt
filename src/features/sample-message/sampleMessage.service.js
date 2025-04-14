@@ -24,7 +24,7 @@ const update = async (id, data) => {
     if (!sampleMessage) throw new Error('notfound');
     return sampleMessage;
   } catch (error) {
-    console.log(error);
+
     throw new Error(error.message);
   }
 };

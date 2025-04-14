@@ -40,7 +40,6 @@ const update = async (data) => {
 
 const getAllPagination = async (data) => {
   const { page, size, sort, ...filter } = exportFilter(data);
-  console.log('filter', JSON.stringify(filter));
   try {
     const [totalDocuments, result] = await Promise.all([
       Chat.countDocuments(filter),
@@ -66,7 +65,7 @@ const getAllPagination = async (data) => {
       pageNumber: page,
     };
   } catch (error) {
-    console.log(JSON.stringify(error.message));
+ 
     throw new Error(error.message);
   }
 };
