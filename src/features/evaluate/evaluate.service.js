@@ -2,6 +2,7 @@ const Evaluate = require('../../models/evaluate');
 const exportFilter = require('./evaluate.filter');
 
 const create = async (data) => {
+  console.log(data);
   try {
     const result = await Evaluate.create({
       ...data,
@@ -17,16 +18,26 @@ const create = async (data) => {
 const getByIdUser = async (userId, data) => {
   const { page, size, sort, ...filter } = exportFilter(data);
   const [totalDocuments, result] = await Promise.all([
-    Evaluate.countDocuments(filter),
-    Evaluate.find({ target: userId })
+    Evaluate.countDocuments({
+      ...filter,
+      target: userId,
+    }),
+    Evaluate.find({
+      ...filter,
+      target: userId,
+    })
       .select('-__v')
+      .populate('createdBy', '_id name avatar slug')
+      .populate('target', '_id name avatar slug ')
+      .populate('post', '_id name slug images price status')
       .sort(sort)
       .limit(size)
       .skip(page * size)
       .lean()
       .exec(),
   ]);
-  if (!result ) throw new Error('notfound');
+  if (!result) throw new Error('notfound');
+  console.log(result);
   return {
     documentList: result,
     totalDocuments,
@@ -52,9 +63,31 @@ const countByUserId = async (userId) => {
     averageStar: parseFloat(averageStar.toFixed(1)) || 0,
   };
 };
+const countEvaluate = async (target) => {
+  const [evalueteBySeller, evalueteByBuyer] = await Promise.all([
+    Evaluate.find({ target: target, isSeller: true }).countDocuments(),
+    Evaluate.find({ target: target, isSeller: false }).countDocuments(),
+  ]);
+  return {
+    evaluateBySeller: evalueteBySeller || 0,
+    evaluateByBuyer: evalueteByBuyer || 0,
+    totalEvaluate: (evalueteBySeller || 0) + (evalueteByBuyer || 0),
+  };
+};
+const getDetail = async (data) => {
+  try {
+    const result = await Evaluate.findOne(data);
+    if (!result) throw new Error('notfound');
+    return result;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
 
 module.exports = {
   create,
   getByIdUser,
   countByUserId,
+  getDetail,
+  countEvaluate,
 };

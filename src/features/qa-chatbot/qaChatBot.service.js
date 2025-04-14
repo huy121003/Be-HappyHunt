@@ -72,8 +72,7 @@ const getById = async (id) => {
     throw new Error(error.message);
   }
 };
-const getAnswer = async (question) => {
-  console.log(question);
+const getAnswer = async (dataReq) => {
   try {
     const data = await QaChatbot.find();
     if (!data) throw new Error('notfound');
@@ -84,7 +83,8 @@ const getAnswer = async (question) => {
           answer: item.answer,
         };
       }),
-      question
+      dataReq.question,
+      dataReq.history
     );
     return answer;
   } catch (error) {

@@ -114,7 +114,7 @@ const getById = async (req, res) => {
 };
 const getAnswer = async (req, res) => {
   try {
-    const result = await qaChatbotService.getAnswer(req.body.question);
+    const result = await qaChatbotService.getAnswer(req.body);
     return apiHandler.sendSuccessWithData(res, 'Answer', result);
   } catch (error) {
     if (error.message.includes('notfound')) {

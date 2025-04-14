@@ -1,7 +1,7 @@
 require('dotenv').config();
 const axios = require('axios');
 
-const callGemini = async (data, question) => {
+const callGemini = async (data, question, history) => {
   const dataString = data.map((item) => `${item.question}: ${item.answer}`).join('\n');
 const prompt = `
   You are an intelligent, friendly, and professional virtual assistant for HappyHunt web, A website that helps connect sellers and buyers.
@@ -11,6 +11,8 @@ const prompt = `
 
   You will receive a question from the user:
   ${question}
+  And the history of the conversation:
+  ${history.map((item) => `${item.sender==='user' ? 'User' : 'Assistant'}: ${item.content}`).join('\n')}
 
   Your answer will be visible to users, so keep it concise and to the point. Each response should be structured in complete paragraphs with subjects and predicates, avoiding overly lengthy explanations.
 
