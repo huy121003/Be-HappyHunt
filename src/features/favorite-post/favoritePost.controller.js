@@ -57,7 +57,7 @@ const getAllPagination = async (req, res) => {
       result
     );
   } catch (error) {
-    console.log(error.message);
+
     if (error.message === 'notfound') {
       return apiHandler.sendNotFound(res, 'No favorite post found');
     }

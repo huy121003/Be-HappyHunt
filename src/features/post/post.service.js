@@ -66,7 +66,7 @@ const create = async (data) => {
 };
 const update = async (id, data) => {
   try {
-    console.log('data', data);
+
     let { images, saveImages = [], address, attributes, ...restData } = data;
     let imageUrls = JSON.parse(saveImages).map((item) => item.url);
 

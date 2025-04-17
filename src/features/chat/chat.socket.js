@@ -75,7 +75,6 @@ const setupChatSocket = (appNamespace, socket, getUserStatus) => {
         .to(chat.buyer._id)
         .emit('count_not_read', socketHandler.success(countBuyer));
     } catch (error) {
-      console.log('error', error);
       socket.emit('error', socketHandler.error(error.message));
     }
   });

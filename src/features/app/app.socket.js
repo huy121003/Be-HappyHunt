@@ -26,7 +26,6 @@ const handleStatusAccount = (
   status,
   socketId = null
 ) => {
-  console.log('handleStatusAccount', accountId, status, socketId);
   if (status === 'online') {
     // Store only socketId for online status
     onlineUsers.set(accountId, {
@@ -47,7 +46,6 @@ const handleStatusAccount = (
 const setupAppSocket = (io) => {
   const appNamespace = io.of('/app');
   appNamespace.on('connection', (socket) => {
-    console.log('appNamespace', socket.id);
     socket.on('online', (accountId) => {
       handleStatusAccount(appNamespace, accountId, 'online', socket.id);
       socket.join(accountId);

@@ -6,7 +6,7 @@ const {
 } = require('../notification/notification.soket');
 const create = async (data) => {
   try {
-    console.log('data', socketStore.appNamespace, socketStore.socketOn);
+
     const res = await Follower.create(data);
     if (!res) throw new Error('create');
     await createNotification(socketStore.appNamespace, socketStore.socketOn, {
@@ -16,7 +16,7 @@ const create = async (data) => {
     });
     return res;
   } catch (error) {
-    console.log(error);
+
     throw new Error(error.message);
   }
 };

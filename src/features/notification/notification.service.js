@@ -22,7 +22,7 @@ const getAll = async (data) => {
       pageNumber: page,
     };
   } catch (error) {
-    console.log(error);
+
     throw new Error(error.message);
   }
 };
@@ -62,7 +62,7 @@ const create = async (data) => {
       const followId = await Follower.find({ following: data.target })
         .lean()
         .exec();
-      console.log('followId', followId);
+
       if (followId.length > 0) {
         for (const follow of [
           ...followId.map((item) => item.createdBy),
@@ -81,7 +81,7 @@ const create = async (data) => {
     }
     return notifications;
   } catch (error) {
-    console.log(error);
+
     throw new Error(error.message);
   }
 };
