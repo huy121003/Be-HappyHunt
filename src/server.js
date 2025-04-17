@@ -5,7 +5,7 @@ const { mongoConfig } = require('./configs');
 require('dotenv').config();
 const appController = require('./features/app/app.controller');
 const ngrokConnect = require('./configs/ngrok.config');
-const setupChatSocket = require('./features/chat/chat.socket');
+const { setupAppSocket } = require('./features/app/app.socket');
 
 (async () => {
   try {
@@ -21,7 +21,7 @@ const setupChatSocket = require('./features/chat/chat.socket');
     });
 
     // Initialize socket handlers
-    setupChatSocket(io);
+    setupAppSocket(io);
 
     httpServer.listen(process.env.POST_SERVER, '0.0.0.0', () => {
       console.log(`🚀 Server is running on port ${process.env.POST_SERVER}`);

@@ -49,6 +49,10 @@ const accountSchema = new Schema(
     favoritePost: [{ type: Number, ref: 'post', default: null }],
     blockAccount: [{ type: Number, ref: 'account', default: null }],
     blockPost: [{ type: Number, ref: 'post', default: null }],
+    onOff: {
+      status: { type: String, enum: ['online', 'offline'], default: 'offline' },
+      timeOff: { type: Date, default: null },
+    },
   },
   { timestamps: true }
 );

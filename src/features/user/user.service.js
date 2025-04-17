@@ -117,6 +117,37 @@ const getNewAccountStatistics = async (data) => {
     throw new Error(error.message);
   }
 };
+const updateStatus = async (id, status) => {
+  try {
+    const result = await Account.findByIdAndUpdate(id, {
+      onOff: {
+        status: status,
+        timeOff: status === 'online' ? null : new Date(),
+      },
+    }).exec();
+    if (!result) throw new Error('update');
+    return {
+      accountId: id,
+      status: result.onOff.status,
+      timestamp: result.onOff.timeOff,
+    };
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+const getStatus = async (id) => {
+  try {
+    const result = await Account.findById(id).exec();
+    if (!result) throw new Error('notfound');
+    return {
+      accountId: id,
+      status: result.onOff.status,
+      timestamp: result.onOff.timeOff,
+    };
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
 
 module.exports = {
   getAll,
@@ -125,4 +156,6 @@ module.exports = {
   banned,
   getBySlug,
   getNewAccountStatistics,
+  updateStatus,
+  getStatus,
 };

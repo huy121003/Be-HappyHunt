@@ -11,7 +11,10 @@ const autoSlug = require('../../helpers/autoSlug');
 const exportFilter = require('./post.filter');
 const dayjs = require('dayjs');
 const { checkType } = require('../../helpers/checkType.helper');
-
+const {
+  create: createNotification,
+} = require('../notification/notification.soket');
+const { socketStore } = require('../app/app.socket');
 const create = async (data) => {
   const { payment, ...restData } = data;
 
@@ -37,6 +40,7 @@ const create = async (data) => {
     });
 
     if (!result) throw new Error('create');
+
     if (payment) {
       let updateBalance = await Account.findByIdAndUpdate(
         restData.createdBy,
@@ -49,6 +53,12 @@ const create = async (data) => {
       );
       if (!updateBalance) throw new Error('update');
     }
+    await createNotification(socketStore.appNamespace, socketStore.socketOn, {
+      target: restData.createdBy,
+      post: result._id,
+      type: 'POST_WAITING_APPROVE',
+      createdBy: restData.createdBy,
+    });
     return result;
   } catch (error) {
     throw new Error(error.message);
@@ -56,8 +66,9 @@ const create = async (data) => {
 };
 const update = async (id, data) => {
   try {
+    console.log('data', data);
     let { images, saveImages = [], address, attributes, ...restData } = data;
-    let imageUrls = JSON.parse(saveImages);
+    let imageUrls = JSON.parse(saveImages).map((item) => item.url);
 
     if (images) {
       const newImages = (await uploadMultiple(images)) || [];
@@ -66,7 +77,12 @@ const update = async (id, data) => {
 
     const updateQuery = {
       ...restData,
-      images: imageUrls,
+      images: imageUrls.map((url, index) => {
+        return {
+          url,
+          index: index,
+        };
+      }),
       status: 'WAITING',
       ...(address && { address: JSON.parse(address) }),
       ...(attributes && { attributes: JSON.parse(attributes) }),
@@ -78,9 +94,16 @@ const update = async (id, data) => {
       runValidators: true,
     });
     if (!result) throw new Error('update');
+    await createNotification(socketStore.appNamespace, socketStore.socketOn, {
+      target: result.createdBy,
+      post: result._id,
+      type: 'POST_WAITING_APPROVE',
+      createdBy: result.createdBy,
+    });
 
     return result;
   } catch (error) {
+    console.error(error);
     throw new Error(error.message);
   }
 };
@@ -272,6 +295,12 @@ const updateCheckingStatus = async (id, post) => {
       { new: true }
     );
     if (!result) throw new Error('update');
+    await createNotification(socketStore.appNamespace, socketStore.socketOn, {
+      target: post.createdBy,
+      post: result._id,
+      type: post.status === 'SELLING' ? 'NEW_POST' : 'POST_REJECTED',
+      createdBy: post.createdBy,
+    });
 
     return result;
   } catch (error) {

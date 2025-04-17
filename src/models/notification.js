@@ -6,11 +6,12 @@ const notificationSchema = new Schema(
   {
     _id: Number,
     target: { type: Number, ref: 'account', required: true },
-    post: { type: Number, ref: 'post', required: true },
+    post: { type: Number, ref: 'post', default: null },
     type: {
       type: String,
       enum: [
         'FIRST_LOGIN',
+        'FOLLOW_ACCOUNT',
         'NEW_POST',
         'NEW_MESSAGE',
         'POST_APPROVED',

@@ -4,7 +4,10 @@ const evaluateImageContent = require('../../helpers/checkingImgaePoint');
 require('dotenv').config();
 const dayjs = require('dayjs');
 const sightEngineConnect = require('../../configs/sightengine.config');
-
+const { socketStore } = require('../app/app.socket');
+const {
+  create: createNotification,
+} = require('../notification/notification.soket');
 cron.schedule('*/1 * * * *', async () => {
   try {
     const posts = await Post.find({ status: 'WAITING' });
@@ -81,6 +84,18 @@ cron.schedule('*/1 * * * *', async () => {
         },
         { new: true }
       );
+      if (newStatus === 'SELLING' || newStatus === 'POST_REJECTED') {
+        await createNotification(
+          socketStore.appNamespace,
+          socketStore.socketOn,
+          {
+            target: post.createdBy,
+            post: post._id,
+            type: newStatus === 'SELLING' ? 'NEW_POST' : 'POST_REJECTED',
+            createdBy: post.createdBy,
+          }
+        );
+      }
     }
   } catch (error) {
     console.error(' Error checking posts:', error);
@@ -94,7 +109,7 @@ cron.schedule('*/5 * * * *', async () => {
     });
     for (const post of posts) {
       if (dayjs().diff(dayjs(post.createdAt), 'days') > 1) {
-        const deletePost = await Post.findByIdAndUpdate(post._id, {
+        await Post.findByIdAndUpdate(post._id, {
           status: 'DELETED',
         });
       }
@@ -110,9 +125,19 @@ cron.schedule('*/5 * * * *', async () => {
     });
     for (const post of posts) {
       if (dayjs().diff(dayjs(post.expiredAt), 'days') > 0) {
-        const updatePost = await Post.findByIdAndUpdate(post._id, {
+        await Post.findByIdAndUpdate(post._id, {
           status: 'EXPIRED',
         });
+        await createNotification(
+          socketStore.appNamespace,
+          socketStore.socketOn,
+          {
+            target: post.createdBy,
+            post: post._id,
+            type: 'POST_EXPIRED',
+            createdBy: post.createdBy,
+          }
+        );
       }
     }
   } catch (error) {
