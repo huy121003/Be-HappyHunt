@@ -45,7 +45,7 @@ const handleStatusAccount = (
 };
 
 const setupAppSocket = (io) => {
-  appNamespace = io.of('/app');
+  const appNamespace = io.of('/app');
   appNamespace.on('connection', (socket) => {
     console.log('appNamespace', socket.id);
     socket.on('online', (accountId) => {
