@@ -145,7 +145,7 @@ const getAllPagiantion = async (query) => {
 const getDepositStatistics = async (data) => {
   try {
     const { startDate, groupByFormat, endDate } = checkType(data);
-   
+
     const result = await PaymentHistory.aggregate([
       {
         $match: {
@@ -200,7 +200,7 @@ const getDepositStatistics = async (data) => {
 };
 const getTopDepositors = async () => {
   try {
-    const topUsers = await PaymentHistory.find({ status: 'PAID' })
+    const topUsers = await PaymentHistory.find({ status: 'SUCCESS' })
       .select('createdBy amount')
       .populate('createdBy', '_id name avatar')
       .lean();
@@ -211,8 +211,8 @@ const getTopDepositors = async () => {
         if (!acc[key]) {
           acc[key] = {
             createdBy: item?.createdBy?._id,
-            userName: item.createdBy?.name,
-            userAvatar: item.createdBy?.avatar,
+            name: item.createdBy?.name,
+            avatar: item.createdBy?.avatar,
             totalAmount: 0,
             totalFaid: 0,
           };

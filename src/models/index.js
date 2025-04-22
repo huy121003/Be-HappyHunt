@@ -2,7 +2,6 @@ const Account = require('./account');
 const Blocked = require('./blocked');
 const Category = require('./category');
 const FavoritePost = require('./favoritePost');
-const Feedback = require('./feedback');
 const Follower = require('./follower');
 const HistoryClickPost = require('./historyClickPost');
 const HistorySearch = require('./historySearch');
@@ -20,7 +19,6 @@ module.exports = {
   Blocked,
   Category,
   FavoritePost,
-  Feedback,
   Follower,
   HistoryClickPost,
   HistorySearch,

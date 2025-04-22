@@ -66,6 +66,7 @@ const banned = async (req, res) => {
     return apiHandler.sendErrorMessage(res, error.message);
   }
 };
+
 const getNewAccountStatistics = async (req, res) => {
   try {
     const result = await userService.getNewAccountStatistics(req.query);
@@ -77,6 +78,41 @@ const getNewAccountStatistics = async (req, res) => {
     return apiHandler.sendErrorMessage(res, error.message);
   }
 };
+const getNewUser = async (req, res) => {
+  try {
+    const result = await userService.getNewUser();
+    return apiHandler.sendSuccessWithData(res, 'List accounts', result);
+  } catch (error) {
+    return apiHandler.sendErrorMessage(res, error.message);
+  }
+};
+const getNewUserStatistics = async (req, res) => {
+  try {
+    const result = await userService.getNewUserStatistics(req.query);
+    return apiHandler.sendSuccessWithData(res, 'List accounts', result);
+  } catch (error) {
+    if (error.message.includes('notfound')) {
+      return apiHandler.sendNotFound(res, 'No data in this time range');
+    }
+    return apiHandler.sendErrorMessage(res, error.message);
+  }
+};
+const totalUser = async (req, res) => {
+  try {
+    const result = await userService.totalUser();
+    return apiHandler.sendSuccessWithData(res, 'Total users', result);
+  } catch (error) {
+    return apiHandler.sendErrorMessage(res, error.message);
+  }
+};
+const countSexUser = async (req, res) => {
+  try {
+    const result = await userService.countSexUser();
+    return apiHandler.sendSuccessWithData(res, 'Count sex users', result);
+  } catch (error) {
+    return apiHandler.sendErrorMessage(res, error.message);
+  }
+};
 module.exports = {
   getAll,
   getById,
@@ -84,4 +120,8 @@ module.exports = {
   banned,
   getBySlug,
   getNewAccountStatistics,
+  getNewUser,
+  getNewUserStatistics,
+  totalUser,
+  countSexUser,
 };

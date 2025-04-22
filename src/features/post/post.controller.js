@@ -148,7 +148,7 @@ const getById = async (req, res) => {
     if (error.message.includes('notfound')) {
       return apiHandler.sendNotFound(res, 'Post not found');
     }
-    return apiHandler.sendErrorsendNotFoundMessage(res, error.message);
+    return apiHandler.sendErrorMessage(res, error.message);
   }
 };
 const getBySlug = async (req, res) => {
@@ -242,7 +242,22 @@ const getNewPostStatistics = async (req, res) => {
     return apiHandler.sendErrorMessage(res, error.message);
   }
 };
-
+const totalPostSelling = async (req, res) => {
+  try {
+    const result = await postService.totalPostSelling();
+    return apiHandler.sendSuccessWithData(res, 'Total posts', result);
+  } catch (error) {
+    return apiHandler.sendErrorMessage(res, error.message);
+  }
+};
+const totalPostSellingByCategory = async (req, res) => {
+  try {
+    const result = await postService.totalPostSellingByCategory();
+    return apiHandler.sendSuccessWithData(res, 'Total posts', result);
+  } catch (error) {
+    return apiHandler.sendErrorMessage(res, error.message);
+  }
+};
 module.exports = {
   create,
   updateStatus,
@@ -259,4 +274,6 @@ module.exports = {
   updatePushedAt,
   countStatusProfile,
   getNewPostStatistics,
+  totalPostSelling,
+  totalPostSellingByCategory,
 };

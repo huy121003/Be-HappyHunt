@@ -4,6 +4,7 @@ const {
   setupNotificationSocket,
 } = require('../notification/notification.soket');
 const onlineUsers = new Map();
+const offlineTimes = new Map(); // New map to store offline times
 const formatTime = (date) => {
   return date.toISOString();
 };
@@ -16,7 +17,9 @@ const getUserStatus = (accountId) => {
   return {
     accountId,
     status: userData ? 'online' : 'offline',
-    timestamp: userData ? null : formatTime(new Date()),
+    timestamp: userData
+      ? null
+      : offlineTimes.get(accountId) || formatTime(new Date()),
   };
 };
 
@@ -27,12 +30,16 @@ const handleStatusAccount = (
   socketId = null
 ) => {
   if (status === 'online') {
-    // Store only socketId for online status
+    // Store socketId for online status and clear offline time
     onlineUsers.set(accountId, {
       socketId: socketId,
     });
+    offlineTimes.delete(accountId);
   } else if (status === 'offline') {
-    // Remove user from onlineUsers map
+    // Store offline time
+    const offlineTime = formatTime(new Date());
+    offlineTimes.set(accountId, offlineTime);
+    // Remove user from online users
     onlineUsers.delete(accountId);
   }
 

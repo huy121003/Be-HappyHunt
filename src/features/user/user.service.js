@@ -117,6 +117,62 @@ const getNewAccountStatistics = async (data) => {
     throw new Error(error.message);
   }
 };
+
+const getNewUser = async () => {
+  try {
+    const result = await Account.find()
+      .select('-password -__v  -updatedAt -deleted')
+      .populate({ path: 'address.province', select: 'name _id' })
+      .populate({ path: 'address.district', select: 'name _id' })
+      .populate({ path: 'address.ward', select: 'name _id' })
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .exec();
+    return result;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+const getNewUserStatistics = async (data) => {
+  try {
+    const { startDate, endDate, groupByFormat } = checkType(data);
+    const result = await Account.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startDate, $lte: endDate },
+        },
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: groupByFormat, date: '$createdAt' } },
+          totalUsers: { $sum: 1 },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]);
+    if (!result) throw new Error('notfound');
+    return result;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+const totalUser = async () => {
+  try {
+    const [totalUser, totalBanned] = await Promise.all([
+      Account.countDocuments({
+        role: null,
+      }),
+      Account.countDocuments({ isBanned: false, role: null }),
+    ]);
+
+    return {
+      totalUser: totalUser || 0,
+      totalBanned: totalBanned || 0,
+    };
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
 const updateStatus = async (id, status) => {
   try {
     const result = await Account.findByIdAndUpdate(id, {
@@ -148,7 +204,27 @@ const getStatus = async (id) => {
     throw new Error(error.message);
   }
 };
-
+const countSexUser = async () => {
+  try {
+    const [totalUser, totalMale, totalFemale, totalOther, totalNotUpdate] =
+      await Promise.all([
+        Account.countDocuments({ role: null }),
+        Account.countDocuments({ role: null, sex: 'MALE' }),
+        Account.countDocuments({ role: null, sex: 'FEMALE' }),
+        Account.countDocuments({ role: null, sex: 'OTHER' }),
+        Account.countDocuments({ role: null, sex: null }),
+      ]);
+    return {
+      totalUser: totalUser || 0,
+      totalMale: totalMale || 0,
+      totalFemale: totalFemale || 0,
+      totalOther: totalOther || 0,
+      totalNotUpdate: totalNotUpdate || 0,
+    };
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
 module.exports = {
   getAll,
   remove,
@@ -156,6 +232,11 @@ module.exports = {
   banned,
   getBySlug,
   getNewAccountStatistics,
+
+  getNewUser,
+  getNewUserStatistics,
+  totalUser,
   updateStatus,
   getStatus,
+  countSexUser,
 };

@@ -28,9 +28,19 @@ router.get(
   postController.getAllSuggestionsPagination
 );
 router.get(
+  '/total-post-selling',
+  authJwt.accessToken,
+  postController.totalPostSelling
+);
+router.get(
   '/statistics',
   authJwt.accessToken,
   postController.getNewPostStatistics
+);
+router.get(
+  '/total-statistic-by-category',
+  authJwt.accessToken,
+  postController.totalPostSellingByCategory
 );
 router.get('/:id', authJwt.accessToken, postController.getById);
 router.delete('/:id', authJwt.accessToken, postController.remove);
@@ -53,4 +63,5 @@ router.get(
   authJwt.accessToken,
   postController.countStatusProfile
 );
+
 module.exports = router;

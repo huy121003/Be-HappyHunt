@@ -6,6 +6,7 @@ const {
   HistoryClickPost,
   FavoritePost,
   Account,
+  Category,
 } = require('../../models');
 const autoSlug = require('../../helpers/autoSlug');
 const exportFilter = require('./post.filter');
@@ -66,7 +67,6 @@ const create = async (data) => {
 };
 const update = async (id, data) => {
   try {
-
     let { images, saveImages = [], address, attributes, ...restData } = data;
     let imageUrls = JSON.parse(saveImages).map((item) => item.url);
 
@@ -463,7 +463,33 @@ const getNewPostStatistics = async (data) => {
     throw new Error(error.message);
   }
 };
-
+const totalPostSelling = async () => {
+  try {
+    const result = await Post.countDocuments({ status: 'SELLING' });
+    return result;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+const totalPostSellingByCategory = async () => {
+  const result = {};
+  try {
+    const categoryParent = await Category.find({
+      parent: null,
+    });
+    for (const category of categoryParent) {
+      const totalPost = await Post.countDocuments({
+        categoryParent: category._id,
+        status: 'SELLING',
+      });
+      result[category.name] = totalPost;
+    }
+    console.log(result);
+    return result;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
 module.exports = {
   create,
   updateStatus,
@@ -480,4 +506,6 @@ module.exports = {
   updatePushedAt,
   countStatusProfile,
   getNewPostStatistics,
+  totalPostSelling,
+  totalPostSellingByCategory,
 };
