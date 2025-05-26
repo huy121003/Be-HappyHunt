@@ -1,0 +1,40 @@
+@startuml
+actor User
+participant "Login Page" as LoginPage
+participant "Register Page" as RegisterPage
+participant System
+database Database
+participant EmailService
+
+== User Registration Process ==
+User -> LoginPage : Click "Register" button
+LoginPage -> RegisterPage : Navigate to Register Page
+User -> RegisterPage : Enter registration information
+RegisterPage -> System : Send registration info via API
+System -> Database : Check if information exists
+alt if Information Already Exists
+    Database --> System : Return error (user exists)
+    System --> RegisterPage : Show error message
+else
+    Database --> System : Return success (user does not exist)
+    System -> EmailService : Send OTP to registered email
+    EmailService --> System : Confirmation of OTP sent
+    System -> Database : Save OTP temporarily
+    Database --> System : Confirmation of OTP saved
+    System --> RegisterPage : Display OTP confirmation input
+    User -> RegisterPage : Enter OTP and submit
+    RegisterPage -> System : Send OTP via API
+    System -> Database : Check OTP
+    alt if Invalid OTP
+        Database --> System : Return error
+        System --> RegisterPage : Show error message
+    else
+        Database --> System : Return confirmation of OTP match
+        System -> Database : Remove temporary OTP
+        Database --> System : Confirmation of OTP removal
+        System --> RegisterPage : Show success message
+        System --> LoginPage : Redirect to Login Page
+    end
+end
+
+@enduml

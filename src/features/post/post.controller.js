@@ -1,7 +1,7 @@
 const { apiHandler } = require('../../helpers');
 const { Account } = require('../../models');
-
 const postService = require('./post.service');
+
 const create = async (req, res) => {
   try {
     const user = await Account.findById(req.userAccess._id).select('balance');

@@ -59,6 +59,7 @@ const postSchema = new Schema(
     createdBy: { type: Number, ref: 'account', default: null },
     updatedBy: { type: Number, ref: 'account', default: null },
     pushedAt: { type: String, default: new Date().toISOString() },
+    isNotify: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

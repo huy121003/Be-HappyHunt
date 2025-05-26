@@ -105,10 +105,10 @@ const totalUser = async (req, res) => {
     return apiHandler.sendErrorMessage(res, error.message);
   }
 };
-const countSexUser = async (req, res) => {
+const countGenderUser = async (req, res) => {
   try {
-    const result = await userService.countSexUser();
-    return apiHandler.sendSuccessWithData(res, 'Count sex users', result);
+    const result = await userService.countGenderUser();
+    return apiHandler.sendSuccessWithData(res, 'Count gender users', result);
   } catch (error) {
     return apiHandler.sendErrorMessage(res, error.message);
   }
@@ -123,5 +123,5 @@ module.exports = {
   getNewUser,
   getNewUserStatistics,
   totalUser,
-  countSexUser,
+  countGenderUser,
 };

@@ -1,0 +1,31 @@
+@startuml
+actor Admin
+participant "Home Page" as HomePage
+participant "Q&A Page" as QAPage
+participant System
+database Database
+
+== View Q&A List ==
+Admin -> HomePage : Click on Q&A Chatbot Tab
+activate HomePage
+HomePage -> QAPage : Navigate to Q&A Page
+deactivate HomePage
+
+activate QAPage
+QAPage -> System : Call API to get Q&A list
+activate System
+System -> Database : Fetch Q&A list
+activate Database
+Database --> System : Return Q&A data
+deactivate Database
+System --> QAPage : Return Q&A list
+deactivate System
+QAPage --> Admin : Display Q&A list
+deactivate QAPage
+
+alt if error
+    activate System
+    System --> Admin : Show error message
+    deactivate System
+end
+@enduml

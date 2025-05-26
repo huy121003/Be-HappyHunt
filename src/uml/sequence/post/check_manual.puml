@@ -1,0 +1,56 @@
+@startuml
+actor Admin
+participant "Checking Post Page" as CP
+participant "Checking Detail Page" as CDP
+participant System
+participant Database
+
+== Open Checking Tab ==
+Admin -> CP : Click "Checking Post" tab
+activate CP
+CP -> System : Call API for posts with status "AI|CHECK-FAILED"
+activate System
+System -> Database : Query failed posts
+activate Database
+Database --> System : Return failed posts
+deactivate Database
+System --> CP : Return data
+deactivate System
+CP --> Admin : Display list
+deactivate CP
+
+== View Detail ==
+Admin -> CP : Click "Checking"
+activate CP
+CP -> CDP : Navigate to Checking Detail Page
+deactivate CP
+
+== Submit Review ==
+activate CDP
+CDP -> Admin : Display images
+Admin -> CDP : Submit rejection reasons
+CDP -> System : Send rejection reasons via API
+deactivate CDP
+
+activate System
+System -> Database : Update rejection info
+activate Database
+deactivate Database
+
+alt No Images Rejected
+    System -> Database : Update post status to "SELLING"
+    activate Database
+    deactivate Database
+else Some Images Rejected
+    System -> Database : Update post status to "REJECT"
+    activate Database
+    deactivate Database
+
+    System -> Database : Store rejection reasons
+    activate Database
+    deactivate Database
+end
+
+System --> CP : Redirect with success message
+deactivate System
+@enduml

@@ -1,0 +1,47 @@
+@startuml
+actor NormalUser
+participant "Post Detail Page" as PDP
+participant "System" as Sys
+database "Database" as DB
+participant "Chat Page" as CP
+
+activate NormalUser
+NormalUser -> PDP : Click on any post of another user
+activate PDP
+deactivate NormalUser
+
+PDP -> NormalUser : Redirect to Post Detail Page
+
+activate NormalUser
+NormalUser -> PDP : Click "Chat with User" button
+deactivate NormalUser
+activate PDP
+
+PDP -> Sys : Send request to create/get chat session
+activate Sys
+
+Sys -> DB : Check if chat session exists between users
+activate DB
+DB --> Sys : Return chat session info or null
+deactivate DB
+
+alt Chat session exists
+    Sys --> PDP : Return existing chat session info
+else Chat session does not exist
+    Sys -> DB : Create new chat session and save to DB
+    activate DB
+    DB --> Sys : Return new chat session info
+    deactivate DB
+    Sys --> PDP : Return new chat session info
+end
+deactivate Sys
+deactivate PDP
+
+PDP -> NormalUser : Redirect to Chat Page with chat session info
+activate NormalUser
+activate CP
+
+NormalUser -> CP : Display chat session info and chat UI
+deactivate CP
+deactivate NormalUser
+@enduml

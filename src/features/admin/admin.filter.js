@@ -6,7 +6,7 @@ const exportFilter = (data) => {
     ...(data.role ? { role: Number(data.role) } : { role: { $ne: null } }),
     ...(data.name && { name: new RegExp(data.name, 'i') }),
     ...(data.isBanned && { isBanned: data.isBanned }),
-    ...(data.phoneNumber && { phoneNumber: new RegExp(data.phoneNumber, 'i') }),
+    ...(data.email && { email: new RegExp(data.email, 'i') }),
   };
   return res;
 };

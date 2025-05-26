@@ -1,0 +1,25 @@
+@startuml
+actor Admin
+participant "Role Page" as RolePage
+participant System
+database Database
+
+== Delete Role ==
+Admin -> RolePage : Click on Delete button for role
+activate RolePage
+RolePage -> Admin : Show popup confirmation
+
+alt if No
+    RolePage --> Admin : Cancel action
+else
+    RolePage -> System : Send API request to delete role
+    activate System
+    System -> Database : Delete role
+    activate Database
+    Database --> System : Confirmation of delete
+    deactivate Database
+    System --> Admin : Show success message
+    deactivate System
+end
+deactivate RolePage
+@enduml

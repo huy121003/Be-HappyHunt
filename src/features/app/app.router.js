@@ -21,6 +21,7 @@ const followRouter = require('../follow/follow.router');
 const chatRouter = require('../chat/chat.router');
 const sampleMessageRouter = require('../sample-message/sampleMessage.router');
 const qaChatbotRouter = require('../qa-chatbot/qaChatBot.router');
+const reportRouter = require('../report/report.router');
 const express = require('express');
 const app = express();
 
@@ -47,4 +48,5 @@ app.use('/follow/', followRouter);
 app.use('/chat/', chatRouter);
 app.use('/sample-message/', sampleMessageRouter);
 app.use('/qa-chatbot/', qaChatbotRouter);
+app.use('/report/', reportRouter);
 module.exports = app;

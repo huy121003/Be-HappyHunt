@@ -1,0 +1,32 @@
+@startuml
+actor Admin
+participant "Role Page" as RolePage
+participant "Update Role Page" as UpdateRolePage
+participant System
+database Database
+
+== Update Role ==
+Admin -> RolePage : Click on Edit button for role
+activate RolePage
+RolePage -> UpdateRolePage : Navigate to Update Role Page
+deactivate RolePage
+
+activate UpdateRolePage
+Admin -> UpdateRolePage : Modify role info and Submit
+UpdateRolePage -> System : Send updated role data
+activate System
+System -> System : Validate updated role data
+
+alt if invalid
+    System --> Admin : Show error message
+else
+    System -> Database : Update role
+    activate Database
+    Database --> System : Confirmation of update
+    deactivate Database
+    System --> Admin : Show success message
+    UpdateRolePage -> RolePage : Redirect to Role Page
+end
+deactivate System
+deactivate UpdateRolePage
+@enduml

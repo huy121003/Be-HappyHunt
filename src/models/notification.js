@@ -19,6 +19,8 @@ const notificationSchema = new Schema(
         'POST_EXPIRED',
         'POST_DELETED',
         'POST_WAITING_APPROVE',
+        'VIP_EXPIRED',
+        'VIP_ACTIVE',
       ],
       default: 'POST_WAITING_APPROVE',
     },

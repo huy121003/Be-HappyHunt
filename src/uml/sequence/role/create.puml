@@ -1,0 +1,32 @@
+@startuml
+actor Admin
+participant "Role Page" as RolePage
+participant "Create New Role Page" as CreateNewRolePage
+participant System
+database Database
+
+== Create New Role ==
+Admin -> RolePage : Click on Create New
+activate RolePage
+RolePage -> CreateNewRolePage : Navigate to Create New Role Page
+deactivate RolePage
+
+activate CreateNewRolePage
+Admin -> CreateNewRolePage : Enter role info and Submit
+CreateNewRolePage -> System : Send new role data
+activate System
+System -> System : Validate role data
+
+alt if invalid
+    System --> Admin : Show error message
+else
+    System -> Database : Save new role
+    activate Database
+    Database --> System : Confirmation of save
+    deactivate Database
+    System --> Admin : Show success message
+    CreateNewRolePage -> RolePage : Redirect to Role Page
+end
+deactivate System
+deactivate CreateNewRolePage
+@enduml

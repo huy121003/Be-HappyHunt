@@ -54,12 +54,6 @@ const create = async (data) => {
       );
       if (!updateBalance) throw new Error('update');
     }
-    await createNotification(socketStore.appNamespace, socketStore.socketOn, {
-      target: restData.createdBy,
-      post: result._id,
-      type: 'POST_WAITING_APPROVE',
-      createdBy: restData.createdBy,
-    });
     return result;
   } catch (error) {
     throw new Error(error.message);
@@ -103,7 +97,6 @@ const update = async (id, data) => {
 
     return result;
   } catch (error) {
-    console.error(error);
     throw new Error(error.message);
   }
 };
@@ -116,7 +109,6 @@ const updateStatus = async (id, data) => {
 
     return result;
   } catch (error) {
-    console.error(error);
     throw new Error(error.message);
   }
 };
@@ -484,7 +476,7 @@ const totalPostSellingByCategory = async () => {
       });
       result[category.name] = totalPost;
     }
-    console.log(result);
+
     return result;
   } catch (error) {
     throw new Error(error.message);

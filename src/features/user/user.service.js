@@ -3,6 +3,9 @@ require('dotenv').config();
 const { checkType } = require('../../helpers/checkType.helper');
 const { Account } = require('../../models');
 const exportFilter = require('./user.filter');
+const emailService = require('../email/email.service');
+const Post = require('../../models/post');
+
 const getAll = async (data) => {
   try {
     const { page, size, sort, ...filter } = exportFilter(data);
@@ -36,7 +39,9 @@ const getById = async (id) => {
   try {
     const result = await Account.findById(id)
       .select('-password -__v  -updatedAt -deleted')
-      .populate('address.province address.district address.ward ', 'name _id')
+      .populate({ path: 'address.province', select: 'name _id' })
+      .populate({ path: 'address.district', select: 'name _id' })
+      .populate({ path: 'address.ward', select: 'name _id' })
       .lean()
       .exec();
     if (!result) throw new Error('notfound');
@@ -73,7 +78,35 @@ const remove = async (id) => {
 
 const banned = async (id, data) => {
   try {
-    const result = await Account.findByIdAndUpdate(id, data).exec();
+    const accountBanned = await Account.findById(id).exec();
+    if (!accountBanned.isBanned && !data.isBanned) {
+      return;
+    }
+
+    const result = await Account.findByIdAndUpdate(id, {
+      ...data,
+      ...(!data.isBanned && { banAmount: accountBanned.banAmount + 1 }),
+    }).exec();
+
+    if (!data.isBanned) {
+      await emailService.sendBanAccountEmail(result.email);
+      await Post.updateMany(
+        { createdBy: id, status: 'SELLING' },
+        { status: 'DELETED' }
+      ).exec();
+    }
+
+    if (!result) throw new Error('update');
+    return result;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+const updateReportCount = async (id) => {
+  try {
+    const result = await Account.findByIdAndUpdate(id, {
+      $inc: { reportAmount: 1 },
+    }).exec();
     if (!result) throw new Error('update');
     return result;
   } catch (error) {
@@ -204,15 +237,15 @@ const getStatus = async (id) => {
     throw new Error(error.message);
   }
 };
-const countSexUser = async () => {
+const countGenderUser = async () => {
   try {
     const [totalUser, totalMale, totalFemale, totalOther, totalNotUpdate] =
       await Promise.all([
         Account.countDocuments({ role: null }),
-        Account.countDocuments({ role: null, sex: 'MALE' }),
-        Account.countDocuments({ role: null, sex: 'FEMALE' }),
-        Account.countDocuments({ role: null, sex: 'OTHER' }),
-        Account.countDocuments({ role: null, sex: null }),
+        Account.countDocuments({ role: null, gender: 'MALE' }),
+        Account.countDocuments({ role: null, gender: 'FEMALE' }),
+        Account.countDocuments({ role: null, gender: 'OTHER' }),
+        Account.countDocuments({ role: null, gender: null }),
       ]);
     return {
       totalUser: totalUser || 0,
@@ -238,5 +271,6 @@ module.exports = {
   totalUser,
   updateStatus,
   getStatus,
-  countSexUser,
+  countGenderUser,
+  updateReportCount,
 };

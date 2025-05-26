@@ -1,0 +1,25 @@
+@startuml
+actor Admin
+participant "Account Management Page" as AccountPage
+participant System
+database Database
+
+== Delete Account ==
+Admin -> AccountPage : Click on Delete button
+activate AccountPage
+AccountPage -> Admin : Show popup confirmation
+
+alt if No
+    AccountPage --> Admin : Cancel action
+else
+    AccountPage -> System : Send API request to delete account
+    activate System
+    System -> Database : Delete user account
+    activate Database
+    Database --> System : Confirmation of deletion
+    deactivate Database
+    System --> Admin : Show success message
+    deactivate System
+end
+deactivate AccountPage
+@enduml

@@ -1,0 +1,48 @@
+@startuml
+participant "System" as Sys
+participant "Database" as DB
+participant "SightengineService" as SS
+
+== Retrieve Waiting Posts ==
+activate Sys
+Sys -> DB : Retrieve posts with status "waiting"
+activate DB
+DB --> Sys : Return list of waiting posts
+deactivate DB
+
+alt Posts Found
+    loop For each post
+        == Check Image with AI ==
+        Sys -> SS : Send images for checking
+        activate SS
+
+        alt Check Successful
+            SS --> Sys : Return image approval
+            deactivate SS
+
+            alt All Images Approved
+                Sys -> DB : Update post status to "SELLING"
+                activate DB
+                deactivate DB
+            else Some Images Rejected
+                Sys -> DB : Update post status to "REJECT"
+                activate DB
+                deactivate DB
+
+                Sys -> DB : Update rejection reasons for images
+                activate DB
+                deactivate DB
+            end
+
+        else Check Failed
+            deactivate SS
+            Sys -> DB : Update post status to "AI|CHECK-FAILED"
+            activate DB
+            deactivate DB
+        end
+    end
+else No Posts Found
+    note right: Stop processing
+end
+deactivate Sys
+@enduml

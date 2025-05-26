@@ -1,0 +1,25 @@
+@startuml
+actor Admin
+participant "Category Page" as CategoryPage
+participant System
+database Database
+
+== Delete Category ==
+Admin -> CategoryPage : Click on Delete button for category
+activate CategoryPage
+CategoryPage -> Admin : Show popup confirmation
+
+alt if No
+    CategoryPage --> Admin : Cancel action
+else
+    CategoryPage -> System : Send API request to delete category
+    activate System
+    System -> Database : Delete category
+    activate Database
+    Database --> System : Confirmation of delete
+    deactivate Database
+    System --> Admin : Show success message
+    deactivate System
+end
+deactivate CategoryPage
+@enduml

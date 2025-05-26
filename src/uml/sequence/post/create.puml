@@ -1,0 +1,51 @@
+@startuml
+actor "Normal User" as NormalUser
+participant "Home Page" as HomePage
+participant "Create Post Page" as CreatePage
+participant "Post Management Page" as PostPage
+participant System
+database Database
+
+== Create New Post ==
+NormalUser -> HomePage : Click "Create New"
+activate HomePage
+HomePage -> CreatePage : Redirect to Create Post Page
+deactivate HomePage
+
+activate CreatePage
+CreatePage -> System : Call API to get categories
+activate System
+System -> Database : Get categories
+activate Database
+Database --> System : Return category list
+deactivate Database
+System --> CreatePage : Return categories
+deactivate System
+
+alt Categories retrieved
+    CreatePage -> NormalUser : Display categories
+    NormalUser -> CreatePage : Select category, fill info, submit
+    CreatePage -> System : Send post data
+    activate System
+    System -> System : Check balance and posting fee
+
+    alt Balance insufficient
+        System --> NormalUser : Show error message (Insufficient balance)
+    else
+        System -> System : Check post info format
+        alt Valid format
+            System -> Database : Save post (status "waiting")
+            activate Database
+            Database --> System : Confirmation
+            deactivate Database
+            System -> Database : Update user balance
+            System --> NormalUser : Show success message
+            CreatePage -> PostPage : Redirect to Post Management Page
+        else
+            System --> NormalUser : Show error message (Invalid format)
+        end
+    end
+    deactivate System
+end
+deactivate CreatePage
+@enduml

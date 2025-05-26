@@ -4,7 +4,7 @@ const otpService = require('./otp.service');
 
 const sendOtp = async (req, res) => {
   try {
-    await otpService.sendOtp(req.body.phoneNumber);
+    await otpService.sendOtp(req.body.email);
     return apiHandler.sendCreated(res, 'OTP sent successfully');
   } catch (error) {
     if (error.message.includes('create')) {
@@ -29,15 +29,14 @@ const verifyOtp = async (req, res) => {
   }
 };
 const sendOTPV2 = async (req, res) => {
-  const { phoneNumber } = req.body;
+  const { email } = req.body;
   try {
     const session = await auth.createUser({
-      phoneNumber: phoneNumber,
+      email: email,
     });
 
     return apiHandler.sendCreated(res, 'OTP sent successfully', session);
   } catch (error) {
-    console.error('Error sending OTP:', error.message);
     return apiHandler.sendErrorMessage(
       res,
       'Failed to send OTP',

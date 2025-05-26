@@ -1,0 +1,65 @@
+@startuml
+actor Admin
+participant "Report Page" as RP
+participant "Report Detail Popup" as RDP
+participant "System" as Sys
+database "Database" as DB
+
+== Load Reports ==
+Admin -> RP : Open Report Page
+activate RP
+RP -> Sys : Fetch list of reports from DB
+activate Sys
+Sys -> DB : Get report list
+DB --> Sys : Return reports
+Sys --> RP : Display reports
+deactivate Sys
+deactivate RP
+
+== View Report Detail ==
+Admin -> RP : Click on an unprocessed report
+RP -> RDP : Open Report Detail Popup
+
+== Handle Report ==
+activate RDP
+
+alt Mark as Spam
+    Admin -> RDP : Click "Spam"
+    RDP -> Sys : Mark report as spam
+    activate Sys
+    Sys -> DB : Update report status to "Spam"
+    DB --> Sys : Confirm update
+    Sys --> Admin : Show success message
+    deactivate Sys
+
+else Approve Report
+    Admin -> RDP : Click "Approve"
+    RDP -> Sys : Approve report
+    activate Sys
+    Sys -> DB : Get report type and related target
+
+    alt Report Type = Review
+        Sys -> DB : Delete review
+        Sys -> DB : Update report status to "Approved"
+    else Report Type = Post
+        Sys -> DB : Delete post
+        Sys -> DB : Update report status to "Approved"
+    else Report Type = Account
+        Sys -> DB : Update report status to "Approved"
+    end
+
+    DB --> Sys : Confirm actions
+    Sys --> Admin : Show success message
+    deactivate Sys
+
+else Reject Report
+    Admin -> RDP : Click "Reject"
+    RDP -> Sys : Reject report
+    activate Sys
+    Sys -> DB : Update report status to "Rejected"
+    DB --> Sys : Confirm update
+    Sys --> Admin : Show rejection message
+    deactivate Sys
+end
+deactivate RDP
+@enduml

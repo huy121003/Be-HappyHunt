@@ -1,0 +1,38 @@
+@startuml
+actor User
+participant "Login Page" as LoginPage
+participant System
+database Database
+participant EmailService
+participant "Home Page" as HomePage
+
+== User Login Process ==
+User -> LoginPage : Enter login information and submit
+LoginPage -> System : Send login info via API
+System -> Database : Check login information
+alt if Invalid Login
+    Database --> System : Return error
+    System --> User : Show error message
+else
+    Database --> System : Return user information
+    System -> EmailService : Send OTP to registered email
+    EmailService --> System : Confirmation of OTP sent
+    System -> Database : Save OTP temporarily
+    Database --> System : Confirmation of OTP saved
+    System --> LoginPage : Display OTP confirmation input
+    User -> LoginPage : Enter OTP and submit
+    LoginPage -> System : Send OTP via API
+    System -> Database : Check OTP
+    alt if Invalid OTP
+        Database --> System : Return error
+        System --> User : Show error message
+    else
+        Database --> System : Return confirmation of OTP match
+        System -> Database : Remove temporary OTP
+        Database --> System : Confirmation of OTP removal
+        System --> User : Return token and account information
+        System --> HomePage : Redirect to Home Page
+    end
+end
+
+@enduml

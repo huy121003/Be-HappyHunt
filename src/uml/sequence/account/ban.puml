@@ -1,0 +1,26 @@
+@startuml
+actor Admin
+participant "Account Management Page" as AccountPage
+participant System
+database Database
+
+== Ban / Unban Account ==
+Admin -> AccountPage : Click on Ban/Unban button
+activate AccountPage
+AccountPage -> Admin : Show confirmation popup
+
+alt if Cancel
+    AccountPage --> Admin : Cancel action
+else
+    AccountPage -> System : Send API request to Ban/Unban account
+    activate System
+    System -> Database : Update account status (banned/unbanned)
+    activate Database
+    Database --> System : Confirmation of update
+    deactivate Database
+    System --> Admin : Show success message
+    AccountPage -> System : Refresh account list
+end
+deactivate System
+deactivate AccountPage
+@enduml

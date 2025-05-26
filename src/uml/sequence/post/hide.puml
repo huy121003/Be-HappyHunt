@@ -1,0 +1,21 @@
+@startuml
+actor "Normal User" as NormalUser
+participant "Post Management Page" as PostPage
+participant System
+database Database
+
+== Hide Post ==
+NormalUser -> PostPage : Click "Hide"
+activate PostPage
+PostPage -> NormalUser : Show reason popup
+NormalUser -> PostPage : Submit reason
+PostPage -> System : Send hide request
+activate System
+System -> Database : Update post status
+activate Database
+Database --> System : Confirmation
+deactivate Database
+System --> NormalUser : Show success message
+deactivate System
+deactivate PostPage
+@enduml

@@ -1,0 +1,31 @@
+@startuml
+actor Admin
+participant "Home Page" as HomePage
+participant "Banner Page" as BannerPage
+participant System
+database Database
+
+== View Banners ==
+Admin -> HomePage : Click on Banner Tab
+activate HomePage
+HomePage -> BannerPage : Display banner page
+deactivate HomePage
+
+activate BannerPage
+BannerPage -> System : Call API to get banners
+activate System
+System -> Database : Fetch banner list
+activate Database
+Database --> System : Return banner list
+deactivate Database
+System --> BannerPage : Return banner data
+deactivate System
+BannerPage --> Admin : Display banner list
+deactivate BannerPage
+
+alt if error
+    activate System
+    System --> Admin : Show error message
+    deactivate System
+end
+@enduml

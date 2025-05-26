@@ -1,0 +1,32 @@
+@startuml
+actor Admin
+participant "Account Management Page" as AccountPage
+participant "Create Account Page" as CreateAccountPage
+participant System
+database Database
+
+== Create New Account ==
+Admin -> AccountPage : Click on Create New
+activate AccountPage
+AccountPage -> CreateAccountPage : Navigate to Create Account Page
+deactivate AccountPage
+
+activate CreateAccountPage
+Admin -> CreateAccountPage : Enter account info and Submit
+CreateAccountPage -> System : Send account data
+activate System
+System -> System : Validate account info
+
+alt if invalid
+    System --> Admin : Show error message
+else
+    System -> Database : Save new account
+    activate Database
+    Database --> System : Confirmation of save
+    deactivate Database
+    System --> Admin : Show success message
+    CreateAccountPage -> AccountPage : Redirect to Account Management Page
+end
+deactivate System
+deactivate CreateAccountPage
+@enduml

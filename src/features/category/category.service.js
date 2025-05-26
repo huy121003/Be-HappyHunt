@@ -21,7 +21,7 @@ const create = async (category) => {
     if (!result) throw new Error('create');
     return result;
   } catch (error) {
-    console.error('Error during category creation:', error.message);
+  
     throw new Error(error.message);
   }
 };

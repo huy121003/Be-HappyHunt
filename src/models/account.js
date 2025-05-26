@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const mongoose_delete = require('mongoose-delete');
 const { Schema, model } = mongoose;
 const applyAutoIncrement = require('../configs/autoIncrement');
-const bcrypt = require('bcrypt');
 const accountSchema = new Schema(
   {
     _id: Number,
@@ -19,20 +18,20 @@ const accountSchema = new Schema(
       trim: true,
     },
 
-    phoneNumber: {
+    email: {
       type: String,
-      required: true,
       unique: true,
+      required: true,
       trim: true,
     },
     password: { type: String, required: true },
     isBanned: { type: Boolean, default: true },
     avatar: { type: String, default: '' },
     background: { type: String, default: '' },
-    sex: { type: String, enum: ['MALE', 'FEMALE', 'OTHER'], default: '' },
+    gender: { type: String, enum: ['MALE', 'FEMALE', 'OTHER'], default: null },
     dateOfBirth: { type: String, default: '' },
     isVip: { type: Boolean, default: false },
-    dateVipExpired: { type: String, default: null },
+    dateVipExpired: { type: Date, default: null },
     address: {
       province: { type: Number, ref: 'province', default: null },
       district: { type: Number, ref: 'district', default: null },
@@ -45,14 +44,8 @@ const accountSchema = new Schema(
     description: { type: String, default: '' },
     createdBy: { type: Number, ref: 'account', default: null },
     updatedBy: { type: Number, ref: 'account', default: null },
-    messageHidden: [{ type: Number, ref: 'message', default: null }],
-    favoritePost: [{ type: Number, ref: 'post', default: null }],
-    blockAccount: [{ type: Number, ref: 'account', default: null }],
-    blockPost: [{ type: Number, ref: 'post', default: null }],
-    onOff: {
-      status: { type: String, enum: ['online', 'offline'], default: 'offline' },
-      timeOff: { type: Date, default: null },
-    },
+    banAmount: { type: Number, default: 0 },
+    reportAmount: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

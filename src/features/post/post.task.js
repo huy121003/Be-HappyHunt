@@ -39,7 +39,7 @@ cron.schedule('*/1 * * * *', async () => {
               allApproved = false;
             }
           } catch (error) {
-            console.error(` Error checking image ${image.url}:`, error.message);
+           
             reasonReject.push(error.message);
             aiCheckFailed = true;
             allApproved = false;
@@ -57,7 +57,7 @@ cron.schedule('*/1 * * * *', async () => {
         if (result.status === 'fulfilled') {
           updatedImages.push(result.value);
         } else {
-          console.error(` Image check failed unexpectedly:`, result.reason);
+         
 
           updatedImages.push({
             url: result.reason.image?.url || 'unknown',

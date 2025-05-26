@@ -1,0 +1,97 @@
+@startuml
+actor "Normal User" as User
+participant "Post Management Page" as PM
+participant "Payment Page" as PP
+participant "System" as Sys
+database "Database" as DB
+participant "PayOS Service" as PayOS
+
+activate User
+User -> PM : Click "Top Up"
+activate PM
+deactivate User
+
+PM -> PP : Navigate to Payment Page
+activate PP
+deactivate PM
+
+PP -> User : Select top-up package and submit
+activate User
+deactivate PP
+
+User -> PP : Submit selection
+activate PP
+
+PP -> Sys : Send top-up package info via API
+activate Sys
+
+Sys -> PayOS : Create invoice
+activate PayOS
+
+alt Invoice Creation Failed
+    PayOS --> Sys : Return error
+    deactivate PayOS
+    Sys --> PP : Show error message
+    deactivate Sys
+else Invoice Created Successfully
+    PayOS --> Sys : Return invoice details
+    deactivate PayOS
+    
+    Sys -> DB : Save invoice info with status "PENDING"
+    activate DB
+    DB --> Sys
+    deactivate DB
+
+    Sys --> PP : Display QR code and payment info
+    deactivate Sys
+
+    activate PP
+    group Wait for user action
+        alt User cancels payment
+            activate User
+            User -> PP : Click "Cancel Payment"
+            deactivate User
+
+            activate PP
+            PP -> Sys : Send cancel request
+            deactivate PP
+
+            activate Sys
+            Sys -> PayOS : Request invoice cancellation
+            activate PayOS
+            PayOS --> Sys : Confirm invoice cancelled
+            deactivate PayOS
+
+            Sys -> DB : Update invoice status to "CANCEL"
+            activate DB
+            DB --> Sys
+            deactivate DB
+
+            Sys --> PP : Notify user of cancellation
+            deactivate Sys
+
+        else User scans QR code and pays
+            deactivate PP
+            activate PayOS
+            PayOS -> PayOS : Listen for payment status
+            PayOS -> Sys : Send payment success notification
+            deactivate PayOS
+
+            activate Sys
+            Sys -> DB : Update invoice status to "SUCCESS"
+            activate DB
+            DB --> Sys
+            deactivate DB
+
+            Sys -> DB : Add funds to user account
+            activate DB
+            DB --> Sys
+            deactivate DB
+
+            Sys --> PP : Notify user of successful payment
+            deactivate Sys
+        end
+    end
+    deactivate PP
+end
+@enduml

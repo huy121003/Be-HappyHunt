@@ -65,7 +65,6 @@ const getAllPagination = async (data) => {
       pageNumber: page,
     };
   } catch (error) {
- 
     throw new Error(error.message);
   }
 };
@@ -73,8 +72,8 @@ const getDetailBySlug = async (slug) => {
   try {
     const chat = await Chat.findOne({ slug })
       .populate('lastMessage', 'sender message image timeSend status')
-      .populate('buyer', 'name avatar slug')
-      .populate('seller', 'name avatar slug')
+      .populate('buyer', 'name avatar slug isBanned')
+      .populate('seller', 'name avatar slug isBanned')
       .populate({
         path: 'post',
         select:

@@ -1,0 +1,32 @@
+@startuml
+actor Admin
+participant "Category Page" as CategoryPage
+participant "Update Category Page" as UpdateCategoryPage
+participant System
+database Database
+
+== Update Category ==
+Admin -> CategoryPage : Click on Edit button for category
+activate CategoryPage
+CategoryPage -> UpdateCategoryPage : Navigate to Update Category Page
+deactivate CategoryPage
+
+activate UpdateCategoryPage
+Admin -> UpdateCategoryPage : Modify category and Submit
+UpdateCategoryPage -> System : Send updated category data
+activate System
+System -> System : Validate updated category data
+
+alt if invalid
+    System --> Admin : Show error message
+else
+    System -> Database : Update category
+    activate Database
+    Database --> System : Confirmation of update
+    deactivate Database
+    System --> Admin : Show success message
+    UpdateCategoryPage -> CategoryPage : Redirect to Category Page
+end
+deactivate System
+deactivate UpdateCategoryPage
+@enduml

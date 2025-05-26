@@ -1,0 +1,32 @@
+@startuml
+actor Admin
+participant "Banner Page" as BannerPage
+participant "Create New Banner Page" as CreateNewBannerPage
+participant System
+database Database
+
+== Create New Banner ==
+Admin -> BannerPage : Click on Create New
+activate BannerPage
+BannerPage -> CreateNewBannerPage : Navigate to Create New Banner Page
+deactivate BannerPage
+
+activate CreateNewBannerPage
+Admin -> CreateNewBannerPage : Enter banner info and Submit
+CreateNewBannerPage -> System : Send new banner data
+activate System
+System -> System : Validate banner data
+
+alt if invalid
+    System --> Admin : Show error message
+else
+    System -> Database : Save new banner
+    activate Database
+    Database --> System : Confirmation of save
+    deactivate Database
+    System --> Admin : Show success message
+    CreateNewBannerPage -> BannerPage : Redirect to Banner Page
+end
+deactivate System
+deactivate CreateNewBannerPage
+@enduml

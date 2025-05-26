@@ -52,7 +52,6 @@ const getPaymentLinkInformation = async (req, res) => {
       result
     );
   } catch (error) {
-    console.error('Error during get payment link information:', error);
     if (error.message === 'notfound') {
       return apiHandler.sendNotFound(res, 'Payment link not found');
     }
@@ -64,7 +63,7 @@ const cancelPaymentLink = async (req, res) => {
     const result = await payOSService.cancelPaymentLink(req.params.id);
     return apiHandler.sendSuccessWithData(res, 'Payment link canceled', result);
   } catch (error) {
-    console.error('Error during cancel payment link:', error);
+
     if (error.message === 'notfound') {
       return apiHandler.sendNotFound(res, 'Payment link not found');
     }

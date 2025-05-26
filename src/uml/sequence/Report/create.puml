@@ -1,0 +1,53 @@
+@startuml
+actor NormalUser
+participant "Review Page" as RP
+participant "Post Detail Page" as PDP
+participant "User Profile Page" as UPP
+participant "Report Form Popup" as RFP
+participant "System" as Sys
+participant "Cloudinary Service" as Cloud
+database "Database" as DB
+
+== Case 1: Report Review ==
+NormalUser -> RP : Click "Report" on own review
+activate RP
+RP -> RFP : Open report form popup
+deactivate RP
+
+== Case 2: Report Post ==
+NormalUser -> PDP : Click "Report" on another user's post
+activate PDP
+PDP -> RFP : Open report form popup
+deactivate PDP
+
+== Case 3: Report User ==
+NormalUser -> UPP : Click "Report" on another user's profile
+activate UPP
+UPP -> RFP : Open report form popup
+deactivate UPP
+
+== Fill Report Form ==
+activate RFP
+NormalUser -> RFP : Select title, reason, attach evidence image(s)
+RFP -> Sys : Submit report data to system
+deactivate RFP
+activate Sys
+
+Sys -> Sys : Validate report data
+alt Valid Data
+    Sys -> Cloud : Upload image evidence
+    activate Cloud
+    Cloud --> Sys : Return image URL(s)
+    deactivate Cloud
+
+    Sys -> DB : Save report information with image URL(s)
+    activate DB
+    DB --> Sys : Confirm save
+    deactivate DB
+
+    Sys --> NormalUser : Show success notification
+else Invalid Data or Upload Error
+    Sys --> NormalUser : Show error message
+end
+deactivate Sys
+@enduml

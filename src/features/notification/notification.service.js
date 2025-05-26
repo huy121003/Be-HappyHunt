@@ -22,7 +22,6 @@ const getAll = async (data) => {
       pageNumber: page,
     };
   } catch (error) {
-
     throw new Error(error.message);
   }
 };
@@ -48,7 +47,10 @@ const create = async (data) => {
       data.type === 'POST_REJECTED' ||
       data.type === 'POST_EXPIRED' ||
       data.type === 'POST_DELETED' ||
-      data.type === 'FOLLOW_ACCOUNT'
+      data.type === 'FOLLOW_ACCOUNT' ||
+      data.type === 'FIRST_LOGIN' ||
+      data.type === 'VIP_EXPIRED' ||
+      data.type === 'VIP_ACTIVE'
     ) {
       const notification = await Notification.create({
         target: data.target,
@@ -81,7 +83,6 @@ const create = async (data) => {
     }
     return notifications;
   } catch (error) {
-
     throw new Error(error.message);
   }
 };

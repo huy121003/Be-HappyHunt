@@ -2,7 +2,7 @@ const { checkType } = require('../../helpers/checkType.helper');
 const { Account } = require('../../models');
 const PaymentHistory = require('../../models/payment-history');
 const exportFilter = require('./payment.filter');
-
+const emailService = require('../email/email.service');
 const createPaymentHistory = async (data) => {
   try {
     const result = await PaymentHistory.create(data);
@@ -68,6 +68,7 @@ const updateStatusByPaymentLinkId = async (paymentLinkId, data) => {
   }
 };
 const updatePaymentHistory = async (data) => {
+  const transactionDateTime = new Date(Date.now());
   try {
     const result = await PaymentHistory.findOneAndUpdate(
       {
@@ -76,9 +77,10 @@ const updatePaymentHistory = async (data) => {
       },
       {
         status: data.status,
-        transactionDateTime: new Date(Date.now()),
+        transactionDateTime: transactionDateTime,
       }
     );
+
     if (!result) {
       throw new Error('update');
     }
@@ -92,6 +94,13 @@ const updatePaymentHistory = async (data) => {
     if (!account) {
       throw new Error('update');
     }
+    await emailService.sendBillPaymentEmail(
+      account.email,
+      data.amount,
+      result.description,
+      data.orderCode,
+      transactionDateTime
+    );
     return result;
   } catch (error) {
     throw new Error(error.message);
@@ -138,7 +147,6 @@ const getAllPagiantion = async (query) => {
       totalDocuments,
     };
   } catch (error) {
-    console.error('Error during get all payment history:', error.message);
     throw new Error(error.message);
   }
 };

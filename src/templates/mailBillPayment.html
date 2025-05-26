@@ -1,0 +1,60 @@
+<!-- email/templates/topupInvoiceTemplate.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Top-Up Invoice - Happy Hunt</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f6f8fa; font-family: Arial, sans-serif;">
+  <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+      <td align="center" style="padding: 30px 0;">
+        <table width="500" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+          <tr style="background-color: #2196F3;">
+            <td align="center" style="padding: 20px;">
+              <h1 style="color: #fff; margin: 0; font-size: 28px;">💰 Happy Hunt</h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 30px;">
+              <h2 style="color: #333;">🧾 Top-Up Invoice</h2>
+              <p style="font-size: 16px; color: #555;">
+                Thank you for your recent top-up. Below are the details of your transaction:
+              </p>
+
+              <table width="100%" style="margin-top: 20px; font-size: 16px; color: #333;">
+                <tr>
+                  <td style="padding: 10px 0;">💵 <strong>Amount:</strong></td>
+                  <td style="padding: 10px 0;" align="right"><strong>{{AMOUNT}} VND</strong></td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px 0;">📝 <strong>Description:</strong></td>
+                  <td style="padding: 10px 0;" align="right">{{CONTENT}}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px 0;">🔑 <strong>Transaction Code:</strong></td>
+                  <td style="padding: 10px 0;" align="right">{{CODE}}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px 0;">⏰ <strong>Transaction Time:</strong></td>
+                  <td style="padding: 10px 0;" align="right">{{TIME}}</td>
+                </tr>
+              </table>
+
+              <p style="font-size: 14px; color: #888; margin-top: 30px;">
+                If you did not make this transaction or see any issue, please contact our support team immediately.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td align="center" style="padding: 20px; background-color: #f0f0f0;">
+              <p style="margin: 0; font-size: 13px; color: #999;">© 2025 Happy Hunt. All rights reserved.</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

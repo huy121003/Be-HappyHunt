@@ -9,7 +9,6 @@ const uploadSingle = async (file) => {
       },
       (error, result) => {
         if (error) {
-
           reject(`Upload failed: ${error}`);
         } else {
           resolve(result.url);
@@ -22,6 +21,7 @@ const uploadSingle = async (file) => {
   });
 };
 const uploadMultiple = async (files) => {
+
   // làm tuong tự như uploadSingleService
   if (Array.isArray(files) === false) {
     const url = await uploadSingle(files);

@@ -1,0 +1,31 @@
+@startuml
+actor Admin
+participant "Home Page" as HomePage
+participant "Category Page" as CategoryPage
+participant System
+database Database
+
+== View Categories ==
+Admin -> HomePage : Click on Category Tab
+activate HomePage
+HomePage -> CategoryPage : Display category page
+deactivate HomePage
+
+activate CategoryPage
+CategoryPage -> System : Call API to get categories
+activate System
+System -> Database : Fetch category list
+activate Database
+Database --> System : Return category list
+deactivate Database
+System --> CategoryPage : Return category data
+deactivate System
+CategoryPage --> Admin : Display category list
+deactivate CategoryPage
+
+alt if error
+    activate System
+    System --> Admin : Show error message
+    deactivate System
+end
+@enduml

@@ -6,7 +6,6 @@ const {
 } = require('../notification/notification.soket');
 const create = async (data) => {
   try {
-
     const res = await Follower.create(data);
     if (!res) throw new Error('create');
     await createNotification(socketStore.appNamespace, socketStore.socketOn, {
@@ -16,11 +15,11 @@ const create = async (data) => {
     });
     return res;
   } catch (error) {
-
     throw new Error(error.message);
   }
 };
 const remove = async (data) => {
+
   try {
     const result = await Follower.findOneAndDelete({
       createdBy: data.createdBy,
@@ -29,6 +28,7 @@ const remove = async (data) => {
     if (!result) throw new Error('delete');
     return result;
   } catch (error) {
+
     throw new Error(error.message);
   }
 };

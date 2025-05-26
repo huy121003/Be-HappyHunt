@@ -1,0 +1,31 @@
+@startuml
+actor Admin
+participant "Home Page" as HomePage
+participant "Role Page" as RolePage
+participant System
+database Database
+
+== View Roles ==
+Admin -> HomePage : Click on Role Tab
+activate HomePage
+HomePage -> RolePage : Display role page
+deactivate HomePage
+
+activate RolePage
+RolePage -> System : Call API to get roles
+activate System
+System -> Database : Fetch role list
+activate Database
+Database --> System : Return role list
+deactivate Database
+System --> RolePage : Return role data
+deactivate System
+RolePage --> Admin : Display role list
+deactivate RolePage
+
+alt if error
+    activate System
+    System --> Admin : Show error message
+    deactivate System
+end
+@enduml

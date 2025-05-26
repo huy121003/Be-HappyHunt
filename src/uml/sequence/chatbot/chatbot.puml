@@ -1,0 +1,42 @@
+@startuml
+actor "Normal User"
+participant "Home Page" as HP
+participant "Chatbot Popup" as CP
+participant "System" as Sys
+participant "GeminiService" as GS
+
+activate "Normal User"
+"Normal User" -> HP : Click "Chatbot" button
+activate HP
+HP -> CP : Open chatbot popup
+activate CP
+deactivate HP
+
+"Normal User" -> CP : Enter message and click "Send"
+activate "Normal User"
+deactivate CP
+CP -> Sys : Send message via API
+activate Sys
+deactivate "Normal User"
+
+Sys -> Sys : Create prompt (Q&A chat bot + user message)
+
+Sys -> GS : Send prompt to GeminiService
+activate GS
+
+alt Error Occurred
+    GS --> Sys : Return error
+    deactivate GS
+    Sys --> CP : Show message "Please try again later"
+    deactivate Sys
+    activate CP
+else Successful Response
+    GS --> Sys : Return response message
+    deactivate GS
+    Sys --> CP : Display received message
+    deactivate Sys
+    activate CP
+end
+
+deactivate CP
+@enduml

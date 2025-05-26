@@ -13,7 +13,7 @@ router.get(
   authJwt.accessToken,
   userController.getNewUserStatistics
 );
-router.get('/count-sex-user', authJwt.accessToken, userController.countSexUser);
+router.get('/count-gender-user', authJwt.accessToken, userController.countGenderUser);
 router.get('/total-user', authJwt.accessToken, userController.totalUser);
 router.get('/', authJwt.accessToken, userController.getAll);
 router.get('/:id', authJwt.accessToken, userController.getById);

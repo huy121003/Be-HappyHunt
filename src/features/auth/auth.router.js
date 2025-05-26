@@ -30,4 +30,6 @@ router.patch(
   authJwt.accessToken,
   authController.updateProfile
 );
+router.patch('/active-vip', authJwt.accessToken, authController.activeVip);
+router.get('/get-vip-status', authJwt.accessToken, authController.getVipStatus);
 module.exports = router;

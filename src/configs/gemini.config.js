@@ -35,7 +35,7 @@ const prompt = `
     }
     throw new Error("No valid response from Gemini API.");
   } catch (error) {
-    console.error("Error calling Gemini API:", error);
+
     throw new Error(error.message);
   }
 };

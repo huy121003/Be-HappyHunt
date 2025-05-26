@@ -2,7 +2,6 @@ const Evaluate = require('../../models/evaluate');
 const exportFilter = require('./evaluate.filter');
 
 const create = async (data) => {
- 
   try {
     const result = await Evaluate.create({
       ...data,
@@ -83,11 +82,36 @@ const getDetail = async (data) => {
     throw new Error(error.message);
   }
 };
-
+const remove = async (id) => {
+  try {
+    const result = await Evaluate.findByIdAndDelete(id);
+    if (!result) throw new Error('notfound');
+    return result;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+const getById = async (id) => {
+  try {
+    const result = await Evaluate.findById(id)
+      .select('-__v')
+      .populate('createdBy', '_id name avatar slug')
+      .populate('target', '_id name avatar slug ')
+      .populate('post', '_id name slug images price status')
+      .lean()
+      .exec();
+    if (!result) throw new Error('notfound');
+    return result;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
 module.exports = {
   create,
   getByIdUser,
   countByUserId,
   getDetail,
   countEvaluate,
+  remove,
+  getById,
 };
