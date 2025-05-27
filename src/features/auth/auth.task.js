@@ -12,7 +12,7 @@ cron.schedule('*/5 * * * *', async () => {
       return;
     }
     for (const account of activeVipAccounts) {
-      const vipEndDate = new Date(account.vipEndDate);
+      const vipEndDate = new Date(account.dateVipExpired);
       const currentDate = new Date();
       if (currentDate > vipEndDate) {
         await authService.cancelVip(account._id);

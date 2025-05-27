@@ -8,6 +8,7 @@ const {
   Account,
   Category,
 } = require('../../models');
+const daysjs = require('dayjs');
 const autoSlug = require('../../helpers/autoSlug');
 const exportFilter = require('./post.filter');
 const dayjs = require('dayjs');
@@ -88,12 +89,6 @@ const update = async (id, data) => {
       runValidators: true,
     });
     if (!result) throw new Error('update');
-    await createNotification(socketStore.appNamespace, socketStore.socketOn, {
-      target: result.createdBy,
-      post: result._id,
-      type: 'POST_WAITING_APPROVE',
-      createdBy: result.createdBy,
-    });
 
     return result;
   } catch (error) {
@@ -162,6 +157,7 @@ const getAllPagination = async (data, userId) => {
         .sort({
           ...sort,
           pushedAt: -1,
+          createdAt: -1,
         })
         .limit(size)
         .skip(page * size)
@@ -191,32 +187,64 @@ const getAllPagination = async (data, userId) => {
     throw new Error(error.message);
   }
 };
+const getAllPaginationManager = async (data) => {
+  try {
+    const { page, size, sort, ...filter } = exportFilter(data);
+    const [totalDocuments, posts] = await Promise.all([
+      Post.countDocuments(filter),
+      Post.find(filter)
+
+        .select('-__v -deleted')
+        .populate(
+          'category categoryParent address.province address.district address.ward createdBy',
+          'name _id avatar phoneNumber slug messages pricePush'
+        )
+        .sort({
+          ...sort,
+        })
+        .limit(size)
+        .skip(page * size)
+        .lean()
+        .exec(),
+    ]);
+    if (!posts) throw new Error('notfound');
+    return {
+      documentList: posts,
+      totalDocuments,
+      pageSize: size,
+      pageNumber: page,
+    };
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 const getAllSuggestionsPagination = async (data, userId) => {
   try {
-    const [categorySuggestions, user, favoritePost] = await Promise.all([
-      Post.find({ createdBy: userId })
-        .select('category categoryParent')
-        .skip(0)
+    const [historyClick, favoritePost, user] = await Promise.all([
+      HistoryClickPost.find({ createdBy: userId })
+        .select('post')
+        .populate('post', 'category categoryParent')
+        .sort({
+          pushAt: -1,
+          createdAt: -1,
+        })
         .limit(10)
-        .sort({ createdAt: -1 })
         .lean(),
-      Account.findById(userId).lean(),
       FavoritePost.find({ createdBy: userId })
         .select('post')
         .populate('post', 'category categoryParent')
         .sort({ createdAt: -1 })
         .limit(10)
         .lean(),
+      Account.findById(userId).lean(),
     ]);
-
     if (!user) throw new Error('notfound');
 
-    const finalCategorySuggestions = [
-      ...postHelper.sortCategory(
-        favoritePost.map((item) => item.post),
-        categorySuggestions
-      ),
-    ];
+    const preferredCategories = postHelper.sortCategory(
+      favoritePost.map((x) => x.post),
+      historyClick.map((x) => x.post)
+    );
 
     const { page, size, sort, ...filter } = exportFilter({
       ...data,
@@ -227,33 +255,61 @@ const getAllSuggestionsPagination = async (data, userId) => {
       }),
     });
 
-    const query = {
+    const commonQuery = {
       ...filter,
       status: 'SELLING',
       createdBy: { $ne: userId },
-      ...(finalCategorySuggestions.length > 0 && {
-        $or: finalCategorySuggestions,
-      }),
     };
-    const [totalDocuments, result] = await Promise.all([
-      Post.countDocuments(query),
-      Post.find(query)
+
+    const queryWithCategory =
+      preferredCategories.length > 0
+        ? { ...commonQuery, $or: preferredCategories }
+        : commonQuery;
+
+    // Lấy bài viết theo danh mục gợi ý
+    let posts = await Post.find(queryWithCategory)
+      .select('-__v -deleted')
+      .populate([
+        { path: 'category' },
+        { path: 'categoryParent' },
+        { path: 'address.province', select: 'name' },
+        { path: 'address.district', select: 'name' },
+        { path: 'address.ward', select: 'name' },
+        { path: 'createdBy', select: 'name _id avatar phoneNumber slug' },
+      ])
+      .sort({ ...sort, pushedAt: -1 })
+      .limit(50)
+      .lean();
+
+    const existingIds = new Set(posts.map((p) => p._id.toString()));
+
+    // Nếu số lượng < 30 → lấy thêm bài mới nhất không trùng
+    if (posts.length < 30) {
+      const more = await Post.find({
+        ...commonQuery,
+        _id: { $nin: Array.from(existingIds) },
+      })
         .select('-__v -deleted')
-        .populate(
-          'category categoryParent address.province address.district address.ward createdBy',
-          'name _id avatar phoneNumber slug'
-        )
-        .sort({
-          ...sort,
-          pushedAt: -1,
-        })
-        .skip(page * size)
-        .limit(size)
-        .lean(),
-    ]);
-    if (!result) throw new Error('notfound');
-    const res = await Promise.all(
-      result.map(async (post) => ({
+        .populate([
+          { path: 'category' },
+          { path: 'categoryParent' },
+          { path: 'address.province', select: 'name' },
+          { path: 'address.district', select: 'name' },
+          { path: 'address.ward', select: 'name' },
+          { path: 'createdBy', select: 'name _id avatar phoneNumber slug' },
+        ])
+        .sort({ ...sort, pushedAt: -1 })
+        .limit(50)
+        .lean();
+
+      posts = [...posts, ...more];
+    }
+
+    const total = posts.length;
+    const paged = posts.slice(page * size, (page + 1) * size);
+
+    const result = await Promise.all(
+      paged.map(async (post) => ({
         ...post,
         isFavorite: !!(await FavoritePost.findOne({
           post: post._id,
@@ -261,15 +317,15 @@ const getAllSuggestionsPagination = async (data, userId) => {
         })),
       }))
     );
-    if (!res) throw new Error('notfound');
+
     return {
-      documentList: res,
-      totalDocuments,
+      documentList: result,
+      totalDocuments: total,
       pageSize: size,
       pageNumber: page,
     };
-  } catch (error) {
-    throw new Error(error.message);
+  } catch (err) {
+    throw new Error(err.message);
   }
 };
 
@@ -296,6 +352,7 @@ const updateCheckingStatus = async (id, post) => {
 
     return result;
   } catch (error) {
+    console.error('Error updating checking status:', error);
     throw new Error(error.message);
   }
 };
@@ -394,15 +451,45 @@ const updateClickCount = async (id, userId) => {
     throw new Error(error.message);
   }
 };
-const updatePushedAt = async (id) => {
+const updatePushedAt = async (id, accountId, price) => {
   const result = await Post.findByIdAndUpdate(
     id,
-    { pushedAt: new Date() },
+    {
+      pushedAt: new Date(
+        daysjs().add(12, 'hour').format('YYYY-MM-DD')
+      ).toISOString(),
+    },
+    { new: true }
+  );
+  const account = await Account.findByIdAndUpdate(
+    accountId,
+    {
+      $inc: {
+        balance: -Number(price),
+      },
+    },
+    { new: true }
+  );
+  if (!account) throw new Error('update account');
+  if (!result) throw new Error('update');
+
+  return result;
+};
+const getPushedAt = async (id) => {
+  const result = await Post.findById(id).select('pushedAt').lean();
+  if (!result) throw new Error('notfound');
+  return result;
+};
+const clearPushedAt = async (id) => {
+  const result = await Post.findByIdAndUpdate(
+    id,
+    { pushedAt: new Date().toISOString() },
     { new: true }
   );
   if (!result) throw new Error('update');
   return result;
 };
+
 const countStatusProfile = async (id) => {
   try {
     const [selling, sold] = await Promise.all([
@@ -500,4 +587,7 @@ module.exports = {
   getNewPostStatistics,
   totalPostSelling,
   totalPostSellingByCategory,
+  clearPushedAt,
+  getPushedAt,
+  getAllPaginationManager,
 };

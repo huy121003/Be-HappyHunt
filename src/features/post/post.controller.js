@@ -126,6 +126,22 @@ const getAllPagination = async (req, res) => {
     return apiHandler.sendErrorMessage(res, error.message);
   }
 };
+const getAllPagiantionManager = async (req, res) => {
+  try {
+    const result = await postService.getAllPaginationManager(
+      {
+        ...req.query,
+      },
+      req.userAccess._id
+    );
+    return apiHandler.sendSuccessWithData(res, 'List posts', result);
+  } catch (error) {
+    if (error.message.includes('notfound')) {
+      return apiHandler.sendNotFound(res, 'No post found');
+    }
+    return apiHandler.sendErrorMessage(res, error.message);
+  }
+};
 const getAllSuggestionsPagination = async (req, res) => {
   try {
     const result = await postService.getAllSuggestionsPagination(
@@ -207,11 +223,35 @@ const updateClickCount = async (req, res) => {
 };
 const updatePushedAt = async (req, res) => {
   try {
-    const result = await postService.updatePushedAt(req.params.id);
+    const account = await Account.findById(req.userAccess._id).select(
+      'balance'
+    );
+    if (account.balance && Number(account.balance) < Number(req.body.price)) {
+      return apiHandler.sendValidationError(
+        res,
+        'You do not have enough money to push post'
+      );
+    }
+    const result = await postService.updatePushedAt(
+      req.params.id,
+      req.userAccess._id,
+      req.body.price
+    );
     return apiHandler.sendSuccessWithData(res, 'Update pushedAt', result);
   } catch (error) {
     if (error.message.includes('update')) {
       return apiHandler.sendErrorMessage(res, 'Failed to update pushedAt');
+    }
+    return apiHandler.sendErrorMessage(res, error.message);
+  }
+};
+const getPushedAt = async (req, res) => {
+  try {
+    const result = await postService.getPushedAt(req.params.id);
+    return apiHandler.sendSuccessWithData(res, 'Get pushedAt', result);
+  } catch (error) {
+    if (error.message.includes('notfound')) {
+      return apiHandler.sendNotFound(res, 'Post not found');
     }
     return apiHandler.sendErrorMessage(res, error.message);
   }
@@ -276,4 +316,6 @@ module.exports = {
   getNewPostStatistics,
   totalPostSelling,
   totalPostSellingByCategory,
+  getPushedAt,
+  getAllPagiantionManager,
 };

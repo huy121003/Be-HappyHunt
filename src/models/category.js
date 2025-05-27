@@ -14,6 +14,7 @@ const categorySchema = new Schema(
     parent: { type: Number, ref: 'category', default: null },
     isPayment: { type: Boolean, default: false },
     pricePayment: { type: Number, default: 0 },
+    pricePush: { type: Number, required: true },
     attributes: [
       {
         name: { type: String, required: true, trim: true },

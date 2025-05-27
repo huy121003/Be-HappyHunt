@@ -85,7 +85,11 @@ const banned = async (id, data) => {
 
     const result = await Account.findByIdAndUpdate(id, {
       ...data,
-      ...(!data.isBanned && { banAmount: accountBanned.banAmount + 1 }),
+      ...(!data.isBanned && {
+        banAmount: accountBanned.banAmount + 1,
+        isVip: false,
+        dateVipExpired: null,
+      }),
     }).exec();
 
     if (!data.isBanned) {

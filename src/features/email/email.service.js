@@ -66,11 +66,7 @@ const sendBanAccountEmail = async (email) => {
   }
 };
 const sendBillPaymentEmail = async (email, amount, content, code, time) => {
-  // console.log('Sending bill payment email to:', email);
-  // console.log('Amount:', amount);
-  // console.log('Content:', content);
-  // console.log('Code:', code);
-  // console.log('Time:', time);
+
   try {
     const htmlTemplatePath = path.join(
       __dirname,

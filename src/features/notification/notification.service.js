@@ -1,4 +1,4 @@
-const { Notification, Follower } = require('../../models');
+const { Notification, Follower, Post } = require('../../models');
 const exportFilter = require('./notification.filter');
 
 const getAll = async (data) => {
@@ -40,52 +40,74 @@ const getDetail = async (data) => {
   return notification;
 };
 const create = async (data) => {
-  let notifications = [];
+  const notifications = [];
+
   try {
-    if (
-      data.type === 'POST_WAITING_APPROVE' ||
-      data.type === 'POST_REJECTED' ||
-      data.type === 'POST_EXPIRED' ||
-      data.type === 'POST_DELETED' ||
-      data.type === 'FOLLOW_ACCOUNT' ||
-      data.type === 'FIRST_LOGIN' ||
-      data.type === 'VIP_EXPIRED' ||
-      data.type === 'VIP_ACTIVE'
-    ) {
-      const notification = await Notification.create({
+    const basicTypes = [
+      'POST_WAITING_APPROVE',
+      'POST_REJECTED',
+      'POST_EXPIRED',
+      'POST_DELETED',
+      'FOLLOW_ACCOUNT',
+      'FIRST_LOGIN',
+      'VIP_EXPIRED',
+      'VIP_ACTIVE',
+    ];
+
+    if (basicTypes.includes(data.type)) {
+      const noti = await Notification.create({
         target: data.target,
         ...(data.post && { post: data.post }),
         type: data.type,
         createdBy: data.createdBy,
       });
-      const getNotification = await getDetail(notification);
-      if (getNotification) notifications.push(getNotification);
-    } else if (data.type === 'NEW_POST') {
-      const followId = await Follower.find({ following: data.target })
-        .lean()
-        .exec();
+      const detail = await getDetail(noti);
+      if (detail) notifications.push(detail);
+    }
 
-      if (followId.length > 0) {
-        for (const follow of [
-          ...followId.map((item) => item.createdBy),
-          data.target,
-        ]) {
-          const notification = await Notification.create({
-            target: follow,
+    if (data.type === 'NEW_POST') {
+      const post = await Post.findById(data.post);
+      if (!post?.isNotify) {
+        // Thông báo cho chủ bài viết
+        const selfNoti = await Notification.create({
+          target: data.target,
+          post: data.post,
+          type: data.type,
+          createdBy: data.createdBy,
+        });
+        const selfDetail = await getDetail(selfNoti);
+        if (selfDetail) notifications.push(selfDetail);
+
+        // Thông báo cho người theo dõi (loại trừ chính chủ nếu có)
+        const followers = await Follower.find(
+          { following: data.target },
+          'createdBy'
+        ).lean();
+        const followerIds = followers
+          .map((f) => f.createdBy.toString())
+          .filter((id) => id !== data.target.toString());
+
+        for (const id of followerIds) {
+          const noti = await Notification.create({
+            target: id,
             post: data.post,
             type: data.type,
             createdBy: data.createdBy,
           });
-          const getNotification = await getDetail(notification);
-          if (getNotification) notifications.push(getNotification);
+          const detail = await getDetail(noti);
+          if (detail) notifications.push(detail);
         }
+
+        await Post.findByIdAndUpdate(data.post, { isNotify: true });
       }
     }
+
     return notifications;
   } catch (error) {
     throw new Error(error.message);
   }
 };
+
 const countNotRead = async (accountId) => {
   const count = await Notification.countDocuments({
     target: accountId,

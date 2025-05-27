@@ -10,7 +10,7 @@ const notificationSchema = new Schema(
     type: {
       type: String,
       enum: [
-        'FIRST_LOGIN',
+        'LOGIN',
         'FOLLOW_ACCOUNT',
         'NEW_POST',
         'NEW_MESSAGE',

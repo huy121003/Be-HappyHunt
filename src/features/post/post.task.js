@@ -8,6 +8,7 @@ const { socketStore } = require('../app/app.socket');
 const {
   create: createNotification,
 } = require('../notification/notification.soket');
+const postServicervice = require('./post.service');
 cron.schedule('*/1 * * * *', async () => {
   try {
     const posts = await Post.find({ status: 'WAITING' });
@@ -39,7 +40,6 @@ cron.schedule('*/1 * * * *', async () => {
               allApproved = false;
             }
           } catch (error) {
-           
             reasonReject.push(error.message);
             aiCheckFailed = true;
             allApproved = false;
@@ -57,8 +57,6 @@ cron.schedule('*/1 * * * *', async () => {
         if (result.status === 'fulfilled') {
           updatedImages.push(result.value);
         } else {
-         
-
           updatedImages.push({
             url: result.reason.image?.url || 'unknown',
             index: result.reason.image?.index || 0,
@@ -144,4 +142,24 @@ cron.schedule('*/5 * * * *', async () => {
     console.error(' Error checking posts:', error);
   }
 });
+// Chạy mỗi phút để kiểm tra các bài đã đẩy tin
+cron.schedule('* * * * *', async () => {
+  try {
+    const posts = await Post.find({
+      pushedAt: { $ne: null },
+      status: 'SELLING',
+    });
+
+    for (const post of posts) {
+      const hoursDiff = dayjs().diff(dayjs(post.pushedAt), 'hour');
+
+      if (hoursDiff >= 12) {
+        await postServicervice.clearPushedAt(post._id);
+      }
+    }
+  } catch (error) {
+    console.error('Error checking pushed posts:', error);
+  }
+});
+
 module.exports = cron;
