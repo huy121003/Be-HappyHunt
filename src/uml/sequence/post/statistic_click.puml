@@ -1,0 +1,27 @@
+@startuml
+actor "Normal User" as NormalUser
+participant "Post Management Page" as PostPage
+participant "Statistics Popup" as StatsPopup
+participant System
+database Database
+
+== View Statistics ==
+NormalUser -> PostPage : Click "View Statistics"
+activate PostPage
+PostPage -> StatsPopup : Show popup
+StatsPopup -> System : Call API to get statistics
+activate System
+System -> Database : Fetch statistics
+activate Database
+Database --> System : Return stats
+deactivate Database
+System --> StatsPopup : Return stats
+deactivate System
+
+alt Stats retrieved
+    StatsPopup --> NormalUser : Display chart
+else
+    StatsPopup --> NormalUser : Show error message
+end
+deactivate StatsPopup
+@enduml

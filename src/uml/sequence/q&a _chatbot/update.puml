@@ -1,0 +1,32 @@
+@startuml
+actor Admin
+participant "Q&A Page" as QAPage
+participant "Update Q&A Page" as UpdateQAPage
+participant System
+database Database
+
+== Update Q&A ==
+Admin -> QAPage : Click on Edit button
+activate QAPage
+QAPage -> UpdateQAPage : Navigate to Update Q&A Page
+deactivate QAPage
+
+activate UpdateQAPage
+Admin -> UpdateQAPage : Modify Q&A and Submit
+UpdateQAPage -> System : Send updated Q&A data
+activate System
+System -> System : Validate updated data
+
+alt if invalid
+    System --> Admin : Show error message
+else
+    System -> Database : Update Q&A
+    activate Database
+    Database --> System : Confirmation of update
+    deactivate Database
+    System --> Admin : Show success message
+    UpdateQAPage -> QAPage : Redirect to Q&A Page
+end
+deactivate System
+deactivate UpdateQAPage
+@enduml

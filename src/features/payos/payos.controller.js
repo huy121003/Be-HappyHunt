@@ -9,12 +9,12 @@ const createPaymentLink = async (req, res) => {
       createdBy: Number(req.userAccess._id),
       status: 'PENDING',
     });
-    // if (count >= 5) {
-    //   throw new Error('count');
-    // }
+    if (count >= 5) {
+      throw new Error('count');
+    }
     const result = await payOSService.createPaymentLink({
       ...req.body,
-    
+
       createdBy: req.userAccess._id,
     });
     if (res) {
@@ -52,7 +52,6 @@ const getPaymentLinkInformation = async (req, res) => {
       result
     );
   } catch (error) {
-    console.error('Error during get payment link information:', error);
     if (error.message === 'notfound') {
       return apiHandler.sendNotFound(res, 'Payment link not found');
     }
@@ -64,7 +63,7 @@ const cancelPaymentLink = async (req, res) => {
     const result = await payOSService.cancelPaymentLink(req.params.id);
     return apiHandler.sendSuccessWithData(res, 'Payment link canceled', result);
   } catch (error) {
-    console.error('Error during cancel payment link:', error);
+
     if (error.message === 'notfound') {
       return apiHandler.sendNotFound(res, 'Payment link not found');
     }

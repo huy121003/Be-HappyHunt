@@ -1,0 +1,64 @@
+@startuml
+actor User1
+actor User2
+participant "Message Page (User 1)" as MP1
+participant "Message Page (User 2)" as MP2
+participant "WebSocket Server" as WS
+participant "Cloudinary Service" as Cloud
+participant "WS Client (User 1)" as WSClient1
+participant "WS Client (User 2)" as WSClient2
+
+activate User1
+User1 -> MP1 : Enter message and attach image
+User1 -> MP1 : Click "Send"
+activate MP1
+deactivate User1
+
+MP1 -> WSClient1 : Send message and image data
+activate WSClient1
+deactivate MP1
+
+WSClient1 -> WS : Send message and image data
+activate WS
+deactivate WSClient1
+
+alt If Image Attached
+    WS -> Cloud : Upload image to Cloudinary 
+    activate Cloud
+    Cloud --> WS : Return image URL
+    deactivate Cloud
+end
+
+WS -> WSClient2 : Deliver message (with image URL if any)
+activate WSClient2
+deactivate WS
+
+WSClient2 -> MP2 : Notify new message
+activate MP2
+deactivate WSClient2
+
+alt Error Occurred During Delivery
+    WS --> WSClient1 : Notify error
+    activate WSClient1
+    WSClient1 -> MP1 : Notify error to User1
+    deactivate WSClient1
+else Successful Delivery
+    WSClient1 -> MP1 : Display sent message
+    activate WSClient1
+    deactivate WSClient1
+end
+
+deactivate MP2
+
+== User 2 Receive Message ==
+activate WSClient2
+WSClient2 -> WS : Acknowledge message receipt
+deactivate WSClient2
+
+activate WS
+WS -> MP2 : Update message view with new message
+deactivate WS
+
+activate MP2
+deactivate MP2
+@enduml

@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
-const { HTTTT, apiHandler } = require('../helpers');
+const { apiHandler } = require('../helpers');
 const { Account } = require('../models');
 const comparePermissions = (accountPermissions, decodedPermissions) => {
   if (accountPermissions.length !== decodedPermissions.length) return false;
@@ -30,12 +30,13 @@ const verifyToken = async (token) => {
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
   const account = await Account.findOne({
     _id: decoded._id,
-    phoneNumber: decoded.phoneNumber,
+    email: decoded.email,
     username: decoded.username,
     role: decoded.role,
   })
     .populate('role', 'name _id permissions')
     .lean();
+
   if (!account) {
     const error = new Error('token: Account not found');
     error.statusCode = 401;
@@ -45,6 +46,7 @@ const verifyToken = async (token) => {
   if (!account.isBanned) {
     const error = new Error('banned: Your account has been banned');
     error.statusCode = 401;
+    throw error;
   }
   const accountPermissions = account?.role?.permissions || [];
   const decodedPermissions = decoded?.role?.permissions || [];
@@ -59,6 +61,7 @@ const verifyToken = async (token) => {
 };
 
 const accessToken = async (req, res, next) => {
+
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer '))
@@ -69,7 +72,7 @@ const accessToken = async (req, res, next) => {
 
     req.userAccess = {
       _id: account._id,
-      phoneNumber: account.phoneNumber,
+      email: account.email,
       username: account.username,
       role: account.role,
     };
@@ -82,6 +85,7 @@ const accessToken = async (req, res, next) => {
         error.message.split(':')[1].trim()
       );
     } else if (error.message.includes('banned:')) {
+  
       return apiHandler.sendUnauthorizedError(
         res,
         error.message.split(':')[1].trim()
@@ -106,7 +110,7 @@ const refreshToken = async (req, res, next) => {
 
     req.userRefresh = {
       _id: account._id,
-      phoneNumber: account.phoneNumber,
+      email: account.email,
       username: account.username,
       role: account.role,
     };

@@ -23,17 +23,34 @@ router.get(
 );
 router.get('/pagination', authJwt.accessToken, postController.getAllPagination);
 router.get(
+  '/pagination-manager',
+  authJwt.accessToken,
+  postController.getAllPagiantionManager
+);
+router.get(
   '/suggestion',
   authJwt.accessToken,
   postController.getAllSuggestionsPagination
+);
+router.get(
+  '/total-post-selling',
+  authJwt.accessToken,
+  postController.totalPostSelling
 );
 router.get(
   '/statistics',
   authJwt.accessToken,
   postController.getNewPostStatistics
 );
+router.get(
+  '/total-statistic-by-category',
+  authJwt.accessToken,
+  postController.totalPostSellingByCategory
+);
 router.get('/:id', authJwt.accessToken, postController.getById);
 router.delete('/:id', authJwt.accessToken, postController.remove);
+router.patch('/push/:id', authJwt.accessToken, postController.updatePushedAt);
+router.get('/push/:id', authJwt.accessToken, postController.getPushedAt);
 router.get('/slug/:slug', authJwt.accessToken, postController.getBySlug);
 router.patch('/:id', authJwt.accessToken, postController.update);
 router.get('/count-sold/:id', authJwt.accessToken, postController.countSold);
@@ -53,4 +70,5 @@ router.get(
   authJwt.accessToken,
   postController.countStatusProfile
 );
+
 module.exports = router;

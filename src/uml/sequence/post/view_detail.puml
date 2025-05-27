@@ -1,0 +1,30 @@
+@startuml
+actor "Normal User" as NormalUser
+participant "Post Management Page" as PostPage
+participant "Detail Page" as DetailPage
+participant System
+database Database
+
+== View Post Details ==
+NormalUser -> PostPage : Select post and click "View Detail"
+activate PostPage
+PostPage -> DetailPage : Redirect to Detail Page
+deactivate PostPage
+
+activate DetailPage
+DetailPage -> System : Call API to get post details
+activate System
+System -> Database : Fetch post details
+activate Database
+Database --> System : Return post details
+deactivate Database
+System --> DetailPage : Return post detail data
+deactivate System
+
+alt Post detail found
+    DetailPage --> NormalUser : Display post details
+else
+    DetailPage --> NormalUser : Show error message
+end
+deactivate DetailPage
+@enduml

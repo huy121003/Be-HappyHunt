@@ -1,0 +1,32 @@
+@startuml
+actor Admin
+participant "Q&A Page" as QAPage
+participant "Create New Q&A Page" as CreateNewQAPage
+participant System
+database Database
+
+== Create New Q&A ==
+Admin -> QAPage : Click on Create New
+activate QAPage
+QAPage -> CreateNewQAPage : Navigate to Create Q&A Page
+deactivate QAPage
+
+activate CreateNewQAPage
+Admin -> CreateNewQAPage : Enter question + answer and Submit
+CreateNewQAPage -> System : Send new Q&A data
+activate System
+System -> System : Validate input data
+
+alt if invalid
+    System --> Admin : Show error message
+else
+    System -> Database : Save Q&A
+    activate Database
+    Database --> System : Confirmation of save
+    deactivate Database
+    System --> Admin : Show success message
+    CreateNewQAPage -> QAPage : Redirect to Q&A Page
+end
+deactivate System
+deactivate CreateNewQAPage
+@enduml

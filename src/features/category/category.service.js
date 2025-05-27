@@ -12,6 +12,7 @@ const create = async (category) => {
       attributes: category.attributes
         ? JSON.parse(category.attributes)
         : undefined,
+      messages: category.messages ? JSON.parse(category.messages) : undefined,
       parent: category.parent ? category.parent : null,
       slug: autoSlug(category.name),
       keywords: category.keywords ? category.keywords : [],
@@ -20,7 +21,7 @@ const create = async (category) => {
     if (!result) throw new Error('create');
     return result;
   } catch (error) {
-    console.error('Error during category creation:', error.message);
+  
     throw new Error(error.message);
   }
 };
@@ -104,6 +105,7 @@ const update = async (id, category) => {
         attributes: category.attributes
           ? JSON.parse(category.attributes)
           : undefined,
+        messages: category.messages ? JSON.parse(category.messages) : undefined,
         parent: category.parent ? category.parent : null,
       },
       {

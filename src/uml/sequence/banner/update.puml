@@ -1,0 +1,32 @@
+@startuml
+actor Admin
+participant "Banner Page" as BannerPage
+participant "Update Banner Page" as UpdateBannerPage
+participant System
+database Database
+
+== Update Banner ==
+Admin -> BannerPage : Click on Edit button for banner
+activate BannerPage
+BannerPage -> UpdateBannerPage : Navigate to Update Banner Page
+deactivate BannerPage
+
+activate UpdateBannerPage
+Admin -> UpdateBannerPage : Modify banner info and Submit
+UpdateBannerPage -> System : Send updated banner data
+activate System
+System -> System : Validate updated banner data
+
+alt if invalid
+    System --> Admin : Show error message
+else
+    System -> Database : Update banner
+    activate Database
+    Database --> System : Confirmation of update
+    deactivate Database
+    System --> Admin : Show success message
+    UpdateBannerPage -> BannerPage : Redirect to Banner Page
+end
+deactivate System
+deactivate UpdateBannerPage
+@enduml

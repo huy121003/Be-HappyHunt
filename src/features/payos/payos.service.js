@@ -42,7 +42,7 @@ const createPaymentLink = async (data) => {
 
     return result;
   } catch (error) {
-    console.error('Error during create payment link:', error);
+    
     throw new Error(error.message);
   }
 };

@@ -14,6 +14,7 @@ const categorySchema = new Schema(
     parent: { type: Number, ref: 'category', default: null },
     isPayment: { type: Boolean, default: false },
     pricePayment: { type: Number, default: 0 },
+    pricePush: { type: Number, required: true },
     attributes: [
       {
         name: { type: String, required: true, trim: true },
@@ -43,6 +44,13 @@ const categorySchema = new Schema(
     icon: { type: String, required: true, trim: true },
     createdBy: { type: Number, ref: 'account', default: null },
     updatedBy: { type: Number, ref: 'account', default: null },
+    messages: [
+      {
+        _id: false,
+        messageSeller: { type: String, trim: true, required: true },
+        messageBuyer: { type: String, trim: true, required: true },
+      },
+    ],
   },
   { timestamps: true }
 );

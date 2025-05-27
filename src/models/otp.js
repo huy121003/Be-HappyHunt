@@ -5,7 +5,7 @@ const applyAutoIncrement = require('../configs/autoIncrement');
 const otpSchema = new Schema(
   {
     _id: Number,
-    phoneNumber: { type: String, required: true, trim: true },
+    email: { type: String, required: true, trim: true },
     otp: { type: String, required: true, trim: true },
   },
   { timestamps: true }

@@ -47,9 +47,7 @@ const createSort = (sortType, isTextSearch) => {
     return isTextSearch ? { score: { $meta: 'textScore' } } : { createdAt: -1 };
 
   const sortOptions = {
-    relevance: isTextSearch
-      ? { score: { $meta: 'textScore' } }
-      : { createdAt: -1 },
+    relevance: isTextSearch && { score: { $meta: 'textScore' } },
     newest: { createdAt: -1 },
     lowest: { price: 1 },
     highest: { price: -1 },

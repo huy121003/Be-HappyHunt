@@ -1,0 +1,31 @@
+@startuml
+actor Admin
+participant "Home Page" as HomePage
+participant "Account Management Page" as AccountPage
+participant System
+database Database
+
+== View Account List ==
+Admin -> HomePage : Click on Account Manager Tab
+activate HomePage
+HomePage -> AccountPage : Navigate to Account Management Page
+deactivate HomePage
+
+activate AccountPage
+AccountPage -> System : Call API to get user accounts
+activate System
+System -> Database : Fetch account list
+activate Database
+Database --> System : Return account data
+deactivate Database
+System --> AccountPage : Return account list
+deactivate System
+AccountPage --> Admin : Display account list
+deactivate AccountPage
+
+alt if error
+    activate System
+    System --> Admin : Show error message
+    deactivate System
+end
+@enduml

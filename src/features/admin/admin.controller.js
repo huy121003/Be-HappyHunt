@@ -11,10 +11,7 @@ const create = async (req, res) => {
     return apiHandler.sendCreated(res, 'Account created successfully', result);
   } catch (error) {
     if (error.message.includes('duplicate')) {
-      return apiHandler.sendConflict(
-        res,
-        'Username or phone number already exists'
-      );
+      return apiHandler.sendConflict(res, 'Username or Email already exists');
     }
     if (error.message.includes('create')) {
       return apiHandler.sendErrorMessage(res, 'Failed to create admin account');
@@ -64,10 +61,7 @@ const update = async (req, res) => {
     return apiHandler.sendCreated(res, 'Account updated successfully', result);
   } catch (error) {
     if (error.message.includes('duplicate')) {
-      return apiHandler.sendConflict(
-        res,
-        'Username or phone number already exists'
-      );
+      return apiHandler.sendConflict(res, 'Username or Email already exists');
     }
     if (error.message.includes('update')) {
       return apiHandler.sendErrorMessage(res, 'Failed to update admin account');

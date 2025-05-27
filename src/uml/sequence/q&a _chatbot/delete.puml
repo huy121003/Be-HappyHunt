@@ -1,0 +1,25 @@
+@startuml
+actor Admin
+participant "Q&A Page" as QAPage
+participant System
+database Database
+
+== Delete Q&A ==
+Admin -> QAPage : Click on Delete button
+activate QAPage
+QAPage -> Admin : Show popup confirmation
+
+alt if No
+    QAPage --> Admin : Cancel action
+else
+    QAPage -> System : Send API request to delete Q&A
+    activate System
+    System -> Database : Delete Q&A
+    activate Database
+    Database --> System : Confirmation of delete
+    deactivate Database
+    System --> Admin : Show success message
+    deactivate System
+end
+deactivate QAPage
+@enduml

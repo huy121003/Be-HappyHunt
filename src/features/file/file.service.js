@@ -21,6 +21,7 @@ const uploadSingle = async (file) => {
   });
 };
 const uploadMultiple = async (files) => {
+
   // làm tuong tự như uploadSingleService
   if (Array.isArray(files) === false) {
     const url = await uploadSingle(files);

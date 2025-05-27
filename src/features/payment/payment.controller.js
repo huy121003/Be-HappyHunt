@@ -12,18 +12,12 @@ const updatePaymentHistory = async (req, res) => {
     }
     const result = await paymentService.updatePaymentHistory({
       status: req.body.data.desc.toUpperCase(),
-
       orderCode: req.body.data.orderCode,
       paymentLinkId: req.body.data.paymentLinkId,
       amount: req.body.data.amount,
+      
     });
-   
-  } catch (error) {
-    if (error.message === 'update') {
-      console.error('Error during update payment history');
-    }
-    console.error('Error during create payment history:', error.message);
-  }
+  } catch (error) {}
 };
 const updateStatus = async (req, res) => {
   try {

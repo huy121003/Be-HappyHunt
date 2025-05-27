@@ -6,11 +6,12 @@ const notificationSchema = new Schema(
   {
     _id: Number,
     target: { type: Number, ref: 'account', required: true },
-    post: { type: Number, ref: 'post', required: true },
+    post: { type: Number, ref: 'post', default: null },
     type: {
       type: String,
       enum: [
-        'FIRST_LOGIN',
+        'LOGIN',
+        'FOLLOW_ACCOUNT',
         'NEW_POST',
         'NEW_MESSAGE',
         'POST_APPROVED',
@@ -18,6 +19,8 @@ const notificationSchema = new Schema(
         'POST_EXPIRED',
         'POST_DELETED',
         'POST_WAITING_APPROVE',
+        'VIP_EXPIRED',
+        'VIP_ACTIVE',
       ],
       default: 'POST_WAITING_APPROVE',
     },

@@ -7,6 +7,14 @@ router.get(
   authJwt.accessToken,
   userController.getNewAccountStatistics
 );
+router.get('/new-user', authJwt.accessToken, userController.getNewUser);
+router.get(
+  '/new-user/statistics',
+  authJwt.accessToken,
+  userController.getNewUserStatistics
+);
+router.get('/count-gender-user', authJwt.accessToken, userController.countGenderUser);
+router.get('/total-user', authJwt.accessToken, userController.totalUser);
 router.get('/', authJwt.accessToken, userController.getAll);
 router.get('/:id', authJwt.accessToken, userController.getById);
 router.delete('/:id', authJwt.accessToken, userController.remove);

@@ -7,14 +7,19 @@ const { twilioConfig } = require('../../configs');
 require('dotenv').config();
 const otpService = require('../otp/otp.service');
 const { uploadSingle } = require('../file/file.service');
-const isPhoneNumber = (input) => {
-  return /^[0-9]{9,15}$/.test(input);
+const emailService = require('../email/email.service');
+const {
+  create: createNotification,
+} = require('../notification/notification.soket');
+const { socketStore } = require('../app/app.socket');
+const isEmail = (input) => {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input);
 };
 const login = async (data, res) => {
   try {
-    const query = isPhoneNumber(data.phoneOrUsername)
-      ? { phoneNumber: data.phoneOrUsername }
-      : { username: data.phoneOrUsername };
+    const query = isEmail(data.emailOrUsername)
+      ? { email: data.emailOrUsername }
+      : { username: data.emailOrUsername };
     const account = await Account.findOne(query)
       .select('-__v -createdAt -updatedAt')
       .populate({
@@ -37,7 +42,7 @@ const login = async (data, res) => {
 
     const payload = {
       _id: account._id,
-      phoneNumber: account.phoneNumber,
+      email: account.email,
       username: account.username,
       role: account.role,
     };
@@ -69,7 +74,7 @@ const register = async (data) => {
     const account = await Account.create({
       name: fullName,
       password: bycryptPassword,
-      phoneNumber: data.phoneNumber,
+      email: data.email,
       username: data.username,
       slug: data.username.toLowerCase().replace(/./g, '_'),
     });
@@ -83,19 +88,16 @@ const register = async (data) => {
 const forgotPassword = async (data) => {
   try {
     const very = await otpService.verifyOtp(data);
-    if (!very) throw new Error('validation: OTP is incorrect');
+
+    if (!very) throw new Error('validation');
     const newPass = uuid().slice(0, 8);
     const hashPass = await bcrypt.hash(newPass, 10).catch((err) => {
       throw new Error('hash');
     });
 
-    await twilioConfig.messages.create({
-      from: process.env.TWILIO_PHONE_NUMBER,
-      to: `+84${data.phoneNumber.slice(1)}`,
-      body: `Your new password is ${newPass}`,
-    });
+    await emailService.sendNewPasswordEmail(data.email, newPass);
     const changePass = await Account.findOneAndUpdate(
-      { phoneNumber: data.phoneNumber },
+      { email: data.email },
       { password: hashPass }
     );
     if (!changePass) throw new Error('update');
@@ -133,7 +135,7 @@ const getNewAccessToken = async (data) => {
     if (!account) throw new Error('notfound');
     const payload = {
       _id: account._id,
-      phoneNumber: account.phoneNumber,
+      email: account.email,
       username: account.username,
       role: account.role,
     };
@@ -165,7 +167,6 @@ const changePassword = async (id, data) => {
   }
 };
 const updateProfile = async (id, data) => {
-  console.log(data);
   try {
     const avatarUrl = data.avatar ? await uploadSingle(data.avatar) : null;
     const backgroundUrl = data.background
@@ -193,7 +194,79 @@ const updateProfile = async (id, data) => {
     if (!result) throw new Error('update');
     return result;
   } catch (err) {
-    console.log(err);
+    throw new Error(err.message);
+  }
+};
+const activeVip = async (id) => {
+  try {
+    const result = await Account.findByIdAndUpdate(
+      id,
+      {
+        isVip: true,
+        dateVipExpired: new Date(
+          dayjs().add(30, 'day').format('YYYY-MM-DD')
+        ).toISOString(),
+        $inc: {
+          balance: -100000,
+        },
+      },
+      {
+        new: true,
+      }
+    )
+      .select('isVip dateVipExpired')
+      .lean()
+      .exec();
+
+    if (!result) throw new Error('Failed to update VIP status');
+
+    await createNotification(socketStore.appNamespace, socketStore.socketOn, {
+      target: id,
+      type: 'VIP_ACTIVE',
+      createdBy: id,
+    });
+
+    return result;
+  } catch (err) {
+    throw new Error(err.message || 'Something went wrong');
+  }
+};
+
+const cancelVip = async (id) => {
+  try {
+    const result = await Account.findByIdAndUpdate(
+      id,
+      { isVip: false, dateVipExpired: null },
+      { new: true }
+    )
+      .select('isVip dateVipExpired')
+      .lean()
+      .exec();
+    if (!result) throw new Error('update');
+    await createNotification(socketStore.appNamespace, socketStore.socketOn, {
+      target: id,
+      type: 'VIP_EXPIRED',
+      createdBy: id,
+    });
+
+    return result;
+  } catch (err) {
+    throw new Error(err.message);
+  }
+};
+const getVipStatus = async (id) => {
+  try {
+    const account = await Account.findById(id)
+      .select('isVip dateVipExpired')
+      .lean()
+      .exec();
+    if (!account) throw new Error('notfound');
+  
+    return {
+      isVip: account.isVip,
+      dateVipExpired: account.dateVipExpired,
+    };
+  } catch (err) {
     throw new Error(err.message);
   }
 };
@@ -205,4 +278,8 @@ module.exports = {
   getNewAccessToken,
   changePassword,
   updateProfile,
+
+  activeVip,
+  cancelVip,
+  getVipStatus,
 };

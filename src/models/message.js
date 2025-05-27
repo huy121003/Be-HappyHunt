@@ -9,8 +9,8 @@ const messageSchema = new Schema(
     message: { type: String, trim: true },
     image: { type: String, default: '' },
     timeSend: { type: Date, default: Date.now },
-    createdBy: { type: Number, ref: 'account', default: null },
-    updatedBy: { type: Number, ref: 'account', default: null },
+    sender: { type: Number, ref: 'account', required: true },
+    timeRead: { type: Date, default: null },
     status: {
       type: String,
       enum: ['SENT', 'DELIVERED', 'READ'],

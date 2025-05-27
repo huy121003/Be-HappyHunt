@@ -1,0 +1,30 @@
+@startuml
+actor "Normal User" as NormalUser
+participant "Home Page" as HomePage
+participant "Post Management Page" as PostPage
+participant System
+database Database
+
+== View Posts ==
+NormalUser -> HomePage : Click "Post Management"
+activate HomePage
+HomePage -> PostPage : Redirect to Post Management Page
+deactivate HomePage
+
+activate PostPage
+PostPage -> System : Call API to get posts data
+activate System
+System -> Database : Query posts
+activate Database
+Database --> System : Return posts
+deactivate Database
+System --> PostPage : Return posts data
+deactivate System
+
+alt Posts found
+    PostPage --> NormalUser : Display posts
+else
+    PostPage --> NormalUser : Show error message
+end
+deactivate PostPage
+@enduml

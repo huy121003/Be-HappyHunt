@@ -26,6 +26,12 @@ const register = async (req, res) => {
     const registerResult = await authService.register(req.body);
     return apiHandler.sendCreated(res, 'Register success', registerResult);
   } catch (error) {
+    if (error.message.includes('duplicate')) {
+      return apiHandler.sendConflict(res, 'Username or Email already exists');
+    }
+    if (error.message === 'validation') {
+      return apiHandler.sendValidationError(res, 'OTP is incorrect or expired');
+    }
     return apiHandler.sendErrorMessage(res, error.message);
   }
 };
@@ -34,23 +40,29 @@ const sendOtpRegister = async (req, res) => {
   try {
     const [account, user] = await Promise.all([
       Account.findOne({
-        phoneNumber: req.body.phoneNumber,
+        email: req.body.email,
       }),
       Account.findOne({
         username: req.body.username,
       }),
     ]);
     if (account || user)
-      return apiHandler.sendConflict(
-        res,
-        'Phone number or username is already exist'
-      );
+      return apiHandler.sendConflict(res, 'Email or username is already exist');
 
-    await otpService.sendOtp(req.body.phoneNumber);
+    await otpService.sendOtp(req.body.email);
     return apiHandler.sendCreated(res, 'OTP has been sent');
   } catch (error) {
     if (error.message.includes('creat:')) {
       return apiHandler.sendErrorMessage(res, 'Failed to send OTP');
+    }
+    if (error.message === 'validation') {
+      return apiHandler.sendValidationError(res, 'OTP is incorrect or expired');
+    }
+    if (error.message === 'notfound') {
+      return apiHandler.sendNotFound(res, 'OTP is incorrect or expired');
+    }
+    if (error.message === 'incorrect') {
+      return apiHandler.sendValidationError(res, 'OTP is incorrect or expired');
     }
     return apiHandler.sendErrorMessage(
       res,
@@ -68,19 +80,19 @@ const logout = async (req, res) => {
 const sendOtpForgotPassword = async (req, res) => {
   try {
     const account = await Account.findOne({
-      phoneNumber: req.body.phoneNumber,
+      email: req.body.email,
     });
-    if (!account)
-      return apiHandler.sendNotFound(res, 'Phone number is not verified');
-    await otpService.sendOtp(req.body.phoneNumber);
+    if (!account) return apiHandler.sendNotFound(res, 'Email is not verified');
+    await otpService.sendOtp(req.body.email);
     return apiHandler.sendCreated(res, 'OTP has been sent');
   } catch (error) {
     if (error.message.includes('create:')) {
       return apiHandler.sendErrorMessage(res, 'Failed to send OTP');
     }
     if (error.message.includes('unverified')) {
-      return apiHandler.sendNotFound(res, 'Phone number is not verified');
+      return apiHandler.sendNotFound(res, 'Email is not verified');
     }
+
     return apiHandler.sendErrorMessage(
       res,
       'An unexpected error occurred. Please try again later.'
@@ -93,11 +105,20 @@ const forgotPassword = async (req, res) => {
     await authService.forgotPassword(req.body);
     return apiHandler.sendCreated(
       res,
-      `Reset password success, please check your phone number ${req.body.phoneNumber} to get new password`
+      `Reset password success, please check your Email ${req.body.email} to get new password`
     );
   } catch (error) {
-    if (error.message.includes('update:')) {
+    if (error.message === 'update') {
       return apiHandler.sendErrorMessage(res, 'Failed to reset password');
+    }
+    if (error.message === 'validation') {
+      return apiHandler.sendValidationError(res, 'OTP is incorrect or expired');
+    }
+    if (error.message === 'notfound') {
+      return apiHandler.sendNotFound(res, 'OTP is incorrect or expired');
+    }
+    if (error.message === 'incorrect') {
+      return apiHandler.sendValidationError(res, 'OTP is incorrect or expired');
     }
     return apiHandler.sendErrorMessage(res, 'Failed to reset password');
   }
@@ -135,7 +156,6 @@ const changePassword = async (req, res) => {
     res.clearCookie('refresh_token');
     return apiHandler.sendCreated(res, 'Change password success');
   } catch (error) {
-    console.log(error);
     if (error.message.includes('notfound')) {
       return apiHandler.sendNotFound(res, 'Account not found');
     }
@@ -153,7 +173,6 @@ const changePassword = async (req, res) => {
 };
 const updateProfile = async (req, res) => {
   try {
-    console.log(req?.files);
     const result = await authService.updateProfile(req.userAccess._id, {
       ...req.body,
       ...(req?.files?.avatar && { avatar: req?.files?.avatar }),
@@ -161,14 +180,35 @@ const updateProfile = async (req, res) => {
     });
     return apiHandler.sendCreated(res, 'Update profile success', result);
   } catch (error) {
-    console.log(error);
     if (error.message === 'update') {
       return apiHandler.sendErrorMessage(res, 'Failed to update profile');
     }
     return apiHandler.sendErrorMessage(res, 'An unexpected error occurred');
   }
 };
-
+const activeVip = async (req, res) => {
+  try {
+    const account = await Account.findById(req.userAccess._id);
+    if (100000 > Number(account.balance)) {
+      return apiHandler.sendErrorMessage(res, 'Not enough balance');
+    }
+    const result = await authService.activeVip(req.userAccess._id);
+    return apiHandler.sendCreated(res, 'Update VIP success', result);
+  } catch (error) {
+    if (error.message === 'update') {
+      return apiHandler.sendErrorMessage(res, 'Failed to update VIP');
+    }
+    return apiHandler.sendErrorMessage(res, 'An unexpected error occurred');
+  }
+};
+const getVipStatus = async (req, res) => {
+  try {
+    const result = await authService.getVipStatus(req.userAccess._id);
+    return apiHandler.sendSuccessWithData(res, 'VIP status', result);
+  } catch (error) {
+    return apiHandler.sendErrorMessage(res, 'An unexpected error occurred');
+  }
+};
 module.exports = {
   login,
   register,
@@ -180,4 +220,6 @@ module.exports = {
   getNewAccessToken,
   changePassword,
   updateProfile,
+  activeVip,
+  getVipStatus,
 };

@@ -1,0 +1,25 @@
+@startuml
+actor Admin
+participant "Banner Page" as BannerPage
+participant System
+database Database
+
+== Delete Banner ==
+Admin -> BannerPage : Click on Delete button for banner
+activate BannerPage
+BannerPage -> Admin : Show popup confirmation
+
+alt if No
+    BannerPage --> Admin : Cancel action
+else
+    BannerPage -> System : Send API request to delete banner
+    activate System
+    System -> Database : Delete banner
+    activate Database
+    Database --> System : Confirmation of delete
+    deactivate Database
+    System --> Admin : Show success message
+    deactivate System
+end
+deactivate BannerPage
+@enduml

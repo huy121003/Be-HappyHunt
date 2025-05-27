@@ -1,0 +1,30 @@
+@startuml
+actor "Normal User" as NormalUser
+participant "Post Management Page" as PostPage
+participant "Update Post Page" as UpdatePage
+participant System
+database Database
+
+== Update Post ==
+NormalUser -> PostPage : Click "Edit" on a post
+activate PostPage
+PostPage -> UpdatePage : Redirect to Update Post Page
+deactivate PostPage
+
+activate UpdatePage
+NormalUser -> UpdatePage : Edit and Submit
+UpdatePage -> System : Send updated post data
+activate System
+System -> System : Validate info
+alt Valid
+    System -> Database : Update post (status "waiting")
+    activate Database
+    Database --> System : Confirmation
+    deactivate Database
+    System --> UpdatePage : Redirect to Post Management Page
+else
+    System --> NormalUser : Show error message (Invalid format)
+end
+deactivate System
+deactivate UpdatePage
+@enduml

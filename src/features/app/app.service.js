@@ -56,7 +56,7 @@ const createAutoAddress = async (provincesData) => {
           createdBy: 1,
           updatedBy: 1,
         }).catch((error) => {
-          console.error(`Error creating ward ${ward.name}:`, error);
+  
           throw error;
         })
       );
@@ -65,7 +65,7 @@ const createAutoAddress = async (provincesData) => {
     }
   }
 
-  console.log('All addresses created successfully');
+
   return true;
 };
 const autoCreatePermission = async () => {

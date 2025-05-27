@@ -1,7 +1,17 @@
 const { apiHandler } = require('../../helpers');
+const { FavoritePost } = require('../../models');
 const favoritePostService = require('./favoritePost.service');
 const create = async (req, res) => {
   try {
+    const count = await FavoritePost.countDocuments({
+      createdBy: req.userAccess._id,
+    });
+    if (count >= 100) {
+      return apiHandler.sendValidationError(
+        res,
+        'You have reached the maximum number of favorite posts'
+      );
+    }
     const result = await favoritePostService.create({
       ...req.body,
       createdBy: req.userAccess._id,
@@ -47,7 +57,7 @@ const getAllPagination = async (req, res) => {
       result
     );
   } catch (error) {
-    console.log(error.message);
+
     if (error.message === 'notfound') {
       return apiHandler.sendNotFound(res, 'No favorite post found');
     }
