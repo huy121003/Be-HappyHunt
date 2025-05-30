@@ -126,6 +126,20 @@ const getAnswer = async (req, res) => {
     );
   }
 };
+const getDescription = async (req, res) => {
+  try {
+    const result = await qaChatbotService.getDescription(req.body);
+    return apiHandler.sendSuccessWithData(res, 'Product description', result);
+  } catch (error) {
+    if (error.message.includes('notfound')) {
+      return apiHandler.sendNotFound(res, 'Qa chatbot not found');
+    }
+    return apiHandler.sendErrorMessage(
+      res,
+      'An unexpected error occurred, please try again later'
+    );
+  }
+};
 module.exports = {
   create,
   update,
@@ -134,4 +148,5 @@ module.exports = {
   getAll,
   getById,
   getAnswer,
+  getDescription
 };

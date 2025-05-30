@@ -155,8 +155,9 @@ const getAllPagination = async (data, userId) => {
           'name _id avatar phoneNumber'
         )
         .sort({
-          ...sort,
           pushedAt: -1,
+          ...sort,
+
           createdAt: -1,
         })
         .limit(size)
@@ -226,7 +227,7 @@ const getAllSuggestionsPagination = async (data, userId) => {
         .select('post')
         .populate('post', 'category categoryParent')
         .sort({
-          pushAt: -1,
+          pushedAt: -1,
           createdAt: -1,
         })
         .limit(10)
@@ -455,9 +456,7 @@ const updatePushedAt = async (id, accountId, price) => {
   const result = await Post.findByIdAndUpdate(
     id,
     {
-      pushedAt: new Date(
-        daysjs().add(12, 'hour').format('YYYY-MM-DD')
-      ).toISOString(),
+      pushedAt: new Date(Date.now()),
     },
     { new: true }
   );
@@ -483,7 +482,7 @@ const getPushedAt = async (id) => {
 const clearPushedAt = async (id) => {
   const result = await Post.findByIdAndUpdate(
     id,
-    { pushedAt: new Date().toISOString() },
+    { pushedAt: null },
     { new: true }
   );
   if (!result) throw new Error('update');

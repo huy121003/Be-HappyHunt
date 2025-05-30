@@ -76,7 +76,11 @@ const register = async (data) => {
       password: bycryptPassword,
       email: data.email,
       username: data.username,
-      slug: data.username.toLowerCase().replace(/./g, '_'),
+      slug: data.username
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, '_')
+        .replace(/^_+|_+$/g, ''),
     });
     if (!account) throw new Error('create');
     return account;
@@ -261,7 +265,7 @@ const getVipStatus = async (id) => {
       .lean()
       .exec();
     if (!account) throw new Error('notfound');
-  
+
     return {
       isVip: account.isVip,
       dateVipExpired: account.dateVipExpired,
