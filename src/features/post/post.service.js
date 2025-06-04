@@ -8,7 +8,7 @@ const {
   Account,
   Category,
 } = require('../../models');
-const daysjs = require('dayjs');
+
 const autoSlug = require('../../helpers/autoSlug');
 const exportFilter = require('./post.filter');
 const dayjs = require('dayjs');
@@ -17,14 +17,12 @@ const {
   create: createNotification,
 } = require('../notification/notification.soket');
 const { socketStore } = require('../app/app.socket');
-const {
-  classifyImageFromUrl,
-  isImageInCorrectCategory,
-} = require('../../configs/classifyImageFormUrl');
+const { classifyImageFromUrl } = require('../../configs/classifyImageFormUrl');
 const categoryService = require('../category/category.service');
 const sightEngineConnect = require('../../configs/sightengine.config');
 const evaluateImageContent = require('../../helpers/checkingImgaePoint');
 const { checkCorrectCategory } = require('../../configs/gemini.config');
+const historyClickService = require('../history-click/historyClick.service');
 const create = async (data) => {
   const { payment, ...restData } = data;
 
@@ -217,6 +215,10 @@ const getAllPaginationManager = async (data) => {
         .exec(),
     ]);
     if (!posts) throw new Error('notfound');
+    for (const post of posts) {
+      post.clickCount = await historyClickService.countByPostId(post._id);
+    }
+
     return {
       documentList: posts,
       totalDocuments,
@@ -234,10 +236,7 @@ const getAllSuggestionsPagination = async (data, userId) => {
       HistoryClickPost.find({ createdBy: userId })
         .select('post')
         .populate('post', 'category categoryParent')
-        .sort({
-          pushedAt: -1,
-          createdAt: -1,
-        })
+        .sort({ createdAt: -1 })
         .limit(10)
         .lean(),
       FavoritePost.find({ createdBy: userId })
@@ -248,6 +247,7 @@ const getAllSuggestionsPagination = async (data, userId) => {
         .lean(),
       Account.findById(userId).lean(),
     ]);
+
     if (!user) throw new Error('notfound');
 
     const preferredCategories = postHelper.sortCategory(
@@ -257,7 +257,7 @@ const getAllSuggestionsPagination = async (data, userId) => {
 
     const { page, size, sort, ...filter } = exportFilter({
       ...data,
-      ...(user.address && {
+      ...(user?.address?.province && {
         province: user.address.province,
         district: user.address.district,
         ward: user.address.ward,
@@ -270,12 +270,10 @@ const getAllSuggestionsPagination = async (data, userId) => {
       createdBy: { $ne: userId },
     };
 
-    const queryWithCategory =
-      preferredCategories.length > 0
-        ? { ...commonQuery, $or: preferredCategories }
-        : commonQuery;
+    const queryWithCategory = preferredCategories?.length
+      ? { ...commonQuery, $or: preferredCategories }
+      : commonQuery;
 
-    // Lấy bài viết theo danh mục gợi ý
     let posts = await Post.find(queryWithCategory)
       .select('-__v -deleted')
       .populate([
@@ -290,13 +288,11 @@ const getAllSuggestionsPagination = async (data, userId) => {
       .limit(50)
       .lean();
 
-    const existingIds = new Set(posts.map((p) => p._id.toString()));
-
-    // Nếu số lượng < 30 → lấy thêm bài mới nhất không trùng
     if (posts.length < 30) {
+      const existingIds = posts.map((p) => p._id);
       const more = await Post.find({
         ...commonQuery,
-        _id: { $nin: Array.from(existingIds) },
+        _id: { $nin: existingIds },
       })
         .select('-__v -deleted')
         .populate([
@@ -310,8 +306,27 @@ const getAllSuggestionsPagination = async (data, userId) => {
         .sort({ ...sort, pushedAt: -1 })
         .limit(50)
         .lean();
-
       posts = [...posts, ...more];
+    }
+
+    // fallback nếu vẫn rỗng
+    if (posts.length === 0) {
+      posts = await Post.find({
+        status: 'SELLING',
+        createdBy: { $ne: userId },
+      })
+        .select('-__v -deleted')
+        .populate([
+          { path: 'category' },
+          { path: 'categoryParent' },
+          { path: 'address.province', select: 'name' },
+          { path: 'address.district', select: 'name' },
+          { path: 'address.ward', select: 'name' },
+          { path: 'createdBy', select: 'name _id avatar phoneNumber slug' },
+        ])
+        .sort({ pushedAt: -1 })
+        .limit(30)
+        .lean();
     }
 
     const total = posts.length;
@@ -449,16 +464,13 @@ const updateClickCount = async (id, userId) => {
     if (res) {
       return res;
     }
-    const [result, createClick] = await Promise.all([
-      Post.findByIdAndUpdate(
-        id,
-        { $inc: { clickCount: 1 } }, // Increment the clickCount field
-        { new: true } // Return the updated document
-      ),
-      HistoryClickPost.create({ post: id, createdBy: userId }),
-    ]);
-    if (!result || !createClick) throw new Error('update');
-    return result;
+    const createClick = await HistoryClickPost.create({
+      post: id,
+      createdBy: userId,
+    });
+
+    if (!createClick) throw new Error('update');
+    return createClick;
   } catch (error) {
     throw new Error(error.message);
   }
@@ -632,7 +644,6 @@ const processPostImages = async (post) => {
           image,
           post.category || post.categoryParent
         );
-        console.log('Image checked:', result);
         updatedImages.push({
           url: result.url,
           index: result.index,

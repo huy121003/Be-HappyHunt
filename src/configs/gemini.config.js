@@ -85,9 +85,6 @@ const checkCorrectCategory = async (labels, keywords, nameCate) => {
     .flatMap(({ label }) => label.toLowerCase().split(',').map(l => l.trim()));
 
   const normalizedKeywords = keywords.map(k => k.toLowerCase().trim());
-  console.log('Filtered Labels:', filteredLabels);
-  console.log('Normalized Keywords:', normalizedKeywords);
-
   const prompt = `
 You are a product categorization expert.
 
@@ -107,7 +104,6 @@ Respond only with: true or false.
     });
 
     const answer = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim().toLowerCase();
-    console.log('Gemini response:', answer);
     if (answer !== 'true' && answer !== 'false') {
       throw new Error(`Unexpected response: ${answer}`);
     }

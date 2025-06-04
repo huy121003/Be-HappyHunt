@@ -14,6 +14,14 @@ const getAllByPostId = async (postId) => {
     throw new Error(error.message);
   }
 };
+const countByPostId = async (postId) => {
+  try {
+    const count = await HistoryClickPost.countDocuments({ post: postId });
+    return count;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
 const countClicksByDay = async (postId) => {
   try {
     const clicks = await HistoryClickPost.aggregate([
@@ -36,4 +44,5 @@ const countClicksByDay = async (postId) => {
 module.exports = {
   getAllByPostId,
   countClicksByDay,
+  countByPostId,
 };
