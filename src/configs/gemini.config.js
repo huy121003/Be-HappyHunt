@@ -39,44 +39,37 @@ const prompt = `
     throw new Error(error.message);
   }
 };
-const callGeminiDescription=async(data)=>{
+const callGeminiDescription = async (data) => {
   const prompt = `
-You are a highly skilled and experienced product description writer. Your task is to create a compelling, engaging, and informative product description for an e-commerce listing. The goal is to make the product stand out to potential customers by clearly communicating its value, features, and benefits in a professional yet friendly tone.
+You are a regular person writing a product description to sell your own item online, not a professional seller. The tone should feel honest, friendly, and personal — like you're talking to a friend.
 
-Please use the following Post details to craft your description:
+Use the info below to write a short, natural-sounding post in English that:
+- Feels real and relatable.
+- Highlights why you’re selling it (if relevant) and what’s good about it.
+- Shares personal thoughts or experiences using it.
+- Keeps it casual, not too formal or "salesy".
+- Adds emojis if they fit (but don’t overdo it).
+- Avoid repeating the product name too much.
 
-📦 Post Information:
-- 🏷️ Post Title: ${data.name}
-- 💰 Price: ${data.price} VND
-- 🗂️ Post Category: ${data.category}
-- 🔧 Key Features & Attributes:
+Post Details:
+- Title: ${data.name}
+- Price: ${data.price} VND
+- Category: ${data.category}
+- Features:
 ${data.attributes.map(attr => `  • ${attr.name}: ${attr.value}`).join('\n')}
 
-🎯 Objectives:
-- Create a well-structured and persuasive description that not only informs but also inspires the customer to make a purchase.
-- Highlight the **main features**, but also emphasize the **practical benefits** and **unique selling points** of the product.
-- Describe how the product can **solve a problem**, **improve the user’s daily life**, or **enhance their experience**.
-
-📌 Writing Guidelines:
-- ✅ Length: Between 100 and 1500 characters.
-- ✅ SEO: Include relevant keywords naturally to improve searchability.
-- ✅ Language: English.
-- ✅ Tone: Professional, friendly, and easy to understand.
-- ✅ Style: Clear, concise, trustworthy, and customer-focused.
-- ✅ Format: Use short paragraphs or bullet points where appropriate for readability.
-- ✅ Visuals: Incorporate suitable emojis to make the text feel more lively and approachable (but don’t overuse them).
-
-Please generate only the product description content based on the instructions above. Avoid repeating the product name more than necessary, and focus on making the product desirable to potential buyers.
+Length: ~100–1500 characters. Return only the post content.
 `;
 
   try {
     const response = await axios.post(process.env.GEMINI_API_URL, {
-      "contents": [{
-        "parts": [{"text": `${prompt}`}]
-      }]
+      "contents": [
+        {
+          "parts": [{ "text": `${prompt}` }]
+        }
+      ]
     });
-    
-    // Kiểm tra cấu trúc dữ liệu trả về
+
     if (response?.data?.candidates && response.data.candidates.length > 0) {
       return response.data.candidates[0].content.parts[0].text;
     }
@@ -84,10 +77,49 @@ Please generate only the product description content based on the instructions a
   } catch (error) {
     throw new Error(error.message);
   }
-
 }
+
+const checkCorrectCategory = async (labels, keywords, nameCate) => {
+  const filteredLabels = labels
+    .filter(({ score }) => score >= 0.3)
+    .flatMap(({ label }) => label.toLowerCase().split(',').map(l => l.trim()));
+
+  const normalizedKeywords = keywords.map(k => k.toLowerCase().trim());
+  console.log('Filtered Labels:', filteredLabels);
+  console.log('Normalized Keywords:', normalizedKeywords);
+
+  const prompt = `
+You are a product categorization expert.
+
+Given:
+- Image labels: "${filteredLabels.join(', ')}"
+- Category name: "${nameCate}"
+- Category keywords: [${normalizedKeywords.join(', ')}]
+
+Task:
+Determine if the labels are contextually or semantically related to any keyword.
+Respond only with: true or false.
+  `;
+
+  try {
+    const { data } = await axios.post(process.env.GEMINI_API_URL, {
+      contents: [{ parts: [{ text: prompt }] }],
+    });
+
+    const answer = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim().toLowerCase();
+    console.log('Gemini response:', answer);
+    if (answer !== 'true' && answer !== 'false') {
+      throw new Error(`Unexpected response: ${answer}`);
+    }
+    return answer === 'true';
+  } catch (error) {
+    console.error('Error in checkCorrectCategory:', error.message);
+    return false; // Default to false in case of errors
+  }
+};
 
 module.exports = {
   callGemini,
-  callGeminiDescription
-};
+  callGeminiDescription,
+  checkCorrectCategory
+}

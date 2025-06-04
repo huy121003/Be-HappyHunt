@@ -17,6 +17,14 @@ const {
   create: createNotification,
 } = require('../notification/notification.soket');
 const { socketStore } = require('../app/app.socket');
+const {
+  classifyImageFromUrl,
+  isImageInCorrectCategory,
+} = require('../../configs/classifyImageFormUrl');
+const categoryService = require('../category/category.service');
+const sightEngineConnect = require('../../configs/sightengine.config');
+const evaluateImageContent = require('../../helpers/checkingImgaePoint');
+const { checkCorrectCategory } = require('../../configs/gemini.config');
 const create = async (data) => {
   const { payment, ...restData } = data;
 
@@ -336,20 +344,23 @@ const updateCheckingStatus = async (id, post) => {
       id,
       {
         ...post,
-        ...(post.status &&
-          post.status === 'SELLING' && {
-            expiredAt: dayjs().add(2, 'months').toDate(),
-          }),
+        ...(post.status && post.status === 'SELLING' && !post.expiredAt
+          ? {
+              expiredAt: dayjs().add(2, 'months').toDate(),
+            }
+          : {}),
       },
       { new: true }
     );
     if (!result) throw new Error('update');
-    await createNotification(socketStore.appNamespace, socketStore.socketOn, {
-      target: post.createdBy,
-      post: result._id,
-      type: post.status === 'SELLING' ? 'NEW_POST' : 'POST_REJECTED',
-      createdBy: post.createdBy,
-    });
+    if (post.status === 'REJECTED' || post.status === 'SELLING') {
+      await createNotification(socketStore.appNamespace, socketStore.socketOn, {
+        target: result.createdBy,
+        post: result._id,
+        type: result.status === 'SELLING' ? 'NEW_POST' : 'POST_REJECTED',
+        createdBy: result.createdBy,
+      });
+    }
 
     return result;
   } catch (error) {
@@ -568,6 +579,100 @@ const totalPostSellingByCategory = async () => {
     throw new Error(error.message);
   }
 };
+const checkImage = async (image, idCategory) => {
+  try {
+    const reasons = [];
+    //kiểm tra hình ảnh có trong danh mục hay không
+    const categoryImage = await classifyImageFromUrl(image.url);
+    if (!categoryImage || categoryImage.length === 0) {
+      throw new Error(`No classification results found for ${image.url}`);
+    }
+    const cate = await categoryService.getKeyword(idCategory);
+    const isCorrectCategory = await checkCorrectCategory(
+      categoryImage,
+      cate.keywords,
+
+      cate.name
+    );
+    if (!isCorrectCategory) {
+      reasons.push(`Not in post category`);
+    }
+    //kiểm tra nội dung hình ảnh
+    const result = await sightEngineConnect(image.url);
+    if (!result || result.status !== 'success') {
+      throw new Error(`Invalid API response for ${image.url}`);
+    }
+    const evaluation = evaluateImageContent(result, {});
+    if (!evaluation || typeof evaluation.approved === 'undefined') {
+      throw new Error(`Evaluation failed for ${image.url}`);
+    }
+    if (!evaluation.approved) {
+      reasons.push(...evaluation.reasons);
+    }
+    return {
+      url: image.url,
+      index: image.index,
+      approved: evaluation.approved && isCorrectCategory,
+      reasons: evaluation.approved && isCorrectCategory ? [] : reasons,
+    };
+  } catch (error) {
+    console.error('Error checking image:', error.message);
+    throw error;
+  }
+};
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const processPostImages = async (post) => {
+  try {
+    const updatedImages = [];
+
+    for (const image of post.images) {
+      try {
+        const result = await checkImage(
+          image,
+          post.category || post.categoryParent
+        );
+        console.log('Image checked:', result);
+        updatedImages.push({
+          url: result.url,
+          index: result.index,
+          reasonReject: result.reasons || [],
+        });
+
+        // (Tuỳ chọn) delay giữa mỗi ảnh nếu cần
+        await delay(3000);
+      } catch (error) {
+        console.error('Error during AI check:', error.message);
+
+        // Nếu có lỗi → dừng toàn bộ và cập nhật trạng thái ngay
+        return {
+          newStatus: 'WAITING|AI_CHECKING_FAILED',
+          updatedImages: post.images.map((img) => ({
+            url: img.url,
+            index: img.index,
+            reasonReject: ['AI checking failed'],
+          })),
+        };
+      }
+    }
+
+    // Kiểm tra nếu có ít nhất 1 ảnh bị từ chối
+    const hasRejectedImage = updatedImages.some(
+      (img) => img.reasonReject.length > 0
+    );
+
+    const newStatus = hasRejectedImage ? 'REJECTED' : 'SELLING';
+
+    return { newStatus, updatedImages };
+  } catch (error) {
+    console.error(
+      'Unexpected error while processing post images:',
+      error.message
+    );
+    throw error;
+  }
+};
+
 module.exports = {
   create,
   updateStatus,
@@ -589,4 +694,6 @@ module.exports = {
   clearPushedAt,
   getPushedAt,
   getAllPaginationManager,
+  checkImage,
+  processPostImages,
 };
