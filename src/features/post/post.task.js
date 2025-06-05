@@ -81,7 +81,7 @@ cron.schedule('* * * * *', async () => {
       const hoursDiff = dayjs().diff(dayjs(post.pushedAt), 'hour');
 
       if (hoursDiff >= 12) {
-        await postServicervice.clearPushedAt(post._id);
+        await postService.clearPushedAt(post._id);
       }
     }
   } catch (error) {

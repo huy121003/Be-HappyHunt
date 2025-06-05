@@ -119,6 +119,15 @@ const getDescription = async (data) => {
     throw new Error(error.message);
   }
 };
+const checkContent = async (text) => {
+  try {
+    const res = await callGeminiDescription(data);
+    if (!res) throw new Error('notfound');
+    return res;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
 module.exports = {
   create,
   update,
@@ -128,4 +137,5 @@ module.exports = {
   getById,
   getAnswer,
   getDescription,
+  checkContent,
 };

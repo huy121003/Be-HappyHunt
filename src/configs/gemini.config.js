@@ -113,9 +113,33 @@ Respond only with: true or false.
     return false; // Default to false in case of errors
   }
 };
+const checkContent= async (text) => {
+  const prompt = `You are a content moderation expert.
+Your task is to determine if the following text contains any inappropriate or harmful content. Respond with "true" if the content is inappropriate, and "false" if it is acceptable.
+Text: "${text}"
+`;
+
+  try {
+    const response = await axios.post(process.env.GEMINI_API_URL, {
+      "contents": [{
+        "parts": [{"text": `${prompt}`}]
+      }]
+    });
+
+    if (response?.data?.candidates && response.data.candidates.length > 0) {
+      const answer = response.data.candidates[0].content.parts[0].text.trim().toLowerCase();
+      return answer === 'true';
+    }
+    throw new Error("No valid response from Gemini API.");
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
 
 module.exports = {
   callGemini,
   callGeminiDescription,
-  checkCorrectCategory
+  checkCorrectCategory,
+  checkContent
 }

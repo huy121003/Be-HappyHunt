@@ -28,7 +28,7 @@ const { setupAppSocket } = require('./features/app/app.socket');
       console.log(`🔌 WebSocket server is ready`);
     });
 
-    //await ngrokConnect();
+   // await ngrokConnect();
     await Promise.all([
       appController.autoCreatePermission(),
       appController.autoCreateRole(),

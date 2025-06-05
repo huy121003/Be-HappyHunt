@@ -1,4 +1,3 @@
-const auth = require('../../configs/firebase.config');
 const { apiHandler } = require('../../helpers');
 const otpService = require('./otp.service');
 

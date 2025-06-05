@@ -628,7 +628,6 @@ const checkImage = async (image, idCategory) => {
       reasons: evaluation.approved && isCorrectCategory ? [] : reasons,
     };
   } catch (error) {
-    console.error('Error checking image:', error.message);
     throw error;
   }
 };

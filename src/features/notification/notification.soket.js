@@ -38,12 +38,12 @@ const create = async (appNamespace, socket, data) => {
     if (notification && notification.length > 0) {
       for (const noti of notification) {
         appNamespace
-          .to(noti.target._id)
+          .to(noti?.target?._id)
           .emit('notification_created', socketHandler.success(noti));
 
-        const count = await notificationService.countNotRead(noti.target._id);
+        const count = await notificationService.countNotRead(noti?.target?._id);
         appNamespace
-          .to(noti.target._id)
+          .to(noti?.target?._id)
           .emit('not_read_notification', socketHandler.success(count));
       }
     }
