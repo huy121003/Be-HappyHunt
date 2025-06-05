@@ -87,7 +87,7 @@ const getAnswer = async (dataReq) => {
           answer: item.answer,
         };
       }),
-      dataReq.question,
+      dataReq.message,
       dataReq.history
     );
     return answer;
