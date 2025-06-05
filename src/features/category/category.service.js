@@ -21,7 +21,6 @@ const create = async (category) => {
     if (!result) throw new Error('create');
     return result;
   } catch (error) {
-  
     throw new Error(error.message);
   }
 };
@@ -172,7 +171,15 @@ const getAllChild = async (id) => {
     throw new Error(error.message);
   }
 };
-
+const getKeyword = async (id) => {
+  try {
+    const result = await Category.findById(id).select('keywords name').exec();
+    if (!result) throw new Error('notfound');
+    return result;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
 module.exports = {
   create,
   getAllPagination,
@@ -183,4 +190,5 @@ module.exports = {
   getAllParent,
   getBySlug,
   getAllChild,
+  getKeyword,
 };

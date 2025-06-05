@@ -7,6 +7,11 @@ const { authJwt } = require('../../middlewares');
 router.get('/', authJwt.accessToken, qaChatbotController.getAllPagination);
 router.post('/', authJwt.accessToken, qaChatbotController.create);
 router.post('/answer', authJwt.accessToken, qaChatbotController.getAnswer);
+router.post(
+  '/description',
+  authJwt.accessToken,
+  qaChatbotController.getDescription
+);
 
 router.get('/:id', authJwt.accessToken, qaChatbotController.getById);
 router.patch('/:id', authJwt.accessToken, qaChatbotController.update);

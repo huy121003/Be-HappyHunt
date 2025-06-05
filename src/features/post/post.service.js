@@ -8,7 +8,7 @@ const {
   Account,
   Category,
 } = require('../../models');
-const daysjs = require('dayjs');
+
 const autoSlug = require('../../helpers/autoSlug');
 const exportFilter = require('./post.filter');
 const dayjs = require('dayjs');
@@ -17,6 +17,12 @@ const {
   create: createNotification,
 } = require('../notification/notification.soket');
 const { socketStore } = require('../app/app.socket');
+const { classifyImageFromUrl } = require('../../configs/classifyImageFormUrl');
+const categoryService = require('../category/category.service');
+const sightEngineConnect = require('../../configs/sightengine.config');
+const evaluateImageContent = require('../../helpers/checkingImgaePoint');
+const { checkCorrectCategory } = require('../../configs/gemini.config');
+const historyClickService = require('../history-click/historyClick.service');
 const create = async (data) => {
   const { payment, ...restData } = data;
 
@@ -155,8 +161,9 @@ const getAllPagination = async (data, userId) => {
           'name _id avatar phoneNumber'
         )
         .sort({
-          ...sort,
           pushedAt: -1,
+          ...sort,
+
           createdAt: -1,
         })
         .limit(size)
@@ -208,6 +215,10 @@ const getAllPaginationManager = async (data) => {
         .exec(),
     ]);
     if (!posts) throw new Error('notfound');
+    for (const post of posts) {
+      post.clickCount = await historyClickService.countByPostId(post._id);
+    }
+
     return {
       documentList: posts,
       totalDocuments,
@@ -225,10 +236,7 @@ const getAllSuggestionsPagination = async (data, userId) => {
       HistoryClickPost.find({ createdBy: userId })
         .select('post')
         .populate('post', 'category categoryParent')
-        .sort({
-          pushAt: -1,
-          createdAt: -1,
-        })
+        .sort({ createdAt: -1 })
         .limit(10)
         .lean(),
       FavoritePost.find({ createdBy: userId })
@@ -239,6 +247,7 @@ const getAllSuggestionsPagination = async (data, userId) => {
         .lean(),
       Account.findById(userId).lean(),
     ]);
+
     if (!user) throw new Error('notfound');
 
     const preferredCategories = postHelper.sortCategory(
@@ -248,7 +257,7 @@ const getAllSuggestionsPagination = async (data, userId) => {
 
     const { page, size, sort, ...filter } = exportFilter({
       ...data,
-      ...(user.address && {
+      ...(user?.address?.province && {
         province: user.address.province,
         district: user.address.district,
         ward: user.address.ward,
@@ -261,12 +270,10 @@ const getAllSuggestionsPagination = async (data, userId) => {
       createdBy: { $ne: userId },
     };
 
-    const queryWithCategory =
-      preferredCategories.length > 0
-        ? { ...commonQuery, $or: preferredCategories }
-        : commonQuery;
+    const queryWithCategory = preferredCategories?.length
+      ? { ...commonQuery, $or: preferredCategories }
+      : commonQuery;
 
-    // Lấy bài viết theo danh mục gợi ý
     let posts = await Post.find(queryWithCategory)
       .select('-__v -deleted')
       .populate([
@@ -281,13 +288,11 @@ const getAllSuggestionsPagination = async (data, userId) => {
       .limit(50)
       .lean();
 
-    const existingIds = new Set(posts.map((p) => p._id.toString()));
-
-    // Nếu số lượng < 30 → lấy thêm bài mới nhất không trùng
     if (posts.length < 30) {
+      const existingIds = posts.map((p) => p._id);
       const more = await Post.find({
         ...commonQuery,
-        _id: { $nin: Array.from(existingIds) },
+        _id: { $nin: existingIds },
       })
         .select('-__v -deleted')
         .populate([
@@ -301,8 +306,27 @@ const getAllSuggestionsPagination = async (data, userId) => {
         .sort({ ...sort, pushedAt: -1 })
         .limit(50)
         .lean();
-
       posts = [...posts, ...more];
+    }
+
+    // fallback nếu vẫn rỗng
+    if (posts.length === 0) {
+      posts = await Post.find({
+        status: 'SELLING',
+        createdBy: { $ne: userId },
+      })
+        .select('-__v -deleted')
+        .populate([
+          { path: 'category' },
+          { path: 'categoryParent' },
+          { path: 'address.province', select: 'name' },
+          { path: 'address.district', select: 'name' },
+          { path: 'address.ward', select: 'name' },
+          { path: 'createdBy', select: 'name _id avatar phoneNumber slug' },
+        ])
+        .sort({ pushedAt: -1 })
+        .limit(30)
+        .lean();
     }
 
     const total = posts.length;
@@ -335,20 +359,23 @@ const updateCheckingStatus = async (id, post) => {
       id,
       {
         ...post,
-        ...(post.status &&
-          post.status === 'SELLING' && {
-            expiredAt: dayjs().add(2, 'months').toDate(),
-          }),
+        ...(post.status && post.status === 'SELLING' && !post.expiredAt
+          ? {
+              expiredAt: dayjs().add(2, 'months').toDate(),
+            }
+          : {}),
       },
       { new: true }
     );
     if (!result) throw new Error('update');
-    await createNotification(socketStore.appNamespace, socketStore.socketOn, {
-      target: post.createdBy,
-      post: result._id,
-      type: post.status === 'SELLING' ? 'NEW_POST' : 'POST_REJECTED',
-      createdBy: post.createdBy,
-    });
+    if (post.status === 'REJECTED' || post.status === 'SELLING') {
+      await createNotification(socketStore.appNamespace, socketStore.socketOn, {
+        target: result.createdBy,
+        post: result._id,
+        type: result.status === 'SELLING' ? 'NEW_POST' : 'POST_REJECTED',
+        createdBy: result.createdBy,
+      });
+    }
 
     return result;
   } catch (error) {
@@ -437,16 +464,13 @@ const updateClickCount = async (id, userId) => {
     if (res) {
       return res;
     }
-    const [result, createClick] = await Promise.all([
-      Post.findByIdAndUpdate(
-        id,
-        { $inc: { clickCount: 1 } }, // Increment the clickCount field
-        { new: true } // Return the updated document
-      ),
-      HistoryClickPost.create({ post: id, createdBy: userId }),
-    ]);
-    if (!result || !createClick) throw new Error('update');
-    return result;
+    const createClick = await HistoryClickPost.create({
+      post: id,
+      createdBy: userId,
+    });
+
+    if (!createClick) throw new Error('update');
+    return createClick;
   } catch (error) {
     throw new Error(error.message);
   }
@@ -455,9 +479,7 @@ const updatePushedAt = async (id, accountId, price) => {
   const result = await Post.findByIdAndUpdate(
     id,
     {
-      pushedAt: new Date(
-        daysjs().add(12, 'hour').format('YYYY-MM-DD')
-      ).toISOString(),
+      pushedAt: new Date(Date.now()),
     },
     { new: true }
   );
@@ -483,7 +505,7 @@ const getPushedAt = async (id) => {
 const clearPushedAt = async (id) => {
   const result = await Post.findByIdAndUpdate(
     id,
-    { pushedAt: new Date().toISOString() },
+    { pushedAt: null },
     { new: true }
   );
   if (!result) throw new Error('update');
@@ -569,6 +591,98 @@ const totalPostSellingByCategory = async () => {
     throw new Error(error.message);
   }
 };
+const checkImage = async (image, idCategory) => {
+  try {
+    const reasons = [];
+    //kiểm tra hình ảnh có trong danh mục hay không
+    const categoryImage = await classifyImageFromUrl(image.url);
+    if (!categoryImage || categoryImage.length === 0) {
+      throw new Error(`No classification results found for ${image.url}`);
+    }
+    const cate = await categoryService.getKeyword(idCategory);
+    const isCorrectCategory = await checkCorrectCategory(
+      categoryImage,
+      cate.keywords,
+
+      cate.name
+    );
+    if (!isCorrectCategory) {
+      reasons.push(`Not in post category`);
+    }
+    //kiểm tra nội dung hình ảnh
+    const result = await sightEngineConnect(image.url);
+    if (!result || result.status !== 'success') {
+      throw new Error(`Invalid API response for ${image.url}`);
+    }
+    const evaluation = evaluateImageContent(result, {});
+    if (!evaluation || typeof evaluation.approved === 'undefined') {
+      throw new Error(`Evaluation failed for ${image.url}`);
+    }
+    if (!evaluation.approved) {
+      reasons.push(...evaluation.reasons);
+    }
+    return {
+      url: image.url,
+      index: image.index,
+      approved: evaluation.approved && isCorrectCategory,
+      reasons: evaluation.approved && isCorrectCategory ? [] : reasons,
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const processPostImages = async (post) => {
+  try {
+    const updatedImages = [];
+
+    for (const image of post.images) {
+      try {
+        const result = await checkImage(
+          image,
+          post.category || post.categoryParent
+        );
+        updatedImages.push({
+          url: result.url,
+          index: result.index,
+          reasonReject: result.reasons || [],
+        });
+
+        // (Tuỳ chọn) delay giữa mỗi ảnh nếu cần
+        await delay(3000);
+      } catch (error) {
+        console.error('Error during AI check:', error.message);
+
+        // Nếu có lỗi → dừng toàn bộ và cập nhật trạng thái ngay
+        return {
+          newStatus: 'WAITING|AI_CHECKING_FAILED',
+          updatedImages: post.images.map((img) => ({
+            url: img.url,
+            index: img.index,
+            reasonReject: ['AI checking failed'],
+          })),
+        };
+      }
+    }
+
+    // Kiểm tra nếu có ít nhất 1 ảnh bị từ chối
+    const hasRejectedImage = updatedImages.some(
+      (img) => img.reasonReject.length > 0
+    );
+
+    const newStatus = hasRejectedImage ? 'REJECTED' : 'SELLING';
+
+    return { newStatus, updatedImages };
+  } catch (error) {
+    console.error(
+      'Unexpected error while processing post images:',
+      error.message
+    );
+    throw error;
+  }
+};
+
 module.exports = {
   create,
   updateStatus,
@@ -590,4 +704,6 @@ module.exports = {
   clearPushedAt,
   getPushedAt,
   getAllPaginationManager,
+  checkImage,
+  processPostImages,
 };

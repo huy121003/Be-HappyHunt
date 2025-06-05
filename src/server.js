@@ -6,6 +6,7 @@ require('dotenv').config();
 const appController = require('./features/app/app.controller');
 const ngrokConnect = require('./configs/ngrok.config');
 const { setupAppSocket } = require('./features/app/app.socket');
+
 (async () => {
   try {
     await mongoConfig();
@@ -27,13 +28,15 @@ const { setupAppSocket } = require('./features/app/app.socket');
       console.log(`🔌 WebSocket server is ready`);
     });
 
-    //await ngrokConnect();
+   // await ngrokConnect();
     await Promise.all([
       appController.autoCreatePermission(),
       appController.autoCreateRole(),
       appController.autoCreateAdmin(),
       appController.createAutoAddress(),
     ]);
+
+    // Call the classifyImageFromUrl function
   } catch (error) {
     console.error('❌ Error during startup:', error);
     process.exit(1);

@@ -5,7 +5,11 @@ const postService = require('./post.service');
 const create = async (req, res) => {
   try {
     const user = await Account.findById(req.userAccess._id).select('balance');
-    if (user.balance && Number(user.balance) < Number(req.body.pricePayment)) {
+    if (
+      user.balance &&
+      req.body.pricePayment &&
+      Number(user.balance) < Number(req.body.pricePayment)
+    ) {
       return apiHandler.sendValidationError(
         res,
         'You do not have enough money to post'
@@ -226,7 +230,9 @@ const updatePushedAt = async (req, res) => {
     const account = await Account.findById(req.userAccess._id).select(
       'balance'
     );
-    if (account.balance && Number(account.balance) < Number(req.body.price)) {
+    console.log('Account balance:', account.balance);
+    console.log('Price:', req.body.price);
+    if (Number(account.balance) < Number(req.body.price)) {
       return apiHandler.sendValidationError(
         res,
         'You do not have enough money to push post'

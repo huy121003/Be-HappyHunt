@@ -38,7 +38,7 @@ const postSchema = new Schema(
       ],
       default: 'WAITING',
     },
-    clickCount: { type: Number, default: 0 },
+
     attributes: [
       {
         name: { type: String, trim: true },
