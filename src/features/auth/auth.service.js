@@ -24,7 +24,7 @@ const login = async (data, res) => {
       .select('-__v -createdAt -updatedAt')
       .populate({
         path: 'role address.province address.district address.ward',
-        select: 'name _id permissions',
+        select: 'name _id version permissions',
       })
       .lean();
     if (!account) throw new Error('notfound');
@@ -117,7 +117,7 @@ const getAccountInfo = async (data) => {
       .select('-__v -createdAt -updatedAt -password -deleted')
       .populate({
         path: 'role address.province address.district address.ward',
-        select: 'name _id permissions',
+        select: 'name _id version permissions',
       })
       .lean();
     if (!account) throw new Error('notfound');
@@ -133,7 +133,7 @@ const getNewAccessToken = async (data) => {
       .select('-__v -createdAt -updatedAt -password -deleted')
       .populate({
         path: 'role address.province address.district address.ward',
-        select: 'name _id permissions',
+        select: 'name _id version permissions',
       })
       .lean();
     if (!account) throw new Error('notfound');
@@ -191,7 +191,7 @@ const updateProfile = async (id, data) => {
       .select('-password -__v -createdAt -updatedAt -deleted')
       .populate(
         'role address.province address.district address.ward',
-        'name _id permissions'
+        'name _id version permissions'
       )
       .lean()
       .exec();
