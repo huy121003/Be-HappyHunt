@@ -12,7 +12,7 @@ const getAll = async (data) => {
     const [totalDocuments, result] = await Promise.all([
       Account.countDocuments(filter),
       Account.find(filter)
-        .select('-password -__v -updatedAt -deleted')
+        .select('-password -__v  -deleted')
         .populate({
           path: 'address.province address.district address.ward',
           select: 'name _id',

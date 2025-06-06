@@ -8,8 +8,8 @@ const getAll = async (data) => {
     const [totalDocuments, result] = await Promise.all([
       Role.countDocuments(filter),
       Role.find(filter)
-        .select('name _id description createdAt')
-        .populate('createdBy', 'name _id')
+        .select('name _id description createdAt, updatedAt version')
+        .populate('createdBy updatedBy', 'name _id')
         .sort(sort)
         .limit(size)
         .skip(page * size)

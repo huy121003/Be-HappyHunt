@@ -41,7 +41,7 @@ const getAllPagination = async (data) => {
     const [totalDocuments, result] = await Promise.all([
       QaChatbot.countDocuments(filter),
       QaChatbot.find(filter)
-        .populate('createdBy', 'name _id')
+        .populate('createdBy updatedBy', 'name _id')
         .sort(sort)
         .skip(page * size)
         .limit(size)
