@@ -11,7 +11,7 @@ const setupChatSocket = (appNamespace, socket, getUserStatus) => {
       socketHandler.success(getUserStatus(targetAccountId))
     );
   });
-  // Join a chat room
+  // Join a chat room with id
   socket.on('join_chat', (chat) => {
     socket.join(chat);
   });

@@ -231,6 +231,15 @@ const getAllPaginationManager = async (data) => {
 };
 
 const getAllSuggestionsPagination = async (data, userId) => {
+  const defaultPopulate = [
+    { path: 'category', select: 'name slug' },
+    { path: 'categoryParent', select: 'name slug' },
+    { path: 'address.province', select: 'name' },
+    { path: 'address.district', select: 'name' },
+    { path: 'address.ward', select: 'name' },
+    { path: 'createdBy', select: 'name _id avatar phoneNumber slug' },
+  ];
+
   try {
     const [historyClick, favoritePost, user] = await Promise.all([
       HistoryClickPost.find({ createdBy: userId })
@@ -273,17 +282,10 @@ const getAllSuggestionsPagination = async (data, userId) => {
     const queryWithCategory = preferredCategories?.length
       ? { ...commonQuery, $or: preferredCategories }
       : commonQuery;
-
+    console.log('queryWithCategory', queryWithCategory);
     let posts = await Post.find(queryWithCategory)
       .select('-__v -deleted')
-      .populate([
-        { path: 'category' },
-        { path: 'categoryParent' },
-        { path: 'address.province', select: 'name' },
-        { path: 'address.district', select: 'name' },
-        { path: 'address.ward', select: 'name' },
-        { path: 'createdBy', select: 'name _id avatar phoneNumber slug' },
-      ])
+      .populate(defaultPopulate)
       .sort({ ...sort, pushedAt: -1 })
       .limit(50)
       .lean();
@@ -295,14 +297,7 @@ const getAllSuggestionsPagination = async (data, userId) => {
         _id: { $nin: existingIds },
       })
         .select('-__v -deleted')
-        .populate([
-          { path: 'category' },
-          { path: 'categoryParent' },
-          { path: 'address.province', select: 'name' },
-          { path: 'address.district', select: 'name' },
-          { path: 'address.ward', select: 'name' },
-          { path: 'createdBy', select: 'name _id avatar phoneNumber slug' },
-        ])
+        .populate(defaultPopulate)
         .sort({ ...sort, pushedAt: -1 })
         .limit(50)
         .lean();
@@ -316,14 +311,7 @@ const getAllSuggestionsPagination = async (data, userId) => {
         createdBy: { $ne: userId },
       })
         .select('-__v -deleted')
-        .populate([
-          { path: 'category' },
-          { path: 'categoryParent' },
-          { path: 'address.province', select: 'name' },
-          { path: 'address.district', select: 'name' },
-          { path: 'address.ward', select: 'name' },
-          { path: 'createdBy', select: 'name _id avatar phoneNumber slug' },
-        ])
+        .populate(defaultPopulate)
         .sort({ pushedAt: -1 })
         .limit(30)
         .lean();

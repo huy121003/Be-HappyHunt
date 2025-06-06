@@ -1,5 +1,4 @@
 const Account = require('./account');
-const Blocked = require('./blocked');
 const Category = require('./category');
 const FavoritePost = require('./favoritePost');
 const Follower = require('./follower');
@@ -16,7 +15,6 @@ const Banner = require('./banner');
 
 module.exports = {
   Account,
-  Blocked,
   Category,
   FavoritePost,
   Follower,

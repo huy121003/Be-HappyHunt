@@ -13,7 +13,7 @@ cron.schedule('*/5 * * * *', async () => {
           count: { $sum: 1 },
         },
       },
-      { $match: { count: { $gte: 5 } } },
+      { $match: { count: { $gte: 10 } } },
     ]);
 
     if (reports.length > 0) {
@@ -27,5 +27,3 @@ cron.schedule('*/5 * * * *', async () => {
     console.error('Error deleting posts with reports:', error);
   }
 });
-
-
