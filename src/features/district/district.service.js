@@ -7,14 +7,14 @@ const getAll = async (data) => {
     const [totalDocuments, result] = await Promise.all([
       District.countDocuments(filter),
       District.find(filter)
-        .select('name _id codeName shortCodeName createdAt')
+        .select('name _id codeName shortCodeName createdAt updatedAt')
         .sort(sort)
         .limit(size)
         .skip(page * size)
-        .populate('province createdBy', 'name _id ')
+        .populate('province createdBy updatedBy', 'name _id ')
         .exec(),
     ]);
-    if (!result ) throw new Error('notfound');
+    if (!result) throw new Error('notfound');
     return {
       documentList: result,
       totalDocuments,

@@ -11,8 +11,8 @@ const getAll = async (data) => {
     const [totalDocuments, result] = await Promise.all([
       Account.countDocuments(filter),
       Account.find(filter)
-        .select('-password -__v  -updatedAt -deleted')
-        .populate('role createdBy', 'name _id')
+        .select('-password -__v   -deleted')
+        .populate('role createdBy updatedBy', 'name _id')
         .sort(sort)
         .limit(size)
         .skip(page * size)

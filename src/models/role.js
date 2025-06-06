@@ -30,6 +30,7 @@ const roleSchema = new Schema(
         _id: false,
       },
     ],
+    version: { type: Number, default: 1 },
     description: { type: String, default: '' },
     createdBy: { type: Number, ref: 'account', default: null },
     updatedBy: { type: Number, ref: 'account', default: null },

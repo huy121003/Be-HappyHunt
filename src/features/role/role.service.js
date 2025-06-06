@@ -8,14 +8,14 @@ const getAll = async (data) => {
     const [totalDocuments, result] = await Promise.all([
       Role.countDocuments(filter),
       Role.find(filter)
-        .select('name _id description createdAt')
-        .populate('createdBy', 'name _id')
+        .select('name _id description createdAt, updatedAt version')
+        .populate('createdBy updatedBy', 'name _id')
         .sort(sort)
         .limit(size)
         .skip(page * size)
         .exec(),
     ]);
-    if (!result ) throw new Error('notfound');
+    if (!result) throw new Error('notfound');
     return {
       documentList: result,
       totalDocuments,
@@ -48,9 +48,16 @@ const create = async (data) => {
 };
 const update = async (id, data) => {
   try {
-    const result = await Role.findByIdAndUpdate(id, data, {
-      new: true,
-    });
+    const result = await Role.findByIdAndUpdate(
+      id,
+      {
+        ...data,
+        $inc: { version: 1 },
+      },
+      {
+        new: true,
+      }
+    );
     if (!result) throw new Error('create');
     return result;
   } catch (error) {

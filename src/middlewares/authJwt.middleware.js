@@ -2,23 +2,6 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const { apiHandler } = require('../helpers');
 const { Account } = require('../models');
-const comparePermissions = (accountPermissions, decodedPermissions) => {
-  if (accountPermissions.length !== decodedPermissions.length) return false;
-
-  return accountPermissions.every((accPerm) => {
-    const match = decodedPermissions.find(
-      (decPerm) => decPerm.codeName === accPerm.codeName
-    );
-    if (!match) return false;
-
-    return Object.keys(accPerm).every((key) => {
-      if (key !== 'codeName') {
-        return accPerm[key] === match[key];
-      }
-      return true;
-    });
-  });
-};
 
 const verifyToken = async (token) => {
   if (!token) {
@@ -27,14 +10,22 @@ const verifyToken = async (token) => {
     throw error;
   }
 
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  let decoded;
+  try {
+    decoded = jwt.verify(token, process.env.JWT_SECRET);
+  } catch (err) {
+    const error = new Error('token: Invalid or expired token');
+    error.statusCode = 401;
+    throw error;
+  }
+
   const account = await Account.findOne({
     _id: decoded._id,
     email: decoded.email,
     username: decoded.username,
     role: decoded.role,
   })
-    .populate('role', 'name _id permissions')
+    .populate('role', 'name _id version')
     .lean();
 
   if (!account) {
@@ -48,20 +39,29 @@ const verifyToken = async (token) => {
     error.statusCode = 401;
     throw error;
   }
-  const accountPermissions = account?.role?.permissions || [];
-  const decodedPermissions = decoded?.role?.permissions || [];
 
-  if (!comparePermissions(accountPermissions, decodedPermissions)) {
-    const error = new Error('permission: Permission denied');
-    error.statusCode = 403;
+  if (account.role && account.role.version !== decoded.role.version) {
+    const error = new Error('permission: Your role has been changed');
+    error.statusCode = 401;
     throw error;
   }
 
   return account;
 };
 
-const accessToken = async (req, res, next) => {
+const handleError = (res, error) => {
+  const [type, message] = error.message.split(':');
+  if (type && message) {
+    const msg = message.trim();
+    if (type === 'banned' || type === 'permission') {
+      return apiHandler.sendUnauthorizedError(res, msg);
+    }
+    return apiHandler.sendUnauthorizedError(res, msg);
+  }
+  return apiHandler.sendUnauthorizedError(res, error.message);
+};
 
+const accessToken = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer '))
@@ -79,24 +79,7 @@ const accessToken = async (req, res, next) => {
 
     next();
   } catch (error) {
-    if (error.message.includes('token:')) {
-      return apiHandler.sendUnauthorizedError(
-        res,
-        error.message.split(':')[1].trim()
-      );
-    } else if (error.message.includes('banned:')) {
-  
-      return apiHandler.sendUnauthorizedError(
-        res,
-        error.message.split(':')[1].trim()
-      );
-    } else if (error.message.includes('permission:')) {
-      return apiHandler.sendUnauthorizedError(
-        res,
-        error.message.split(':')[1].trim()
-      );
-    }
-    return apiHandler.sendUnauthorizedError(res, error.message);
+    return handleError(res, error);
   }
 };
 
@@ -118,17 +101,7 @@ const refreshToken = async (req, res, next) => {
     next();
   } catch (error) {
     res.clearCookie('refresh_token');
-    if (error.message.includes('token:')) {
-      return apiHandler.sendUnauthorizedError(
-        res,
-        error.message.split(':')[1].trim()
-      );
-    } else if (error.message.includes('banned:')) {
-      return apiHandler.sendForbidden(res, error.message.split(':')[1].trim());
-    } else if (error.message.includes('permission:')) {
-      return apiHandler.sendForbidden(res, error.message.split(':')[1].trim());
-    }
-    return apiHandler.sendUnauthorizedError(res, error.message);
+    return handleError(res, error);
   }
 };
 

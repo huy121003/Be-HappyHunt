@@ -27,17 +27,21 @@ cron.schedule('*/1 * * * *', async () => {
     console.error('Error checking posts:', error.message);
   }
 });
-cron.schedule('*/5 * * * *', async () => {
+cron.schedule('*/1 * * * *', async () => {
   try {
-    const posts = await Post.find({
-      status: { $in: ['WAITING', 'WAITING|AI_CHECKING_FAILED', 'REJECTED'] },
-    });
-    for (const post of posts) {
-      if (dayjs().diff(dayjs(post.updatedAt), 'days') > 1) {
-        await Post.findByIdAndUpdate(post._id, {
-          status: 'DELETED',
-        });
+    const deletedPost = await Post.updateMany(
+      {
+        status: { $in: ['WAITING', 'WAITING|AI_CHECKING_FAILED', 'REJECTED'] },
+        updatedAt: { $lt: dayjs().subtract(1, 'day').toDate() },
+      },
+      {
+        status: 'DELETED',
       }
+    );
+    if (deletedPost.modifiedCount > 0) {
+      console.log(
+        `Deleted ${deletedPost.modifiedCount} posts that were waiting for more than 1 day.`
+      );
     }
   } catch (error) {
     console.error(' Error checking posts:', error);

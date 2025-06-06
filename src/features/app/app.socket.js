@@ -3,11 +3,7 @@ const setupChatSocket = require('../chat/chat.socket');
 const {
   setupNotificationSocket,
 } = require('../notification/notification.soket');
-const onlineUsers = new Map();
-const offlineTimes = new Map(); // New map to store offline times
-const formatTime = (date) => {
-  return date.toISOString();
-};
+const onlineUsers = new Map(); // Store online users only
 const socketStore = {
   appNamespace: null,
   socketOn: null,
@@ -17,32 +13,12 @@ const getUserStatus = (accountId) => {
   return {
     accountId,
     status: userData ? 'online' : 'offline',
-    timestamp: userData
-      ? null
-      : offlineTimes.get(accountId) || formatTime(new Date()),
   };
 };
 
-const handleStatusAccount = (
-  appNamespace,
-  accountId,
-  status,
-  socketId = null
-) => {
-  if (status === 'online') {
-    // Store socketId for online status and clear offline time
-    onlineUsers.set(accountId, {
-      socketId: socketId,
-    });
-    offlineTimes.delete(accountId);
-  } else if (status === 'offline') {
-    // Store offline time
-    const offlineTime = formatTime(new Date());
-    offlineTimes.set(accountId, offlineTime);
-    // Remove user from online users
-    onlineUsers.delete(accountId);
-  }
-
+const handleStatusAccount = (appNamespace, accountId, socketId) => {
+  // Store socketId for online status
+  onlineUsers.set(accountId, { socketId });
   // Notify all users about status change
   appNamespace.emit(
     'status_account',
@@ -54,14 +30,14 @@ const setupAppSocket = (io) => {
   const appNamespace = io.of('/app');
   appNamespace.on('connection', (socket) => {
     socket.on('online', (accountId) => {
-      handleStatusAccount(appNamespace, accountId, 'online', socket.id);
+      handleStatusAccount(appNamespace, accountId, socket.id);
       socket.join(accountId);
     });
     socket.on('disconnect', () => {
       // Find and remove the disconnected user from onlineUsers
       for (const [accountId, userData] of onlineUsers.entries()) {
         if (userData.socketId === socket.id) {
-          handleStatusAccount(appNamespace, accountId, 'offline');
+          onlineUsers.delete(accountId);
           break;
         }
       }

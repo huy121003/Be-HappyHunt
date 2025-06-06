@@ -29,15 +29,15 @@ const getAll = async (data) => {
     const [totalDocuments, result] = await Promise.all([
       Province.countDocuments(filter),
       Province.find(filter)
-        .select('name _id codeName phoneCode')
-        .populate('createdBy', 'name _id')
+        .select('name _id codeName phoneCode createdAt updatedAt ')
+        .populate('createdBy updatedBy', 'name _id')
         .sort(sort)
         .limit(size)
         .skip(page * size)
         .exec(),
     ]);
 
-    if (!result ) throw new Error('notfound');
+    if (!result) throw new Error('notfound');
     return {
       documentList: result,
       totalDocuments,
