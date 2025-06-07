@@ -190,11 +190,15 @@ const activeVip = async (req, res) => {
   try {
     const account = await Account.findById(req.userAccess._id);
     if (100000 > Number(account.balance)) {
-      return apiHandler.sendErrorMessage(res, 'Not enough balance');
+      return apiHandler.sendValidationError(
+        res,
+        'You do not have enough balance to activate VIP'
+      );
     }
     const result = await authService.activeVip(req.userAccess._id);
     return apiHandler.sendCreated(res, 'Update VIP success', result);
   } catch (error) {
+
     if (error.message === 'update') {
       return apiHandler.sendErrorMessage(res, 'Failed to update VIP');
     }

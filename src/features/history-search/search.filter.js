@@ -6,6 +6,7 @@ const exportFilter = (search) => {
       ? { sort: search.sort }
       : { sort: '-updatedAt -createdAt' }),
     ...(search.keyword && { keyword: search.keyword }),
+    ...(search.createdBy ? { createdBy: search.createdBy } : {}),
   };
   return res;
 };

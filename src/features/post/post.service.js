@@ -282,7 +282,7 @@ const getAllSuggestionsPagination = async (data, userId) => {
     const queryWithCategory = preferredCategories?.length
       ? { ...commonQuery, $or: preferredCategories }
       : commonQuery;
-    console.log('queryWithCategory', queryWithCategory);
+
     let posts = await Post.find(queryWithCategory)
       .select('-__v -deleted')
       .populate(defaultPopulate)
