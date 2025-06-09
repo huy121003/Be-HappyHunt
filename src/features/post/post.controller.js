@@ -162,7 +162,7 @@ const getAllSuggestionsPagination = async (req, res) => {
 };
 const getById = async (req, res) => {
   try {
-    const result = await postService.getById(req.params.id, req.userAccess._id);
+    const result = await postService.getById(req.params.id);
     return apiHandler.sendSuccessWithData(res, 'Post', result);
   } catch (error) {
     if (error.message.includes('notfound')) {

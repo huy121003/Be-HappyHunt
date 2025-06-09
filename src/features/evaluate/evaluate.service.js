@@ -1,6 +1,6 @@
 const Evaluate = require('../../models/evaluate');
 const exportFilter = require('./evaluate.filter');
-
+const userService = require('../user/user.service');
 const create = async (data) => {
   try {
     const result = await Evaluate.create({
@@ -15,34 +15,47 @@ const create = async (data) => {
 };
 
 const getByIdUser = async (userId, data) => {
-  const { page, size, sort, ...filter } = exportFilter(data);
-  const [totalDocuments, result] = await Promise.all([
-    Evaluate.countDocuments({
-      ...filter,
-      target: userId,
-    }),
-    Evaluate.find({
-      ...filter,
-      target: userId,
-    })
-      .select('-__v')
-      .populate('createdBy', '_id name avatar slug')
-      .populate('target', '_id name avatar slug ')
-      .populate('post', '_id name slug images price status')
-      .sort(sort)
-      .limit(size)
-      .skip(page * size)
-      .lean()
-      .exec(),
-  ]);
-  if (!result) throw new Error('notfound');
+  try {
+    const account = await userService.getById(userId);
+    const accountBlock = account?.accountBlock || [];
+    const reviewBlock = account?.reviewBlock || [];
 
-  return {
-    documentList: result,
-    totalDocuments,
-    pageSize: size,
-    pageNumber: page,
-  };
+    const { page, size, sort, ...filter } = exportFilter(data);
+
+    const [totalDocuments, result] = await Promise.all([
+      Evaluate.countDocuments({
+        ...filter,
+        target: userId,
+        createdBy: { $nin: accountBlock },
+        _id: { $nin: reviewBlock },
+      }),
+      Evaluate.find({
+        ...filter,
+        target: userId,
+        createdBy: { $nin: accountBlock },
+        _id: { $nin: reviewBlock },
+      })
+        .select('-__v')
+        .populate('createdBy', '_id name avatar slug')
+        .populate('target', '_id name avatar slug ')
+        .populate('post', '_id name slug images price status')
+        .sort(sort)
+        .limit(size)
+        .skip(page * size)
+        .lean()
+        .exec(),
+    ]);
+    if (!result) throw new Error('notfound');
+
+    return {
+      documentList: result,
+      totalDocuments,
+      pageSize: size,
+      pageNumber: page,
+    };
+  } catch (error) {
+    throw new Error(error.message);
+  }
 };
 const countByUserId = async (userId) => {
   const result = await Evaluate.find({ target: userId });

@@ -6,12 +6,21 @@ const exportFilter = require('./user.filter');
 const emailService = require('../email/email.service');
 const Post = require('../../models/post');
 
-const getAll = async (data) => {
+const getAll = async (data, userId) => {
   try {
+    const account = await Account.findById(userId).exec();
+    const accountBlock = account?.accountBlock || [];
+
     const { page, size, sort, ...filter } = exportFilter(data);
     const [totalDocuments, result] = await Promise.all([
-      Account.countDocuments(filter),
-      Account.find(filter)
+      Account.countDocuments({
+        ...filter,
+        _id: { $nin: accountBlock },
+      }),
+      Account.find({
+        ...filter,
+        _id: { $nin: accountBlock },
+      })
         .select('-password -__v  -deleted')
         .populate({
           path: 'address.province address.district address.ward',
@@ -45,13 +54,17 @@ const getById = async (id) => {
       .lean()
       .exec();
     if (!result) throw new Error('notfound');
+
     return result;
   } catch (error) {
+    console.error('Error in getById:', error);
     throw new Error(error.message);
   }
 };
-const getBySlug = async (slug) => {
+const getBySlug = async (slug, userId) => {
   try {
+    const account = await Account.findById(userId).exec();
+    const accountBlock = account?.accountBlock || [];
     const result = await Account.findOne({ slug })
       .select('-password -__v  -updatedAt -deleted')
       .populate({ path: 'address.province', select: 'name _id' })
@@ -60,6 +73,9 @@ const getBySlug = async (slug) => {
       .lean()
       .exec();
     if (!result) throw new Error('notfound');
+    if (accountBlock.includes(result._id)) {
+      throw new Error('notfound');
+    }
     return result;
   } catch (error) {
     throw new Error(error.message);
@@ -262,6 +278,26 @@ const countGenderUser = async () => {
     throw new Error(error.message);
   }
 };
+const update = async (id, data) => {
+  try {
+    const avatarUrl = data.avatar ? await uploadSingle(data.avatar) : null;
+    const result = await Account.findByIdAndUpdate(
+      id,
+      {
+        ...data,
+        ...(avatarUrl && { avatar: avatarUrl }),
+      },
+      {
+        new: true,
+      }
+    ).exec();
+
+    if (!result) throw new Error('update');
+    return result;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
 module.exports = {
   getAll,
   remove,
@@ -269,7 +305,7 @@ module.exports = {
   banned,
   getBySlug,
   getNewAccountStatistics,
-
+  update,
   getNewUser,
   getNewUserStatistics,
   totalUser,

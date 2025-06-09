@@ -7,7 +7,7 @@ const checkType = (data) => {
   switch (type) {
     case 'ALL':
       startDate = dayjs('2020-01-01').startOf('day').toDate();
-      endDate = dayjs().endOf('day').toDate();
+      endDate = dayjs('2999-21-31').endOf('day').toDate();
       groupByFormat = '%Y-%m';
       break;
     case 'TODAY':

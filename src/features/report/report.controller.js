@@ -74,6 +74,7 @@ const getAll = async (req, res) => {
 const getById = async (req, res) => {
   try {
     const result = await reportService.getById(req.params.id);
+
     return apiHandler.sendSuccessWithData(res, 'Report details', result);
   } catch (error) {
     if (error.message === 'notfound') {

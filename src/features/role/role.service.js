@@ -8,7 +8,7 @@ const getAll = async (data) => {
     const [totalDocuments, result] = await Promise.all([
       Role.countDocuments(filter),
       Role.find(filter)
-        .select('name _id description createdAt, updatedAt version')
+        .select('name _id description createdAt updatedAt version')
         .populate('createdBy updatedBy', 'name _id')
         .sort(sort)
         .limit(size)

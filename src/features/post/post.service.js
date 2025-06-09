@@ -8,7 +8,7 @@ const {
   Account,
   Category,
 } = require('../../models');
-
+const userService = require('../user/user.service');
 const autoSlug = require('../../helpers/autoSlug');
 const exportFilter = require('./post.filter');
 const dayjs = require('dayjs');
@@ -151,10 +151,30 @@ const countStatus = async (id) => {
 const getAllPagination = async (data, userId) => {
   try {
     const { page, size, sort, search, ...filter } = exportFilter(data);
-
+    const account = await userService.getById(userId);
+    const accountBlock = account?.accountBlock || [];
+    const postBlock = account?.postBlock || [];
     const [totalDocuments, posts] = await Promise.all([
-      Post.countDocuments(filter),
-      Post.find(filter)
+      Post.countDocuments({
+        ...filter,
+        createdBy: {
+          $ne: userId,
+          $nin: accountBlock,
+        },
+        _id: {
+          $nin: postBlock,
+        },
+      }),
+      Post.find({
+        ...filter,
+        createdBy: {
+          $nin: accountBlock,
+          $ne: userId,
+        },
+        _id: {
+          $nin: postBlock,
+        },
+      })
         .select('-__v -deleted')
         .populate(
           'category categoryParent address.province address.district address.ward createdBy',
@@ -241,6 +261,12 @@ const getAllSuggestionsPagination = async (data, userId) => {
   ];
 
   try {
+    // ✅ Phải await ở đây
+    const account = await userService.getById(userId);
+    const accountBlock = account?.accountBlock || [];
+    const postBlock = account?.postBlock || [];
+    console.log('accountBlock:', accountBlock);
+    console.log('postBlock:', postBlock);
     const [historyClick, favoritePost, user] = await Promise.all([
       HistoryClickPost.find({ createdBy: userId })
         .select('post')
@@ -276,7 +302,8 @@ const getAllSuggestionsPagination = async (data, userId) => {
     const commonQuery = {
       ...filter,
       status: 'SELLING',
-      createdBy: { $ne: userId },
+      createdBy: { $ne: userId, $nin: accountBlock },
+      _id: { $nin: postBlock },
     };
 
     const queryWithCategory = preferredCategories?.length
@@ -294,13 +321,14 @@ const getAllSuggestionsPagination = async (data, userId) => {
       const existingIds = posts.map((p) => p._id);
       const more = await Post.find({
         ...commonQuery,
-        _id: { $nin: existingIds },
+        _id: { $nin: [...existingIds, ...postBlock] },
       })
         .select('-__v -deleted')
         .populate(defaultPopulate)
         .sort({ ...sort, pushedAt: -1 })
         .limit(50)
         .lean();
+
       posts = [...posts, ...more];
     }
 
@@ -308,7 +336,8 @@ const getAllSuggestionsPagination = async (data, userId) => {
     if (posts.length === 0) {
       posts = await Post.find({
         status: 'SELLING',
-        createdBy: { $ne: userId },
+        createdBy: { $ne: userId, $nin: accountBlock },
+        _id: { $nin: postBlock },
       })
         .select('-__v -deleted')
         .populate(defaultPopulate)
@@ -337,6 +366,7 @@ const getAllSuggestionsPagination = async (data, userId) => {
       pageNumber: page,
     };
   } catch (err) {
+    console.error('getAllSuggestionsPagination error:', err);
     throw new Error(err.message);
   }
 };
@@ -372,7 +402,7 @@ const updateCheckingStatus = async (id, post) => {
   }
 };
 
-const getById = async (id, userId) => {
+const getById = async (id) => {
   try {
     const result = await Post.findById(id)
       .select(' -updatedAt -__v')
@@ -386,7 +416,6 @@ const getById = async (id, userId) => {
     if (!result) throw new Error('notfound');
     const favorite = await FavoritePost.findOne({
       post: id,
-      createdBy: userId,
     });
 
     return {
@@ -399,6 +428,9 @@ const getById = async (id, userId) => {
 };
 const getBySlug = async (slug, userId) => {
   try {
+    const account = userService.getById(userId);
+    const accountBlock = account?.accountBlock || [];
+    const postBlock = account?.blockedPosts || [];
     const result = await Post.findOne({ slug })
       .select(' -updatedAt -__v')
       .populate(
@@ -409,6 +441,13 @@ const getBySlug = async (slug, userId) => {
       .exec();
 
     if (!result) throw new Error('notfound');
+    if (
+      result.createdBy &&
+      (accountBlock.includes(result.createdBy) ||
+        postBlock.includes(result._id))
+    ) {
+      throw new Error('notfound');
+    }
     const favorite = await FavoritePost.findOne({
       post: result._id,
       createdBy: userId,
@@ -517,10 +556,10 @@ const countStatusProfile = async (id) => {
 const getNewPostStatistics = async (data) => {
   try {
     const { startDate, endDate, groupByFormat } = checkType(data);
+
     const result = await Post.aggregate([
       {
         $match: {
-          role: null,
           createdAt: {
             $gte: startDate,
             $lte: endDate,

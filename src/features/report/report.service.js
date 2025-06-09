@@ -22,6 +22,22 @@ const create = async (data) => {
       images: imageUrls,
     });
     if (!result) throw new Error('create');
+    let pushData = {};
+    if (result.targetType === 'account') {
+      pushData.accountBlock = result.target;
+    } else if (result.targetType === 'post') {
+      pushData.postBlock = result.target;
+    } else if (result.targetType === 'review') {
+      pushData.reviewBlock = result.target;
+    }
+
+    // Chỉ update nếu có trường cần push
+    if (Object.keys(pushData).length > 0) {
+      await userService.update(result.createdBy, {
+        $push: pushData,
+      });
+    }
+
     return result;
   } catch (error) {
     console.error(error);
@@ -29,6 +45,7 @@ const create = async (data) => {
   }
 };
 const updateStatus = async (id, data) => {
+  console.log('updateStatus', id, data);
   try {
     const result = await Report.findByIdAndUpdate(
       id,
@@ -38,43 +55,55 @@ const updateStatus = async (id, data) => {
       },
       { new: true }
     );
-    if (!result) throw new Error('update');
-    if (data.status === 'APPROVED' && result.targetType === 'review') {
-      const evaluate = await evaluateService.remove(result.target);
-      if (!evaluate) throw new Error('update');
+
+    if (!result) {
+      throw new Error('Update failed or document not found.');
     }
-    if (result.targetType === 'account' && data.status === 'APPROVED') {
-      const updateReportCount = await userService.updateReportCount(
-        result.target
-      );
-      if (!updateReportCount) throw new Error('update');
-    }
-    if (result.targetType === 'post' && data.status === 'APPROVED') {
-      const post = await postService.getById(result.target);
-      const updateReportCount = await userService.updateReportCount(
-        post.createdBy._id
-      );
-      if (!updateReportCount) throw new Error('update');
-    }
-    if (result.targetType === 'review' && data.status === 'APPROVED') {
-      const review = await evaluateService.getById(result.target);
-      const updateReportCount = await userService.updateReportCount(
-        review.createdBy._id
-      );
-      if (!updateReportCount) throw new Error('update');
-    }
-    if (data.status === 'SPAM') {
+
+    if (data.status === 'APPROVED') {
+      let updateReportCount;
+
+      switch (result.targetType) {
+        case 'account':
+          updateReportCount = await userService.updateReportCount(
+            result.target
+          );
+          break;
+        case 'post':
+          const post = await postService.getById(result.target, null);
+          updateReportCount = await userService.updateReportCount(
+            post.createdBy._id
+          );
+          break;
+        case 'review':
+          const review = await evaluateService.getById(result.target);
+          updateReportCount = await userService.updateReportCount(
+            review.createdBy._id
+          );
+          break;
+        default:
+          break;
+      }
+
+      if (!updateReportCount) {
+        throw new Error('Failed to update report count.');
+      }
+    } else if (data.status === 'SPAM') {
       const updateSpamCount = await userService.updateReportCount(
         result.createdBy
       );
-      if (!updateSpamCount) throw new Error('update');
+      if (!updateSpamCount) {
+        throw new Error('Failed to update spam count.');
+      }
     }
+
     return result;
   } catch (error) {
-    console.error(error);
+    console.error('Error in updateStatus:', error);
     throw new Error(error.message);
   }
 };
+
 const remove = async (id) => {
   try {
     const result = await Report.findByIdAndDelete(id);
@@ -105,6 +134,7 @@ const getAll = async (query) => {
       pageNumber: page,
     };
   } catch (error) {
+    console.error(error);
     throw new Error(error.message);
   }
 };
