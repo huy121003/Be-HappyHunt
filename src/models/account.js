@@ -47,6 +47,7 @@ const accountSchema = new Schema(
     banAmount: { type: Number, default: 0 },
     reportAmount: { type: Number, default: 0 },
     accountBlock: { type: [Number], default: [] },
+    blockAccount: { type: [Number], default: [] },
     postBlock: { type: [Number], default: [] },
     reportBlock: { type: [Number], default: [] },
   },

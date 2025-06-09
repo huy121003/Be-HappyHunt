@@ -9,17 +9,20 @@ const Post = require('../../models/post');
 const getAll = async (data, userId) => {
   try {
     const account = await Account.findById(userId).exec();
-    const accountBlock = account?.accountBlock || [];
+    const block = [
+      ...(account?.accountBlock || []),
+      ...(account?.blockAccount || []),
+    ];
 
     const { page, size, sort, ...filter } = exportFilter(data);
     const [totalDocuments, result] = await Promise.all([
       Account.countDocuments({
         ...filter,
-        _id: { $nin: accountBlock },
+        _id: { $nin: block },
       }),
       Account.find({
         ...filter,
-        _id: { $nin: accountBlock },
+        _id: { $nin: block },
       })
         .select('-password -__v  -deleted')
         .populate({
@@ -64,7 +67,11 @@ const getById = async (id) => {
 const getBySlug = async (slug, userId) => {
   try {
     const account = await Account.findById(userId).exec();
-    const accountBlock = account?.accountBlock || [];
+    const block = [
+      ...(account?.accountBlock || []),
+      ...(account?.blockAccount || []),
+    ];
+
     const result = await Account.findOne({ slug })
       .select('-password -__v  -updatedAt -deleted')
       .populate({ path: 'address.province', select: 'name _id' })
@@ -73,7 +80,7 @@ const getBySlug = async (slug, userId) => {
       .lean()
       .exec();
     if (!result) throw new Error('notfound');
-    if (accountBlock.includes(result._id)) {
+    if (block.includes(result._id)) {
       throw new Error('notfound');
     }
     return result;

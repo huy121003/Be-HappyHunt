@@ -11,39 +11,47 @@ const create = async (data) => {
   const { images, ...rest } = data;
   const check = await checkExit(data.createdBy, data.target);
   if (!check) throw new Error('exit');
-
   try {
     let imageUrls = [];
     if (images) {
       imageUrls = (await uploadMultiple(images)) || [];
     }
+
     const result = await Report.create({
       ...rest,
       images: imageUrls,
     });
-    if (!result) throw new Error('create');
-    let pushData = {};
-    if (result.targetType === 'account') {
-      pushData.accountBlock = result.target;
-    } else if (result.targetType === 'post') {
-      pushData.postBlock = result.target;
-    } else if (result.targetType === 'review') {
-      pushData.reviewBlock = result.target;
-    }
 
-    // Chỉ update nếu có trường cần push
-    if (Object.keys(pushData).length > 0) {
-      await userService.update(result.createdBy, {
-        $push: pushData,
+    if (!result) throw new Error('create');
+
+    const reporterId = result.createdBy;
+    const targetId = result.target;
+    const targetType = result.targetType;
+    if (targetType === 'account') {
+      await userService.update(reporterId, {
+        $addToSet: { accountBlock: targetId },
+      });
+      await userService.update(targetId, {
+        $addToSet: { blockAccount: reporterId },
       });
     }
+    if (targetType === 'post')
+      await userService.update(reporterId, {
+        $addToSet: { postBlock: targetId },
+      });
+    if (targetType === 'review') 
+      await userService.update(reporterId, {
+        $addToSet: { reviewBlock: targetId },
+      });
+    
 
     return result;
   } catch (error) {
-    console.error(error);
+    console.error('Report create error:', error);
     throw new Error(error.message);
   }
 };
+
 const updateStatus = async (id, data) => {
   console.log('updateStatus', id, data);
   try {

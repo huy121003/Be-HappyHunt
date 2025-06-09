@@ -152,14 +152,17 @@ const getAllPagination = async (data, userId) => {
   try {
     const { page, size, sort, search, ...filter } = exportFilter(data);
     const account = await userService.getById(userId);
-    const accountBlock = account?.accountBlock || [];
+    const block = [
+      ...(account?.accountBlock || []),
+      ...(account?.blockAccount || []),
+    ];
     const postBlock = account?.postBlock || [];
     const [totalDocuments, posts] = await Promise.all([
       Post.countDocuments({
         ...filter,
         createdBy: {
           $ne: userId,
-          $nin: accountBlock,
+          $nin: block,
         },
         _id: {
           $nin: postBlock,
@@ -168,7 +171,7 @@ const getAllPagination = async (data, userId) => {
       Post.find({
         ...filter,
         createdBy: {
-          $nin: accountBlock,
+          $nin: block,
           $ne: userId,
         },
         _id: {
@@ -263,9 +266,12 @@ const getAllSuggestionsPagination = async (data, userId) => {
   try {
     // ✅ Phải await ở đây
     const account = await userService.getById(userId);
-    const accountBlock = account?.accountBlock || [];
+    const block = [
+      ...(account?.accountBlock || []),
+      ...(account?.blockAccount || []),
+    ];
     const postBlock = account?.postBlock || [];
-    console.log('accountBlock:', accountBlock);
+    console.log('block:', block);
     console.log('postBlock:', postBlock);
     const [historyClick, favoritePost, user] = await Promise.all([
       HistoryClickPost.find({ createdBy: userId })
@@ -302,7 +308,7 @@ const getAllSuggestionsPagination = async (data, userId) => {
     const commonQuery = {
       ...filter,
       status: 'SELLING',
-      createdBy: { $ne: userId, $nin: accountBlock },
+      createdBy: { $ne: userId, $nin: block },
       _id: { $nin: postBlock },
     };
 
@@ -336,7 +342,7 @@ const getAllSuggestionsPagination = async (data, userId) => {
     if (posts.length === 0) {
       posts = await Post.find({
         status: 'SELLING',
-        createdBy: { $ne: userId, $nin: accountBlock },
+        createdBy: { $ne: userId, $nin: block },
         _id: { $nin: postBlock },
       })
         .select('-__v -deleted')
@@ -429,7 +435,7 @@ const getById = async (id) => {
 const getBySlug = async (slug, userId) => {
   try {
     const account = userService.getById(userId);
-    const accountBlock = account?.accountBlock || [];
+    const block = account?.block || [];
     const postBlock = account?.blockedPosts || [];
     const result = await Post.findOne({ slug })
       .select(' -updatedAt -__v')
@@ -443,8 +449,7 @@ const getBySlug = async (slug, userId) => {
     if (!result) throw new Error('notfound');
     if (
       result.createdBy &&
-      (accountBlock.includes(result.createdBy) ||
-        postBlock.includes(result._id))
+      (block.includes(result.createdBy) || postBlock.includes(result._id))
     ) {
       throw new Error('notfound');
     }
