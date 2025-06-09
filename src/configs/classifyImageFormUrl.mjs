@@ -1,6 +1,7 @@
-const classifyImageFromUrl = async (imageUrl) => {
+import { pipeline } from '@xenova/transformers';
+
+export async function classifyImageFromUrl(imageUrl) {
   try {
-    const { pipeline } = await import('@xenova/transformers').then((m) => m);
     const model = await pipeline('image-classification');
     const result = await model(imageUrl);
     if (!result || result.length === 0) {
@@ -10,6 +11,4 @@ const classifyImageFromUrl = async (imageUrl) => {
   } catch (error) {
     throw error;
   }
-};
-
-module.exports = { classifyImageFromUrl };
+}

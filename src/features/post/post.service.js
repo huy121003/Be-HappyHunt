@@ -17,12 +17,13 @@ const {
   create: createNotification,
 } = require('../notification/notification.soket');
 const { socketStore } = require('../app/app.socket');
-const { classifyImageFromUrl } = require('../../configs/classifyImageFormUrl');
+
 const categoryService = require('../category/category.service');
 const sightEngineConnect = require('../../configs/sightengine.config');
 const evaluateImageContent = require('../../helpers/checkingImgaePoint');
 const { checkCorrectCategory } = require('../../configs/gemini.config');
 const historyClickService = require('../history-click/historyClick.service');
+const { classifyImage } = require('../../configs/classifyImage ');
 const create = async (data) => {
   const { payment, ...restData } = data;
 
@@ -627,7 +628,7 @@ const checkImage = async (image, idCategory) => {
   try {
     const reasons = [];
     //kiểm tra hình ảnh có trong danh mục hay không
-    const categoryImage = await classifyImageFromUrl(image.url);
+    const categoryImage = await classifyImage(image.url);
     if (!categoryImage || categoryImage.length === 0) {
       throw new Error(`No classification results found for ${image.url}`);
     }
