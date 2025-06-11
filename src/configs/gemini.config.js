@@ -83,6 +83,8 @@ const checkCorrectCategory = async (labels, keywords, nameCate) => {
   const filteredLabels = labels?.flatMap(({ label }) => label?.toLowerCase().split(',').map(l => l.trim()));
 
   const normalizedKeywords = keywords?.map(k => k.toLowerCase().trim());
+  console.log('Normalized Keywords:', normalizedKeywords);
+  console.log('Filtered Labels:', filteredLabels);
   const prompt = `
 You are a product categorization expert.
 
