@@ -6,6 +6,7 @@ require('dotenv').config();
 const appController = require('./features/app/app.controller');
 const ngrokConnect = require('./configs/ngrok.config');
 const { setupAppSocket } = require('./features/app/app.socket');
+const { loadModel } = require('./configs/classifyImageFormUrl');
 
 (async () => {
   try {
@@ -36,6 +37,7 @@ const { setupAppSocket } = require('./features/app/app.socket');
       appController.createAutoAddress(),
     ]);
 
+    await loadModel(); // Preload the model to avoid delays later
     // Call the classifyImageFromUrl function
   } catch (error) {
     console.error('❌ Error during startup:', error);
