@@ -10,7 +10,7 @@
     "@jridgewell/gen-mapping" "^0.3.5"
     "@jridgewell/trace-mapping" "^0.3.24"
 
-"@babel/cli@^7.27.2":
+"@babel/cli@^7.26.4":
   version "7.27.2"
   resolved "https://registry.npmjs.org/@babel/cli/-/cli-7.27.2.tgz"
   integrity sha512-cfd7DnGlhH6OIyuPSSj3vcfIdnbXukhAyKY8NaZrFadC7pXyL9mOL5WgjcptiEJLi5k3j8aYvLIVCzezrWTaiA==
@@ -40,7 +40,7 @@
   resolved "https://registry.npmjs.org/@babel/compat-data/-/compat-data-7.27.5.tgz"
   integrity sha512-KiRAp/VoJaWkkte84TvUd9qjdbZAdiqyvMxrGl1N6vzFogKmaLgoM3L1kgtLicp2HP5fBJS8JrZKLVIZGVJAVg==
 
-"@babel/core@^7.27.4":
+"@babel/core@^7.26.9":
   version "7.27.4"
   resolved "https://registry.npmjs.org/@babel/core/-/core-7.27.4.tgz"
   integrity sha512-bXYxrXFubeYdvB0NhD/NBB3Qi6aZeV20GOWVI47t2dkecCEoneR4NPVcb7abpXDEvejgrUfFtG6vG/zxAKmg+g==
@@ -678,7 +678,7 @@
     "@babel/helper-create-regexp-features-plugin" "^7.27.1"
     "@babel/helper-plugin-utils" "^7.27.1"
 
-"@babel/preset-env@^7.27.2":
+"@babel/preset-env@^7.26.9":
   version "7.27.2"
   resolved "https://registry.npmjs.org/@babel/preset-env/-/preset-env-7.27.2.tgz"
   integrity sha512-Ma4zSuYSlGNRlCLO+EAzLnCmJK2vdstgv+n7aUP+/IKZrOfWHOJVdSJtuub8RzHTj3ahD37k5OKJWvzf16TQyQ==
@@ -1737,7 +1737,6 @@ bcrypt@^5.1.1:
     mongoose-sequence "^6.0.1"
     node-cron "^3.0.3"
     nodemailer "^7.0.3"
-    nodemon "^3.1.9"
     path "^0.12.7"
     sharp "^0.34.2"
     socket.io "^4.8.1"

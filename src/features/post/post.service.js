@@ -629,20 +629,20 @@ const checkImage = async (image, idCategory) => {
   try {
     const reasons = [];
     //kiểm tra hình ảnh có trong danh mục hay không
-    // const categoryImage = await classifyImageFromUrl(image.url);
-    // if (!categoryImage || categoryImage.length === 0) {
-    //   throw new Error(`No classification results found for ${image.url}`);
-    // }
-    // const cate = await categoryService.getKeyword(idCategory);
-    // const isCorrectCategory = await checkCorrectCategory(
-    //   categoryImage,
-    //   cate.keywords,
+    const categoryImage = await classifyImageFromUrl(image.url);
+    if (!categoryImage || categoryImage.length === 0) {
+      throw new Error(`No classification results found for ${image.url}`);
+    }
+    const cate = await categoryService.getKeyword(idCategory);
+    const isCorrectCategory = await checkCorrectCategory(
+      categoryImage,
+      cate.keywords,
 
-    //   cate.name
-    // );
-    // if (!isCorrectCategory) {
-    //   reasons.push(`Not in post category`);
-    // }
+      cate.name
+    );
+    if (!isCorrectCategory) {
+      reasons.push(`Not in post category`);
+    }
     //kiểm tra nội dung hình ảnh
     const result = await sightEngineConnect(image.url);
     if (!result || result.status !== 'success') {
@@ -658,8 +658,8 @@ const checkImage = async (image, idCategory) => {
     return {
       url: image.url,
       index: image.index,
-      approved: evaluation.approved,
-      reasons: evaluation.approved ? [] : reasons,
+      approved: evaluation.approved && isCorrectCategory,
+      reasons: evaluation.approved && isCorrectCategory ? [] : reasons,
     };
   } catch (error) {
     throw error;

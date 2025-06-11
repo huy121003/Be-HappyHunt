@@ -15,9 +15,9 @@
   "author": "Quang Huy",
   "license": "ISC",
   "devDependencies": {
-    "@babel/cli": "^7.27.2",
-    "@babel/core": "^7.27.4",
-    "@babel/preset-env": "^7.27.2",
+    "@babel/cli": "^7.26.4",
+    "@babel/core": "^7.26.9",
+    "@babel/preset-env": "^7.26.9",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.31.0",
@@ -27,7 +27,6 @@
     "prettier": "^3.4.2"
   },
   "dependencies": {
-    "nodemon": "^3.1.9",
     "@ngrok/ngrok": "^1.4.1",
     "@payos/node": "^1.0.10",
     "@xenova/transformers": "^2.17.2",
