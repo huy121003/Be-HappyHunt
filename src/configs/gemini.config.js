@@ -71,7 +71,7 @@ Length: ~100–1500 characters. Return only the post content.
     });
 
     if (response?.data?.candidates && response.data.candidates.length > 0) {
-      return response.data.candidates[0].content.parts[0].text;
+      return response.data.candidates[0]?.content?.parts[0]?.text;
     }
     throw new Error("No valid response from Gemini API.");
   } catch (error) {
@@ -125,7 +125,7 @@ Text: "${text}"
     });
 
     if (response?.data?.candidates && response.data.candidates.length > 0) {
-      const answer = response.data.candidates[0].content.parts[0].text.trim().toLowerCase();
+      const answer = response.data.candidates[0]?.content?.parts[0]?.text?.trim().toLowerCase();
       return answer === 'true';
     }
     throw new Error("No valid response from Gemini API.");
