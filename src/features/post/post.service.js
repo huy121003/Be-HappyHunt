@@ -630,7 +630,7 @@ const checkImage = async (image, idCategory) => {
     const reasons = [];
     //kiểm tra hình ảnh có trong danh mục hay không
     const categoryImage = await classifyImageFromUrl(image.url);
-    if (!categoryImage || categoryImage.length === 0) {
+    if (!categoryImage || categoryImage?.length === 0) {
       throw new Error(`No classification results found for ${image.url}`);
     }
     const cate = await categoryService.getKeyword(idCategory);

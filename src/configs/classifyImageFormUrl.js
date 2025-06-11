@@ -6,7 +6,7 @@ const classifyImageFromUrl = async (imageUrl) => {
     const model = await pipeline('image-classification');
     // Phân loại hình ảnh
     const result = await model(imageUrl);
-    if (!result || result.length === 0) {
+    if (!result || result?.length === 0) {
       throw new Error('No classification results found for the image.');
     }
     console.log('Classification result:', result);
