@@ -80,9 +80,7 @@ Length: ~100–1500 characters. Return only the post content.
 }
 
 const checkCorrectCategory = async (labels, keywords, nameCate) => {
-  const filteredLabels = labels
-    .filter(({ score }) => score >= 0.3)
-    .flatMap(({ label }) => label.toLowerCase().split(',').map(l => l.trim()));
+  const filteredLabels = labels.flatMap(({ label }) => label.toLowerCase().split(',').map(l => l.trim()));
 
   const normalizedKeywords = keywords.map(k => k.toLowerCase().trim());
   const prompt = `
