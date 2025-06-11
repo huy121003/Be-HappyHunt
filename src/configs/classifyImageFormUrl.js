@@ -9,9 +9,13 @@ const classifyImageFromUrl = async (imageUrl) => {
     if (!result || result?.length === 0) {
       throw new Error('No classification results found.');
     }
+
     return result;
   } catch (error) {
     console.error(error);
     throw error;
   }
+};
+module.exports = {
+  classifyImageFromUrl,
 };
