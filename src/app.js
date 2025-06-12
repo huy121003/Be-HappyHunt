@@ -32,7 +32,7 @@ app.use('/sleeper', (req, res) => {
   res.status(200).json({ message: 'Server is running' });
 });
 // Định tuyến API
-app.use('/api/v1/', authLimiter, appRouter);
+app.use('/api/v1/', appRouter);
 app.use((err, req, res, next) => {
   return res.status(500).json({ error: 'Internal Server Error' });
 });

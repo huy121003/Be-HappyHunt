@@ -11,6 +11,7 @@ const loadModel = async () => {
 
 const classifyImageFromUrl = async (imageUrl) => {
   try {
+    await loadModel(); // Ensure the model is loaded before classifying
     const result = await model(imageUrl);
     return result;
   } catch (error) {
