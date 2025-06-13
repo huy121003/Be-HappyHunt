@@ -1,18 +1,25 @@
-// Định nghĩa hàm classifyImageFromUrl
+let model;
+const loadModel = async () => {
+  if (!model) {
+    const { pipeline } = await import('@xenova/transformers');
+    model = await pipeline(
+      'image-classification',
+      'Xenova/vit-base-patch16-224'
+    );
+  }
+};
+
 const classifyImageFromUrl = async (imageUrl) => {
   try {
-    // Tải mô hình CLIP
-    const { pipeline } = await import('@xenova/transformers');
-    const model = await pipeline('image-classification');
-    // Phân loại hình ảnh
+    await loadModel(); // Ensure the model is loaded before classifying
     const result = await model(imageUrl);
-    if (!result || result.length === 0) {
-      throw new Error('No classification results found for the image.');
-    }
     return result;
   } catch (error) {
     throw error;
   }
 };
 
-module.exports = { classifyImageFromUrl };
+module.exports = {
+  classifyImageFromUrl,
+  loadModel,
+};

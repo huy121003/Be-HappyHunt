@@ -56,7 +56,7 @@ const login = async (data, res) => {
     ]);
     res.cookie('refresh_token', refresh_token, {
       httpOnly: true,
-      sameSite: 'strict',
+      sameSite: 'none',
       secure: process.env.NODE_ENV === 'production',
     });
     const { password: _, ...safeAccount } = account;

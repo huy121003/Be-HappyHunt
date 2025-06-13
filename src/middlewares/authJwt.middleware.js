@@ -79,7 +79,15 @@ const accessToken = async (req, res, next) => {
 
     next();
   } catch (error) {
-    return handleError(res, error);
+    const [type, message] = error.message.split(':');
+    if (type && message) {
+      const msg = message.trim();
+      if (type === 'banned' || type === 'permission') {
+        return apiHandler.sendUnauthorizedError(res, msg);
+      }
+      return apiHandler.sendUnauthorizedError(res, msg);
+    }
+    return apiHandler.sendUnauthorizedError(res, error.message);
   }
 };
 
@@ -101,7 +109,15 @@ const refreshToken = async (req, res, next) => {
     next();
   } catch (error) {
     res.clearCookie('refresh_token');
-    return handleError(res, error);
+    const [type, message] = error.message.split(':');
+    if (type && message) {
+      const msg = message.trim();
+      if (type === 'banned' || type === 'permission') {
+        return apiHandler.sendValidationError(res, msg);
+      }
+      return apiHandler.sendValidationError(res, msg);
+    }
+    return apiHandler.sendValidationError(res, error.message);
   }
 };
 

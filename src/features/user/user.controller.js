@@ -3,7 +3,7 @@ const { apiHandler } = require('../../helpers');
 
 const getAll = async (req, res) => {
   try {
-    const result = await userService.getAll(req.query);
+    const result = await userService.getAll(req.query, req.userAccess._id);
     return apiHandler.sendSuccessWithData(res, 'List accounts', result);
   } catch (error) {
     if (error.message.includes('notfound')) {
@@ -14,7 +14,8 @@ const getAll = async (req, res) => {
 };
 const getById = async (req, res) => {
   try {
-    const result = await userService.getById(req.params.id);
+    console.log('getById', req.params.id, req.userAccess._id);
+    const result = await userService.getById(req.params.id, req.userAccess._id);
     return apiHandler.sendSuccessWithData(res, 'Account', result);
   } catch (error) {
     if (error.message.includes('notfound')) {
@@ -25,7 +26,10 @@ const getById = async (req, res) => {
 };
 const getBySlug = async (req, res) => {
   try {
-    const result = await userService.getBySlug(req.params.slug);
+    const result = await userService.getBySlug(
+      req.params.slug,
+      req.userAccess._id
+    );
     return apiHandler.sendSuccessWithData(res, 'Account', result);
   } catch (error) {
     if (error.message.includes('notfound')) {
