@@ -628,45 +628,53 @@ const totalPostSellingByCategory = async () => {
 const checkImage = async (image, idCategory) => {
   try {
     const reasons = [];
-    //kiểm tra hình ảnh có trong danh mục hay không
-    // const categoryImage = await classifyImageFromUrl(image.url);
-    // console.log('categoryImage:', categoryImage);
-    // if (!categoryImage || categoryImage?.length === 0) {
-    //   throw new Error(`No classification results found for ${image.url}`);
-    // }
-    // const cate = await categoryService.getKeyword(idCategory);
-    // const isCorrectCategory = await checkCorrectCategory(
-    //   categoryImage,
-    //   cate.keywords,
+    // 1. Khởi động song song 2 tác vụ
+    const classificationPromise = (async () => {
+      const categoryImage = await classifyImageFromUrl(image.url);
+      if (!categoryImage || categoryImage.length === 0) {
+        throw new Error(`No classification results found for ${image.url}`);
+      }
+      const cate = await categoryService.getKeyword(idCategory);
+      const isCorrectCategory = await checkCorrectCategory(
+        categoryImage,
+        cate.keywords,
+        cate.name
+      );
+      if (!isCorrectCategory) reasons.push(`Not in post category`);
+      return isCorrectCategory;
+    })();
 
-    //   cate.name
-    // );
-    // console.log('isCorrectCategory:', isCorrectCategory);
-    // if (!isCorrectCategory) {
-    //   reasons.push(`Not in post category`);
-    // }
-    //kiểm tra nội dung hình ảnh
-    const result = await sightEngineConnect(image.url);
-    if (!result || result.status !== 'success') {
-      throw new Error(`Invalid API response for ${image.url}`);
-    }
-    const evaluation = evaluateImageContent(result, {});
-    if (!evaluation || typeof evaluation.approved === 'undefined') {
-      throw new Error(`Evaluation failed for ${image.url}`);
-    }
-    if (!evaluation.approved) {
-      reasons.push(...evaluation.reasons);
-    }
+    const contentCheckPromise = (async () => {
+      const result = await sightEngineConnect(image.url);
+      if (!result || result.status !== 'success') {
+        throw new Error(`Invalid API response for ${image.url}`);
+      }
+      const evaluation = evaluateImageContent(result, {});
+      if (!evaluation || typeof evaluation.approved === 'undefined') {
+        throw new Error(`Evaluation failed for ${image.url}`);
+      }
+      if (!evaluation.approved) reasons.push(...evaluation.reasons);
+
+      return evaluation.approved;
+    })();
+
+    // 2. Chạy song song cả 2
+    const [isCorrectCategory, isApprovedContent] = await Promise.all([
+      classificationPromise,
+      contentCheckPromise,
+    ]);
+
     return {
       url: image.url,
       index: image.index,
-      approved: evaluation.approved,
-      reasons: evaluation.approved ? [] : reasons,
+      approved: isCorrectCategory && isApprovedContent,
+      reasons: isCorrectCategory && isApprovedContent ? [] : reasons,
     };
   } catch (error) {
     throw error;
   }
 };
+
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const processPostImages = async (post) => {
@@ -688,8 +696,7 @@ const processPostImages = async (post) => {
         // (Tuỳ chọn) delay giữa mỗi ảnh nếu cần
         await delay(3000);
       } catch (error) {
-        console.error('Error during AI check:', error.message);
-
+        console.log(`Error processing image ${image.url}: ${error.message}`);
         // Nếu có lỗi → dừng toàn bộ và cập nhật trạng thái ngay
         return {
           newStatus: 'WAITING|AI_CHECKING_FAILED',
@@ -708,13 +715,17 @@ const processPostImages = async (post) => {
     );
 
     const newStatus = hasRejectedImage ? 'REJECTED' : 'SELLING';
-
+    if (newStatus === 'REJECTED') {
+      console.log(
+        'At least one image was rejected, updating status to REJECTED'
+      );
+    } else {
+      console.log('All images approved, updating status to SELLING');
+    }
     return { newStatus, updatedImages };
   } catch (error) {
-    console.error(
-      'Unexpected error while processing post images:',
-      error.message
-    );
+    console.log(`Error checking image ${image.url}: ${error.message}`);
+    console.log('Updating image as AI_CHECKING_FAILED');
     throw error;
   }
 };

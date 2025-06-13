@@ -10,13 +10,19 @@ const postService = require('./post.service');
 
 cron.schedule('*/1 * * * *', async () => {
   try {
+    console.log('Start post moderation check...');
+    console.log('Get all posts with status WAITING');
+
     const posts = await Post.find({ status: 'WAITING' });
     if (posts.length === 0) return;
 
     for (const post of posts) {
+      console.log(`Processing post with ID: ${post._id}`);
       const { newStatus, updatedImages } =
         await postService.processPostImages(post);
-
+      console.log(
+        `Post ID: ${post._id} - New status: ${newStatus}, Updated images: ${updatedImages.length}`
+      );
       await postService.updateCheckingStatus(post._id, {
         status: newStatus,
         images: updatedImages,
