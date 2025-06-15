@@ -303,6 +303,20 @@ const totalPostSellingByCategory = async (req, res) => {
     return apiHandler.sendErrorMessage(res, error.message);
   }
 };
+const reNewPost = (req, res) => {
+  try {
+    const result = postService.reNewPost(req.params.id);
+    return apiHandler.sendSuccessWithData(res, 'ReNew Post', result);
+  } catch (error) {
+    if (error.message.includes('renew')) {
+      return apiHandler.sendErrorMessage(res, 'Failed to renew post');
+    }
+    if (error.message.includes('notfound')) {
+      return apiHandler.sendNotFound(res, 'Post not found');
+    }
+    return apiHandler.sendErrorMessage(res, error.message);
+  }
+};
 module.exports = {
   create,
   updateStatus,
@@ -323,4 +337,5 @@ module.exports = {
   totalPostSellingByCategory,
   getPushedAt,
   getAllPagiantionManager,
+  reNewPost,
 };

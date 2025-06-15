@@ -729,6 +729,29 @@ const processPostImages = async (post) => {
     throw error;
   }
 };
+const reNewPost = async (postId) => {
+  try {
+    const post = await Post.findById(postId);
+    // if (!post) throw new Error('Post not found');
+
+    await Post.deleteOne({ _id: postId });
+
+    const newPost = await Post.create({
+      ...post.toObject(),
+      _id: undefined, // xoá _id để Mongo tự tạo
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      status: 'WAITING',
+      pushedAt: null,
+      isNotify: false,
+    });
+
+    return newPost;
+  } catch (error) {
+    console.error('Error renewing post:', error);
+    throw error;
+  }
+};
 
 module.exports = {
   create,
@@ -740,6 +763,7 @@ module.exports = {
   getBySlug,
   update,
   countSold,
+  reNewPost,
   updateClickCount,
   updateCheckingStatus,
   getAllSuggestionsPagination,
