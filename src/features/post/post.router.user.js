@@ -67,5 +67,10 @@ router.get(
   permissionApi.permissionUser,
   postController.countStatusProfile
 );
+router.patch(
+  '/renew/:id',
+  permissionApi.permissionUser,
+  postController.reNewPost
+);
 
 module.exports = router;
