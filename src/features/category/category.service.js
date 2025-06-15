@@ -106,6 +106,7 @@ const update = async (id, category) => {
           : undefined,
         messages: category.messages ? JSON.parse(category.messages) : undefined,
         parent: category.parent ? category.parent : null,
+        pricePayment: category.isPayment ? category.pricePayment : undefined,
       },
       {
         new: true,

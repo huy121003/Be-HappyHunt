@@ -117,15 +117,15 @@ function evaluateImageContent(analysis, thresholds = {}) {
     }
 
     // Kiểm tra violence
-    // const violence = analysis.violence || {};
-    // const violenceClasses = violence.classes || {};
-    // if (
-    //   violence.prob > t.violence ||
-    //   violenceClasses.physical_violence > t.violence ||
-    //   violenceClasses.firearm_threat > t.violence
-    // ) {
-    //   reasons.push('Contains violence');
-    // }
+    const violence = analysis.violence || {};
+    const violenceClasses = violence.classes || {};
+    if (
+      violence.prob > t.violence ||
+      violenceClasses.physical_violence > t.violence ||
+      violenceClasses.firearm_threat > t.violence
+    ) {
+      reasons.push('Contains violence');
+    }
 
     // // Kiểm tra offensive
     // const offensive = analysis.offensive || {};
